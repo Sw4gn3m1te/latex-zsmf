@@ -1,0 +1,715 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{color}
+\usepackage{setspace}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\title{Zusammenfassung Betriebssysteme und Sicherheit}
+\author{Henrik Tscherny}
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Betriebssysteme}
+\subsection{Aufgaben eines OS}
+\begin{itemize}
+\item Schnittstelle zwischen Software und Hardware
+\item Bereitstellen von CPU, Speicher, Ein-/Ausgabe und anderen Betriebsmitteln
+\end{itemize}
+\subsection{Prozesse}
+Ein Prozess ist ein Programm welches ausgeführt wird.
+Die Bestandteile eines Prozesses sind:
+\begin{itemize}
+\item ein Programm
+\item mindestens ein Thread
+\item ein Adressraum
+\item Besitzer von Betriebsmitteln z.B. Netzwerkverbindungen, Speicherbereiche, geöffnete Dateien
+\item Nutzerzuordnung
+\end{itemize}
+Hintergrundprozesse nennt man auch deamons
+Folgende Ressourcen sind Prozess unabhängig:
+\begin{itemize}
+\item CPU-Cache
+\item Dateisystem
+\item physischer Speicher
+\item Netzwerkkarte
+\end{itemize}
+
+\subsection{Threads}
+Ein Thread ist eine Aktivität die:
+\begin{itemize}
+\item ein sequenzielles Programm ausführt
+\item zu anderen Threads parallel läuft
+\item von OS bereitgestellt wird
+\end{itemize}
+Ein Thread kann sich in folgenden Zuständen befinden:
+\begin{itemize}
+\item aktiv: Thread wird ausgeführt, Pro CPU ist max ein Thread aktiv
+\item blockiert: mindestens eine nötige Ressource ist nicht vorhanden, die benötigt wird, damit die Ausführung starten kann (z.B. erwarten einer Eingabe, Freigabe von Betriebsmitteln)
+\item bereit: nicht blockiert aber nicht aktiv, Thread kann theoretisch los rechnen, ist aber noch nicht dran
+\end{itemize}
+Anforderungen an Threads sind: 
+\begin{itemize}
+\item max ein Thread pro CPU
+\item ein aktiver Thread ist genau einer CPU zugehörig
+\item nur bereite Thread können die CPU erhalten
+\item Fairness: jeder Thread kommt wenn er rechen möchte auch dran
+\item das Wohlverhalten der Threads darf keine Voraussetzung bei der Implementierung sein
+\end{itemize}
+\paragraph{Threadumschaltung}
+\begin{itemize}
+\item kooperativ
+\begin{itemize}
+\item Threads rufen zuverlässig Umschaltoperationen auf
+\item Threads geben freiwillig die Kontrolle ab
+\item Verwendung heute teils noch in User-Level Threads
+\end{itemize}
+\item präemtiv
+\begin{itemize}
+\item Thread wird die CPU entzogen
+\item Thread kann nichts dagegen tuen
+\item Thread Umschaltung kann zu jeder Zeit passieren
+\end{itemize}
+\end{itemize}
+Threads teilen sich folgende Ressourcen:
+\begin{itemize}
+\item offene Datein
+\item globale Variablen
+\item Netzwerkkarte
+\item physischer Speicher
+\item PCB
+\item Virtueller Adressraum
+\item Dateisystem
+\item CPU-Cache
+\end{itemize}
+\paragraph{TCB}
+\begin{itemize}
+\item Thread Zustand
+\item Kernel-Stack-Pointer
+\item CPU-State
+\item Verweis auf Adressraum
+\item Scheduling-Attribute
+\end{itemize}
+
+\subsection{Adressraum}
+Als Teil eines Prozesses ist der Adressraum ein Ausschnitt des Hauptspeichers welcher vom Prozess verwaltet wird. Der Adressraum ist dabei wie folgt in mehrere Abschnitte untergliedert:
+\paragraph{Kern}
+Von den höchsten Adressen startend beginnt der Teil des Adressraums welcher einen Teil des Kernel enthält. Dazu zählen u.a. eine Liste aller Prozesse und eine Tabelle der offenen Dateien. Dies ist z.B. für die Durchführung von Systemcalls nötig. Ein im Usermode laufender Prozess kann nicht auf dieses Segment zugreifen. 
+
+\paragraph{Stack}
+Beim Stack handelt es sich um einen Kellerspeicher. Der Stack dient dem Speichern von lokalen Variablen und Funktionsparametern. Auch werden Rücksprungadressen auf dem Stack gespeichert. Da Funktionen immer in der Reihenfolge verlassen werden wie sie betreten wurden, ist hierbei der Kellerspeicher als LIFO Speicher sehr hilfreich. Der Stack wächst von hohen Adressen hin zu niedrigeren Adressen. Das Oberste Element des Stacks wird mit den Stackpointer(SP) markiert.
+
+\paragraph{Heap}
+Unter den Stack folgt der Heap. Dieser wächst entgegen der Richtung des Stack von den niedrigen Adressen zu höheren Adressen. Auf dem Heap werden alle zu Laufzeit erstellten Speicherbereiche, wie etwa durch malloc() gelagert. Der Heap wird von allen Threads und geteilten Bibliotheken eines Prozesses genutzt.
+
+\paragraph{BSS}
+Das folgende BSS Segment enthält alle globalen Variablen welche nicht initialisiert wurden, d.h. welch keine Wertzuweisung haben.
+
+\paragraph{Data}
+Im Daten Segment befinden sich globale Variablen welche Initialisiert wurden
+
+\paragraph{Text}
+Ganz unten im Adressraum befindet sich das Textsegment. Das Textsegment enthält den auszuführenden Programmcode und ist Read-Only und von fester Größe. Oft wird am unteren Ende etwas Platz gelassen um nicht initialisierte Pointer zu erkennen.
+
+\subsection{Systemcalls}
+Systemcalls sind spezielle Befehle welche genutzt werden können um Funktionen des OS-Kernels zu benutzen. 
+\begin{itemize}
+\item der Kernmodus wird eingeschaltet
+\item es wird auf den Kern Stack umgeschaltet
+\item es wir an eine andere Stelle verzweigt
+\item der Kern führt die dortige Operation aus
+\end{itemize}
+
+Beispiele für Syscalls:
+\begin{itemize}
+\item x = fork(): Erstellt eine exakte Kopie des Aufrufers inc. Adressraum, Filedeskriptoren usw.\begin{itemize}
+\item x == 0: im Child Process
+\item x < 0: Fehler
+\item x > 0: Parentprocess , enthält ID des Childs
+\end{itemize}
+\item exit(status): beendet Prozess. Wenn Kindprozess, dann bleibt dieser noch als Zombie bestehen bis der Parent wait() ausführt
+\item s = wait(pid): wartet auf die Beendigung des Childs mit pid, wenn\\ pid == -1, warte auf beliebiges Child, s ist der exit(status) des Kindes
+\item s = exec(file, arg, env): ersetzt Speicherinhalt des Prozesses durch den Inhalt von File, schreibt Argumente und Umgebungsvariablen an Anfang des Kellersegments
+\end{itemize}
+
+\subsection{Interrupts}
+\begin{itemize}
+\item unterbrechen den Ablauf eines aktiven Threads an einer beliebigen Stelle
+\item asynchron: Interrupts, synchron Exceptions
+\item Auslöser: IO-Geräte, interne Timer
+\item Exceptions: Seitenfehlern, fehlerhaften Instruktionen, explizites Auslösen durch Syscalls
+\item Timerinterrupts können vom Kern mit speziellen Syscalls deaktiviert/aktiviert werden (cli (aus), sti (an))
+\end{itemize}
+ein IO-Interrupt läuft wie folgt ab:
+\begin{itemize}
+\item IO-Controller löst Interrupt aus
+\item CPU erkennt Auftreten des Interrupts zwischen den Befehlen
+\item CPU schalten in der Kernel-Mode und schaltet auf den Kernel-Stack welcher im TCB vermerkt ist
+\item CPU sichert dort User-Stack-Pointer, User-Programm-Counter, Flags, usw
+\item CPU lädt Kern-Programm-Counter aus Interrupt Description Table (IDT)
+\item Fortsetzung des Codes im OS-Kern
+\item Instruktion iret stellt Zustand vor dem Syscall für den Thread wieder her
+\item Thread fährt mit der Ausführung fort
+\end{itemize}
+
+\subsection{kritische Abschnitte}
+Anforderungen an einen kritischen Abschnitt:
+\begin{itemize}
+\item es darf sich maximal ein Thread zur gleichen Zeit in ihm befinden
+\item jeder Thread der ihn betreten möchte bekommt irgendwann auch die Gelegenheit dazu
+\item es dürfen keine Annahmen bzgl. der Reigenfolge, relativen Geschwindigkeit der Threads gemacht werden
+\end{itemize}
+
+\paragraph{Race-Condition}
+\flushleft
+Eine Race-Condition tritt auf, wenn mehrere Dinge (z.B. Thread) auf die gleiche Ressource zugreifen und so das Ergebnis einer Operation davon abhängig ist, welcher Thread als erstes an der Reihe ist und wie die weitere Abarbeitungsreihenfolge der Threads abläuft (z.B. doppelte Abbuchen eines Kontos)
+
+\paragraph{Lösung nach Peterson}
+\flushleft
+\begin{itemize}
+\item jeder Thread bekundet sein Interesse einen kritischen Abschnitt zu betreten
+\item dafür benutzt man eine List $interested[self.id] = true$
+\item nach dem Bekunden des Interesses setzt der Thread eine turn variable auf eine andere ID als seine Eigene $turn\neq self.id$
+\item es wird dann eine Endlosschleife betreten solange der andere Partner das Interesse bekundet und die ID des Partners auch dran ist $while (interested[other.id]\hspace{4pt} and\hspace{4pt} turn == other.id)$
+\item nach dem Verlassen der kritischen Sektion wird das eigene Interesse entbekundet $interested[self.id] = false$
+\item Node: funktioniert nicht für OS mit weak memory consistency
+\end{itemize}
+andere Lösungsversuche:
+\begin{itemize}
+\item Unterbrechungssperre: ausschalten der Timerinterrupts
+\begin{itemize}
+\item nur Kern kann Timerinterrupts sperren
+\item deaktiviert nur den Timer des eigenen Kerns, die Timer anderer Kerne laufen weiter $\rightarrow$ nur für einen Core möglich
+\end{itemize}
+\item nicht Unterbrechbare Instruktionen
+\begin{itemize}
+\item da jede Instruktion selbst aus mehreren $\mu$Ops besteht wird das Problem nur weiter nach unten gereicht
+\end{itemize}
+\item atomare Instruktionen
+\begin{itemize}
+\item Speicherzelle wird Hardwareseitig gesperrt und ist Hardwareseitig ganz oder garnicht ausführbar
+\item funktioniert
+\item früher: Bus wird gesperrt, heute: Cache-line wird gesperrt
+\end{itemize}
+\end{itemize}
+
+\subsection{Mutex/Locks}
+\begin{itemize}
+\item bussy waiting
+\item hohe Busbelastung
+\item ein Thread kann verhungern
+\item nicht für Thread auf derselben CPU
+\item nur für kurze kritische Abschnitte geeignet
+\end{itemize}
+
+\subsubsection{Semaphore}
+\begin{itemize}
+\item Zähler 
+\item Warteschlange
+\item Operationen up() und down() manipulieren den Zähler
+\item können von verschiedenen Thread verwendet werden
+\item kein Bussy-Waiting, sondern blockieren in der Warteschlange
+\item sleep(q) blockiert Aufrufer und fügt in in WS ein
+\item wakeup(q) weckt den ältesten Thread in WS auf
+\end{itemize}
+
+\subsubsection{Deadlocks}
+\begin{itemize}
+\item ein Deadlock ist eine Situation wobei mehrere Thread jeweil zyklisch aufeinander warten
+\item es kommt zu einem Stillstand, da jeder auf einen anderen wartet
+\item kann durch Locks/Semaphore ausgelöst werden
+\item Notwendige Bedingungen sind:
+\begin{itemize}
+\item gegenseitiger Ausschluss bei der Benutzung von BM
+\item Nachfordern von BM
+\item keine Verdrängung möglich
+\item zyklische Wartesituation
+\end{itemize}
+\item Hinreichend: Konjunktion der 4 Notwendigen
+\end{itemize}
+
+\subsubsection{Bedingungsvariablen}
+\begin{itemize}
+\item Warteschlange
+\item wait() und signal()
+\item Bedingung frei implementierbar
+\item Test der Bedingung muss mit Lock geschützt werden
+\item Lock wird mit wait() atomar freigegeben und beim Aufwachen wieder gesperrt
+\end{itemize}
+
+\subsection{Scheduling}
+
+\begin{itemize}
+\item Optimale Schedule: Es gibt keine bessere Reihenfolge welche eine geringere Zeit benötigt um alle Jobs zu bearbeiten
+\item Wartezeit: Zeit eines Jobs bevor er anfangen kann zu Rechnen, d.h. Ausführungszeit der Jobs davor + Lücken
+\item Verweilzeit: Zeit die ein Job bis zur Beendigung braucht, d.h. Wartezeit + eigene Ausführungszeit
+\end{itemize}
+
+
+\paragraph{Shortest Processing Time (SPT)}
+\flushleft
+\begin{itemize}
+\item nimmt immer den kürzesten Job und reiht diesen als erstes ein
+\item Optimal wenn es keine Abhängigkeiten zwischen Aufgaben gibt
+\item gut um gesamt Wartezeit zu minimieren
+\end{itemize}
+
+\paragraph{Longest Processing Time (LPT)}
+\flushleft
+\begin{itemize}
+\item reiht den Job mit der längsten Ausführungszeit zuerst ein
+\item LPT ist optimal, sofern es nur eine CPU gibt (trivial)
+\item gut um gesamt Bearbeitungszeit zu minimieren
+\end{itemize}
+
+
+\paragraph{Round-Robin}
+\flushleft
+\begin{itemize}
+\item Jeder Job bekommt reihum jeweils ein Timeslice mit Größe Q
+\item es gibt n Jobs mit Ausführungszeit T
+\item ein Zyklus sei ein Abschnitt in welchem jeder Job einmal gerechnet hat
+\item Wartezeit für einen Zyklus $t_{w_i} = Q(i-1)+(\frac{T}{Q}-1)(n-1)$
+\item durchschnittliche Gesamtwartezeit $\frac{1}{n} \sum^n_{i=1} t_{w_i}$
+\end{itemize}
+
+\subsubsection{Real-Time-Scheduling}
+\begin{itemize}
+\item eine Menge von Jobs $j \in  J$ mit besonderen Eigenschaften
+\item Hyperperiode: $kgV(p_j), j\in  J$, Punkt an dem der Schedule sich wiederholt
+\item Auslastungsgrad: $\eta = \sum^n_{i_1} \frac{e_i}{p_i}$
+\item jeder Job hat: 
+\begin{itemize}
+\item Ausführungszeit e
+\item Deadline d (hard oder soft)
+\item Periode p
+\item keine Abhängigkeiten *(hier)
+\item unterbrechbar
+\item kein Scheduling Overhead *(nur theoretisch)
+
+\end{itemize}
+\end{itemize}
+\paragraph{Admission}
+\flushleft
+\begin{itemize}
+\item Zeigt ob der Task tatsächlich einplanbar ist
+\item Einplanbarkeit kann durch das Admission-Kriterium überprüft werden
+\end{itemize}
+
+\paragraph{Rate Monotonic Scheduling (RMS)}
+\flushleft
+\begin{itemize}
+\item Jeder Job besitzt eine feste Priorität
+\item Jobs mit kürzester Periode erhält höchste Priorität
+\item Optimal bzgl. Einplanbarkeit unter statischen Prioritäten
+\item geringer Overhead
+\item schlechte Auslastung
+\item Admission: Einplanbar wenn $\eta \leq n(\sqrt[\leftroot{-2}\uproot{2} n]{2} -1), n=|J|$
+\end{itemize}
+
+\paragraph{Earliest Deadline First (EDF)}
+\flushleft
+\begin{itemize}
+\item benutzt dynamische Prioritäten
+\item Job mit nächst gelegener Deadline bekommt höchste Priorität
+\item Optimal bzgl. Einplanbarkeit unter dynamischen Prioritäten
+\item großer Overhead
+\item höhere Auslastung
+\item Admission: Einplanbar gdw. $\eta \leq 1$
+\end{itemize}
+
+\section{Speicherverwaltung}
+\paragraph{Aufbau}
+\flushleft
+\begin{itemize}
+\item Seite: virtuelle Abbildung eines Teils des theoretisch möglichen Hauptspeichers
+\item Rahmen: Zu einer Seite korrespondierender Speicherbereich im Hauptspeicher 
+\item zu einer Seite gehört, sofern das present-bit gesetzt ist mindestens ein Rahmen, es können mehrere Seiten auf den selben Rahmen zeigen
+\item Block: Speichersegment auf der Festplatte (persistent)
+\item Seiten werden in der Seitentabelle gespeichert
+\item die Seitentabelle speichert auch die Rechte für die jeweilige Speicherregion
+\item Es können Seitenverzeichnisse benutzt werden welche Verweise auf Seitentabellen enthalten
+\item durch die Hierarchie können große Menge an Seiten auf einmal Verwaltet werden (z.B. als nicht Präsent oder nur lesbar markiert werden)
+\item die MMU ist für die Umrechnung der virtuelle Adressen in die physischen Zuständig
+\item der TLB speichert einige Übersetzungen für virtuelle in physische Adressen, für häufig verwendete Adressen
+\end{itemize}
+
+\paragraph{Statische Segmentierung}
+\flushleft
+Jedes Programm erhält die gleiche Menge von Speicher
+Folgende Nachteile entstehen durch das nicht verwenden von virtuellem Speicher:
+\begin{itemize}
+\item Es werden dedizierte Register (Basis und Limit-Register) benötigen zum Schutz vor unerlaubten Zugriffen
+\item Reallocation: Je nachdem in welchem Segment sich das Programm befindet sind die Adressen anders (Lösung $\rightarrow$ Base-Register)
+\item Fragmentierung des Speichers, da Programme viel zu Große Segmente erhalten $\rightarrow$ viel verschwendeter Speicherplatz
+\end{itemize}
+
+\paragraph{Dynamische Segmentierung}
+\flushleft
+
+First-Fit:
+\begin{itemize}
+\item platziert die Anfrage in die erste Lücke in welche das Programm passt
+\item Beginnt Suche immer am Anfang des Speichers
+\item sehr einfaches Verfahren
+\item erzeugt starte Fragmentierung des Speichers, besonders am Anfang des Speichers
+\end{itemize}
+Next-Fit:
+\begin{itemize}
+\item First-Fit, beginnt jedoch die Suche am Ende des zuletzt platzierten Stücks
+\item einfaches Verfahren
+\item erzeugt Fragmentierung wie bei First-Fit, jedoch über den gesamten Speicher verteilt
+\item bessere Verteilung der Fragmentierung
+\end{itemize}
+Best-Fit:
+\begin{itemize}
+\item platziert die Anfrage in beste Lücke, d.h. die welche die geringste externe Fragmentierung erzeugt $\rightarrow$ Lücke dessen Größe am nächsten der Größte der Anfrage entspricht
+\item hoher Suchaufwand
+\item besseres Einlagerungsverhalten
+\item jedoch möglich, dass Best-Fit schlechter ist als First-Fit ist, allgemein jedoch besser
+\item
+\end{itemize}
+Worst-Fit
+\begin{itemize}
+\item nimmt die Lücke welche die Größte Fragmentierung erzeugt $\rightarrow$ die Lücke wessen größte am weitesten von der angefragten Größte abweicht
+\item hoher Suchaufwand
+\item etwas schlechter als Best-Fit
+\item sogt für gleichgroße Lücken
+\end{itemize}
+Buddy-Verfahren
+\begin{itemize}
+\item der Speicher wird in Blöcke der Größe $2^k$ zerlegt
+\item der angeforderte Speicher wird zur nächsten Zweierpotenz aufgerundet
+\item gibt es keinen Block dieser Größer so wird die nächst Größere Zweierpotenz gesucht, diese zweigeteilt und eine Hälfte dem Prozess zugewiesen
+\item geringer Suchaufwand
+\item einfach Implementierung
+\item keine Hardwareunterstützung nötig
+\item erzeugt interne und externe Fragmentierung
+\item schlechte Einlagerung als Best-Fit
+\item Worst-Case wenn angefragte Speichergrößen $2^n +  1$ sind (wegen Aufrundung)
+\end{itemize}
+
+\subsection{Seitenersetzungsverfahren}
+\begin{itemize}
+\item OPT 
+\begin{itemize}
+\item Basiert auf Wissen von der Zukunft $\rightarrow$ nicht implementierbar
+\item Dient als theoretische untere Schranke
+\end{itemize}
+\item FIFO
+\begin{itemize}
+\item Nutzt kein Wissen über Referenzverhalten eines Programms (Lokalität)
+\item sehr einfach implementierbar
+\item durchschnittlich schlechtes Verhalten
+\item Auftreten der Beladeschen Anomalie (mehr Seitenfehler bei mehr Speicher)
+\end{itemize}
+\item LRU/LFU
+\begin{itemize}
+\item Gute Näherung an OPT
+\item aufwändige Implementierung (komplettes Referenzverhalten, volle Suche)
+\end{itemize}
+\item Clock-Algorithmus
+\begin{itemize}
+\item Annäherung an LRU-Verfahren
+\item einfache Implementierung
+\item Nicht fair zwischen mehreren Prozessen, da ein Prozess komplett den physischen Speicher übernehmen kann
+\item MMU vermerkt Zugriffe auf Seiten in Accessed-Bit der Seitentabelle
+\item Seiten ohne Accessed-Bit werden verdrängt
+\item Funktionsweise
+\begin{itemize}
+\item Ist Access-Bit an Zeigerstelle gesetzt ?
+\item Wenn JA: Bit in Seitentabelle zurücksetzen, gehe zum nächsten Frame
+\item Wenn NEIN: Kandidat gefunden gefunden, tausche Seiten aus, gehe zum nächsten Frame
+\end{itemize}
+\end{itemize}
+\item Arbeitsmengenmodell
+\begin{itemize}
+\item Nutzt Lokalität für Ersetzungsentscheidungen
+\item Zugriffe werden für jeden Prozess einzeln aufgezeichnet (Arbeitsmengen)
+\item Alle Seiten innerhalb der letzten n Zugriffe (Fenstergröße) werden nicht verdrängt
+\item Berücksichtigt Lokalität 
+\item Fair zwischen mehreren Prozessen, da bevorzugt lokale Verdrängung
+\item aufwändige Implementierung (speichern und updaten der AMs, jeder Zugriff muss aufgezeichnet werden)
+\item Funktionsweise
+\begin{itemize}
+\item Bei jedem Zugriff werden die AM aktualisiert, (Liste der letzten n Zugriffe, keine Doppelnennung bei mehrfachen Zugriffen)
+\item Kacheln welche nicht mehr in der AM sind werden als ersetzbar markiert
+\item Verdränge zuerst eigene Seiten (lokale Verdrängung), sonnst Seiten von anderen (globale Verdrängung)
+\end{itemize}
+\end{itemize}
+\item Second Chance
+\begin{itemize}
+\item jede Seite erhält eine referenced Flag
+\item wird eine Seite referenziert so wird diese gesetzt
+\item wird eine Kachel benötigt, so wird vom Anfang der Liste durchsucht
+\item Kachel hat Flag: Flag wird gelöscht, gehe zum nächstem Element
+\item Kache hat keine Flag, Kachel wird ausgetauscht
+\item kann mit dem Clock-Algorithmus kombiniert werden
+\item enorm besser als FIFO
+\end{itemize}
+\item Aging
+\begin{itemize}
+\item für jede Seite für eine Liste (z.B. aus 8 Bits) gespeichert
+\item bei jedem Tick wird an den Anfang ein Bit angesetzt und das hinterste Bit herausgeschoben
+\item Seite hat die Flag: 1 wird vorn angefügt, Flag wird gecleared
+\item Seite het keine Flag: 0 wird vorn angefügt
+\item wird eine neue Kachel benötigt, so wird die Kachel eingelagert mit dem kleinsten Alter (Alter ist die Zahl welche sich aus den 8 Bits ergibt)
+\item effizienter Algorithmus
+\end{itemize}
+\end{itemize}
+
+\subsection{Seitenfehlerbehandlung}
+\begin{itemize}
+\item Echte Fehler
+\begin{itemize}
+\item Zugriffe auf ungültige Speicherbereiche
+\item Prozess wird SIGSEGV zugestellt
+\item Prozess wird (im Normalfall) beendet
+\end{itemize}
+\item Reparable Fehler
+\begin{itemize}
+\item Zugriff gültig, aber Seite ausgelagert
+\item wird transparent im OS behandelt
+\item OS lagert Seite ein
+\item Programm wird normal fortgesetzt
+\end{itemize}
+\item genereller Ablauf:
+\begin{itemize}
+\item Seitenfehler tritt auf
+\item finde Objekt und Seite (Offset Behandlung)
+\item Suche ob Kachel schon vorhanden ist (von einem anderen Thread bspw.)
+\item Falls Ja: Seite in Seitentabelle eintragen, done
+\item Falls Nein: suche nach freien Kacheln
+\item Es gibt eine freie Kachel: Inhalt lesen, Seite eintragen
+\item Es gibt keine freie Kachel: verdrängen
+\begin{itemize}
+\item Aus allen beteiligen Seitentabellen austragen
+\item Zu welchem Objekt gehört die verdrängte Kachel
+\item Inhalt sichern
+\end{itemize}
+\item neuen Inhalt lesen, Seite eintragen
+\end{itemize}
+\end{itemize}
+
+\subsection{Sicherheitskonzepte}
+\begin{itemize}
+\item Objekt: Dateien mit Besitzer und Gruppe
+\item Subjekt: Prozesse, die als ein Nutzer sowie all seinen Gruppen gestartet werden
+\item Rechte: lesen, schreiben, ausführen (rwx)
+\end{itemize}
+\paragraph{ALC}
+\flushleft
+\begin{itemize}
+\item darf von Objekterzeuger gesetzt werden
+\item bei jedem Zugriff wird beim Objekt auf der Basis der ID des Aufrufers dessen Berechtigung überprüft
+\item benutzt in reduimentären FS
+\item Aufbau: Datei [Besitzer] [Gruppen] [Rechte]
+\item geringe Ausdrucksmöglichkeiten
+\item verfügt u.u. noch über ein set-uid Bit, wenn gesetzt wird das Programm zusätzlich zu den Rechten des Nutzers mit den Rechten des Besitzers Ausgeführt
+\item set-uid dient dazu Ressourcen vor unprivilegierte Zugriffen zu schützen
+\end{itemize}
+\paragraph{Capabilities}
+\flushleft
+\begin{itemize}
+\item bei jedem Zugriff wird etwas geprüft, was Subjekte besitzung und bei Bedarf weitergeben können
+\item Beschränkung durch die initiale Vergabe der Caps
+\item Subjekte können Rechte gezielt weitergeben
+\item Erzeuger eines Objekt hat zunächst alle Rechte und gibt diese weiter
+\item Überprüfung der Caps durch vertrauenswürdige unumgängliche Einheiten (z.B. Kern oder spezielle Dienste)
+\end{itemize}
+\paragraph{Mandatory Access Control (MAC)}
+\flushleft
+\begin{itemize}
+\item bei jedem Zugriff werden Regen ausgewertet
+\item Subjekte und Objekte haben labels 
+\item Entscheidung über Zugriffe anhand von Regeln
+\item z.B. Multilevel Security durch verschiedene Sicherheitsebenen
+\end{itemize}
+
+
+\subsection{Dateisysteme}
+\subsubsection{Aufbau}
+\paragraph{Superblock}
+\flushleft
+\begin{itemize}
+\item Ankerpunkt für das FS
+\item Root I-Node
+\item Allocation Bitmap (Zeigt welche physische Blöcke verwendet werden)
+\item I-Node Bitmap (Zeigt welche I-Nodes im Block vergeben sind)
+\end{itemize}
+\paragraph{Root I-Node}
+\flushleft
+\begin{itemize}
+\item Rechte
+\item Größte
+\item uid, gid
+\item Verzeichnisblock
+\end{itemize}
+\paragraph{I-Node Blöcke}
+\flushleft
+\begin{itemize}
+\item I-Nodes
+\item I-Nodes verweisen wieder auf Verzeichnisblöcke
+\end{itemize}
+\paragraph{Verzeichnisblock}
+\flushleft
+\begin{itemize}
+\item Verweis auf Datenblöcke
+\item I-Nodes mit weiteren Verzeichnisblöcken
+\item evl. Verweise auf Indirection Blöcke, diese zeigen wiederum auf Datenblöcke
+\end{itemize}
+\subsubsection{Links}
+\paragraph{Hardlink}
+\flushleft
+\begin{itemize}
+\item Verweis im einem Verzeichnisblock
+\item Zeigt auf eine I-Node
+\item d.h. mehrere Verzeichniseinträge zeigen auf den selben Datei I-Node
+\item dürfen nicht auf Verzeichnisse zeigen, da so Schleifen entstehen können
+\item Eintrag im Verzeichnisblock kann gelöscht werden, es wird dabei lediglich der Link-Counter reduziert, die Datei ist jedoch immernoch über den Hardlink (der ja immernoch auf diese Datei zeigt) erreichbar
+\item kann nicht über FS Grenzen hinausgehen
+\item Da der Hardlink auf die I-Node direkt zeigt, funktioniert er auch wenn die Datei verschoben werden sollte
+\end{itemize}
+
+\paragraph{Softlink/Symbolic Link}
+\flushleft
+\begin{itemize}
+\item ganz normale Datei eines I-Nodes
+\item Datei enthält einen Pfad
+\item OS löst Pfad in der Datei nochmal von Anfang auf
+\item Wird der Verweis auf die Datei gelöscht so wird dabei der Link-Counter auf 0 reduziert da keine Links zu der Datei mehr existieren werden die Daten freigegeben $\rightarrow$ der Softlink zeigt ins nichts
+\item kann über FS Grenzen hinaus verlinken (z.B. Netzwerkpfade)
+\item können auch auf Verzeichnisse verweisen, das OS übernimmt den loop-check
+\end{itemize}
+
+\subsubsection{Filedeskriptoren}
+\begin{itemize}
+\item Werden in einer von Kernel verwalteten Liste gespeicherts
+\item ein Eintrag pro offener Datei
+\item die offenen Dateien der Prozesse werden in der Open File Table gehalten
+\item die Einträge der OFT zeigen auf I-Nodes von Dateien
+\item Zugriff über die Nummer des Eintrags
+\item 0: Std-In
+\item 1: Std-Out
+\item 2: Sdt-Err
+\end{itemize}
+
+\subsection{Inkonsistenten}
+\paragraph{kritisch}
+\flushleft
+\begin{itemize}
+\item Verweise ohne hinterlegte Daten
+\item Verweise auf Blöcke oder I-Nodes, die noch nicht angelegt worden/nicht mehr existieren z.B. wenn mein erzeugen/löschen einer Datei der Strom ausfällt
+\item Verwendung von I-Nodes welche noch nicht als belegt markiert wurden, wenn z.B. ein Ausfall geschieht bevor ein Eintrag in der Allocation Bitmap erzeugt werden konnte
+\item möglicher Verlust des Dateisystems
+\end{itemize}
+\paragraph{unkritisch}
+\flushleft
+\begin{itemize}
+\item angelegte Daten ohne Verweise
+\item Nur Datenverlust, nicht aber das Dateisystem 
+\item Blöcke sind als Belegt markiert, jedoch sind jedoch ohne Verwendung, Allocation Bitmap ist bereits belegt, jedoch gibt es keine Daten dazu
+\item kann mit einen FS check wiederherstellbar
+\end{itemize}
+
+\paragraph{Vermeidung durch synchrones Schreiben}
+\flushleft
+\begin{itemize}
+\item schreibe zuerst die Allocation Bitmap
+\item schreibe die Datenblöcke
+\item führe eine write-barrier aus (sogt dafür, dass alle Daten auf der Platte persistent werden bevor weiter gemacht wird)
+\item schreibe den zugehörigen I-Node Block
+\item schreibe den Superblock (egal wann da nur für Statistik)
+\item Essence: Schreibe immer erst den Verweis und dann die Daten
+\item nur unkritische Inkonsistenzen möglich
+\item write-barrier nach jedem Schreiben von Daten
+\end{itemize}
+
+\paragraph{Journaling}
+\flushleft
+\begin{itemize}
+\item es gibt einen dedizierten Bereich auf der Festplatte (das Journal)
+\item statt Änderungen inplace zu machen, werden die Änderungen erst in einem Journaleintrag geschrieben
+\item es gibt Metadata (Nur Verweise) und Full Journaling (Verweise und Datenblöcke)
+\item bei Absturz kann man dann in das Journal schauen um Inkonsistenzen zu finden
+\item Vorteil: Weniger write-barriers (eine für in da Journal schreiben, eine nach dem schreiben der Transactionblöcken, eine nach dem inplace schreiben)
+\item Vorteil: Compound Transactions: zusammenfassen von Änderungen
+\item Nachteil: benötigt mehr Platz
+\item Nachteil: mehr Schreiboperationen
+\end{itemize}
+
+\section{Sicherheit}
+\subsection{Schutz-Ziele}
+\begin{itemize}
+\item (C) Vertraulichkeit: Daten nur von bestimmten Personen lesbar/modifizierbar
+\item (I) Integrität: Daten dürfen nicht unbemerkt verändert werden, Veränderungen müssen nachvollziehbar sein
+\item (A) Verfügbarkeit: Zugriff auf Daten muss "irgendwann" möglich sein
+\item C: Durch Verschlüsselungssysteme
+\item I: Durch Authentifizierungssysteme
+\item A: Durch Ausfallsicherungssysteme
+
+\subsection{Verschlüsselung}
+\paragraph{Kerkhoff'sches Prinziep}
+\flushleft
+Die Sicherheit eines Kryptographischen Systems sollte nicht von der Implementierung dessen abhängig sein, d.h. der Algorithmus muss auch sicher sein, wenn er open-source ist
+
+\subsection{Arten von Verschlüsselungsverfahren}
+\item symmetrische Verschlüsselung: Selber Key für enc(x) und dec(x)
+\item sym. V. sind schnell aber schwerer Schlüsselaustausch
+\item asymmetrische Verschlüsselung
+\item asym. V. sind langsam aber einfacher Schlüsselaustausch
+\item Kombination von asym. V. und sym. V. als hybrid
+\item asym. V zum Austausch des Schlüssels für sym. V. (z.B. TLS)
+\end{itemize}
+
+\subsection{RSA}
+\begin{itemize}
+\item Faktorisierung ist NP-Hard und $P \neq NP$
+
+\end{itemize}
+
+\begin{itemize}
+\item Key Generation
+\begin{itemize}
+\item wähle zwei Primzahlen p und q ($ |p| \approx |q|$)
+\item rechne $n=p\cdot q$ es gilt außerdem $\varphi(n) = (p-1) \cdot (q-1)$
+\item wähle ein $c \in (a, \varphi(n)$ mit $ ggT(c, \varphi(n)) = 1$
+\item berechne ein $d \in (1,\varphi(n))$ mit $c\cdot d \equiv 1\hspace{4pt} mod\hspace{4pt} \varphi(n)$
+\item public key: (n,c)
+\item private key: (n, d)
+\end{itemize}
+\item De/Encryption
+\begin{itemize}
+\item Nachricht: x
+\item Encryption: $x^c \equiv y\hspace{4pt} mod \hspace{4pt} n$
+\item Decryption: $y^d \equiv x\hspace{4pt} mod \hspace{4pt} n$
+\item $x, y \in [0,n]$ 
+\end{itemize}
+\item Note: Nachweis dass c und d ein Keypair sind mittels $c \cdot d \equiv 1 \hspace{4pt} mod \hspace{4pt} \varphi(n)$
+\end{itemize}
+
+\subsection{Zufall}
+Erzeugung von Entropie durch:
+\begin{itemize}
+\item Jitter von Interrupts
+\item Abstände zwischen Interrupts von IO-Geräte
+\item Rauschen auf Mikrophonen oder Pins
+\item Hardware Random Number Generator (HRNG)
+\end{itemize}
+Schlechter Zufall:
+\begin{itemize}
+\item $n_1= p_1 \cdot q_1$
+\item $n_2= p_2 \cdot q_2$
+\item Sei $p_1 = q_2$
+\item $n_1$ und $n_2$ sind so leicht findbar
+\item $ggT(n_1, n_2)$ ergibt den einen Primfaktor der für beide gleich ist, der andere lässt sich dann aus $\frac{n}{p}$ einfach errechnen
+\item einfach angreifbar durch paarweises durchtesten von Publickey listen $\rightarrow$ public keys öfter über Zeit immer mal wieder neu generieren
+\end{itemize}
+\end{document}

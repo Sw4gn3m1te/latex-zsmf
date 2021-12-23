@@ -1,0 +1,295 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{color}
+\usepackage{setspace}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{stix}
+\title{Complexity Theory}
+\author{Henrik Tscherny}
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Definitionen}
+\subsection{Entscheidbarkeit und Erkennbarkeit}
+\begin{itemize}
+\item Sei M eine TM mit dem Eingabealphabet $\Sigma$
+\item Sei $L(M) := \{w \in \Sigma^* \vert M akzeptiert w\}$
+\item Ein Sprache L ist \textbf{erkennbar} gdw. es eine TM gibt welche diese Sprache erkennt ($L = L(M)$)
+\item Außerdem ist eine Sprache \textbf{erkennbar} gdw. es einen Enumerator E mit $G(E) = L$
+\item Ist eine Sprache \textbf{erkennbar}, dann existiert ein Enumerator E für L welcher jedes Wort in L nur genau einmal ausgibt
+\item Eine Sprache L ist \textbf{entscheidbar} gdw. sie erkennbar ist und die TM auf jedem Input hält
+\item Eine Sprache L ist \textbf{erkennbar} gdw. es einen Enumerator E gibt welcher die Wörter in aufsteigender Länge aufzählt
+\item Eine Sprache L ist \textbf{co-semi-entscheidbar} gdw. $\bar{L}$ semi-entscheidbar ist
+\item Ist L semi-entscheidbar und co-semi-entscheidbar, so ist L entscheidbar\\
+Beweis:
+\begin{itemize}
+\item Sei $TM_L$ eine TM welche L erkennt
+\item Sei $TM_{\bar{L}}$ eine TM welche $\bar{L}$ erkennt
+\item Simuliere $TM_L$ und $TM_{\bar{L}}$
+\item eine von beiden muss halten, da L semi-entscheidbar und co-semi-entscheidbar ist
+\item somit kann $w \in L$ entschieden werden
+\end{itemize}
+\item Es gibt Probleme Welche weder semi- npch co-semi-entscheidbar sind z.B. TM Äquivalenz (Beweis siehe Many-One-Reduktionen)
+\end{itemize}
+Note: Erkennbar = semi-entscheidbar
+
+\subsection{Enumerator (Aufzähler)}
+Eine Multi-Band TM M mit:
+\begin{itemize}
+\item M hat ein \textbf{write-only output Band}, auf dem der Head nur nach Links laufen kann
+\item M hat ein $\#$ Symbol welches die Wörter auf dem Output Band trennt
+\item Die von \textbf{M erzeugte Sprache} sei die Sprache aller Wörter welche irgendwann auf dem Output Band zwischen Zwei $\#$ auftauchen
+\item M \textbf{startet} auf einem \textbf{leeren Band}
+\end{itemize}
+
+\section{Arten von TM's}
+\subsection{einseitig begrenzte einband TM}
+\paragraph{Definition}
+\flushleft
+\begin{itemize}
+\item $M=(Q, \Sigma, \Gamma, \delta, q_0, q_{accept}, q_{reject})$
+\item Q: Zustandsmenge
+\item $\Sigma$: Eingabealphabet (ohne \textvisiblespace)
+\item: $\Gamma$: Bandalphabet mit $\Sigma \cup \{$\textvisiblespace$\} \subseteq \Gamma$
+\item $\delta$: Übergangsfunktion mit $\delta: Q \times \Gamma \rightarrow Q \times \Gamma \times \{L, R\}$
+\item $q_0$: Startzustand
+\item $q_{accept}$: akzeptierender Endzustand mit $q_{accept} \in Q$
+\item $q_{reject}$: ablehnender Endzustand mit $q_{reject} \in Q, q_{accept} \neq q_{reject}$
+\end{itemize}
+
+\subsection{k-Band TM}
+\paragraph{Definition}
+\flushleft
+\begin{itemize}
+\item $M=(Q, \Sigma, \Gamma, \delta, q_0, q_{accept}, q_{reject})$
+\item $\delta: Q \times \Gamma^k \rightarrow Q \times \Gamma^k \times \{L, R, N\}^k$
+\end{itemize}
+\paragraph{Äquivalenzbeweis}
+\flushleft
+\begin{itemize}
+\item Sei M eine k-Band TM und S eine TM welche M simuliert
+\item Schreibe den Inhalt der k Bänder von M hintereinander jeweils getrennt durch ein Trennzeichen ($\#$)
+\item Die Head-Positionen von M werden durch spezielle Zeichen in S dargestellt ($\dot{x}$)
+\end{itemize}
+
+\subsection{Oracle TM}
+\paragraph{Definition}
+\flushleft
+\begin{itemize}
+\item besitzt ein spezielles \textbf{Oracle Band}
+\item hat spezielle Zustände $q_?, q_{yes}, q_{no}$
+\item Wenn die OTM $q_?$ erreicht, springt diese zu $q_{yes}$ oder $q_{no}$, je nachdem ob der Inhalt des Oracle Bandes in O ist
+\item O kann ein beliebig schweres Problem sein, sogar unentscheidbar
+\item Das Oracle zu benutzen benötigt lediglich einen Schritt
+\item Ein Oracle zu Komplementieren hat keine Auswirkung
+\end{itemize}
+
+\section{Reduktionen}
+\subsection{Turing-Reduktionen}
+\paragraph{Definition}
+\flushleft
+ein Problem P ist \textbf{Turing reduzierbar} auf ein Problem Q (P $\leq_T$ Q), wenn P durch eine OTM $M^Q$ mit Oracle Q entschieden werden kann\\
+Turing-Reduktion kann genutzt werden, um Unentscheidbarkeit zu beweisen\\
+\textbf{Ist P unentscheidbar und P $\leq_T$ Q dann ist Q unentscheidbar}\\
+Beweis mittels Kontrapositiv:
+\begin{itemize}
+\item Nehme an P $\leq_T$ Q mit Q ist entscheidbar
+\item Man kann die benötigte OTM als normale TM konstruieren, so dass gilt P $\leq_T$ Q
+\item daraus folgt das P entscheidbar ist
+\end{itemize}
+Note: Ist Q semi-entscheidbar und P $\leq_T$ Q, dann kann oder kann P nicht semi-entscheidbar sein
+
+
+\paragraph{Beispiel-Reduktion}
+\flushleft
+Reduzieren des $\epsilon$-Halteproblems auf das Halteproblem\\
+(Hält eine TM M auf einem leeren Inputband ?)
+\begin{itemize}
+\item Definiere eine OTM wie folgt:
+\begin{itemize}
+\item Input: Eine TM M und ein Wort w
+\item Konstruiere eine TM $M_w$ wie folgt:
+\begin{enumerate}
+\item Lösche alles vom Inputtape und schreibe w darauf
+\item Bearbeite den Input wie M
+\end{enumerate}
+\item Löse das $\epsilon$-Halteproblem für $M_w$ mit einem Oracle
+\item Output: Ergebnis des $\epsilon$-Halteproblem
+\end{itemize}
+\item $\Rightarrow$ \textbf{Unentscheidbar}
+\end{itemize}
+
+\subsection{Many-one-Reduktion (mapping Reduction)}
+\paragraph{Definition}
+\flushleft
+Eine Sprach P ist \textbf{many-one-reduzierbar} auf eine Sprache Q (P $\leq_m$ Q), wenn es eine \textbf{totale berechenbare Funktion} f gibt, so dass $f: \Sigma^* \rightarrow \Sigma^*$, so dass\\
+$\forall w\in \Sigma^*: w\in P \, \Leftrightarrow \, f(w) \in Q$\\
+\begin{itemize}
+\item Many-one-Reduktion \textbf{erhält (co-)semi-entscheidbarkeit} (anders als die Turing-Reduktion)
+\item P $\leq_m$ Q $\Rightarrow$ P $\leq_T$ Q\\
+Beweis:
+\begin{itemize}
+\item Man erhält eine OTM mit Oracle Q, welches P erkennt wie folgt:
+\begin{itemize}
+\item Input w $\rightarrow$ berechne f(w)
+\item Frage das Oracle und gebe das Ergebnis zurück (ja = akzeptieren, nein = verwerfen)
+\end{itemize}
+\end{itemize}
+\item gilt P $\leq_m$ Q und Q ist entscheidbar, dann ist P entscheidbar
+\item gilt P $\leq_m$ Q und Q ist semi-entscheidbar, dann ist P semi-entscheidbar\\
+Beweis:
+\begin{itemize}
+\item gegeben eine TM welche Q erkennt, man erhält eine TM welche P erkennt wie folgt:
+\begin{itemize}
+\item Auf dem Input w, berechne f(w)
+\item Simuliere die TM für Q und gebe das Ergebnis zurück
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\paragraph{Beispiel-Reduktion}
+Zwei TM's M und N sind äquivalent wenn sie die gleiche Sprache erkennen (L(M) = L(N))\\
+TM Äquivalenz ist unentscheidbar:\\
+Beweis:
+\begin{itemize}
+\item definiere f, so dass $w\in \epsilon-\text{Halting}$ gdw. $f(w) \in \text{Äquivalenz}$
+\item Sei $M_a$ eine TM welche alle Inputs akzeptiert (hält auf jedem beliebigen w)
+\item Definiere für eine TM M eine TM $M^*$ wie folgt:
+\begin{itemize}
+\item Simuliere M auf $\epsilon$
+\item wenn M hält akzeptiere
+\end{itemize}
+\item $M^*$ akzeptiert also alle Inputs sofern, M auf $\epsilon$ hält
+\item $M^*$ ist äquivalent zu $M_a$ gdw. M auf $\epsilon$ hält
+\item $\displaystyle f(w) = \begin{cases} \langle M^*, M_a \rangle, & w= \langle M \rangle \text{\hspace{25pt}(valide Kodierung)} \\ \epsilon, & \text{ungültige Kodierung} \end{cases}$\\
+$\rightarrow$ $M^*$ auf $M_a$ akzeptiert immer, da $M_a$ für für jeden beliebigen Input hält, somit auch auf $\epsilon$
+\end{itemize}
+
+Äquivalenz von TMs ist weder semi- noch co-semi-entscheidbar\\
+Beweis:
+\begin{itemize}
+\item Wie gezeigt gilt $\epsilon$-Halteproblem $\leq_m$ Äquivalenz
+\item Da das $\epsilon$-Halteproblem nicht co-semi-entscheidbar ist, ist Äquivalenz es auch nicht
+\item Jedoch kann man zeigen, dass nicht-$\epsilon$-Halteproblem $\leq_m$ Äquivalenz
+\begin{itemize}
+\item Sei $M_\emptyset$ eine TM welche alle Inputs ablehnt (Gegenteil zu $M_a$)
+\item Äquivalenz zu $M_a$ korrespondiert zu $\epsilon$-halten
+\item Äquivalenz zu $M_\emptyset$ korrespondiert zu $\epsilon$-nicht-halten
+\item $\displaystyle f(w) = \begin{cases} \langle M^*, M_\emptyset \rangle, & w= \langle M \rangle \text{\hspace{25pt}(valide Kodierung)} \\ \langle M^*, M_\emptyset \rangle, & \text{ungültige Kodierung} \end{cases}$
+\end{itemize}
+\end{itemize}
+
+
+\section{Satz von Rice}
+\paragraph{Trivialität}
+\flushleft
+\begin{itemize}
+\item Sei P eine Menge von Sprachen
+\item Eine Sprache L hat die Eigenschaft P wenn $L \in P$
+\item P ist \textbf{nicht-trivial}, wenn es erkennbare Sprachen gibt welche P haben und solche die P nicht haben\\
+$\rightarrow$ es muss Entscheidungsmöglichkeiten geben
+\end{itemize}
+
+\paragraph{Satz}
+\flushleft
+Ist P eine \textbf{nicht-triviale} Eigenschaft einer erkennbaren Sprache, dann ist folgendes Problem unentscheidbar:\\
+$P-ness = \{\langle M \rangle \vert L(M) \in P\}$\\
+d.h. Die Frage ob eine TM eine nicht-triviale Eigenschaft, hat ist unentscheidbar
+
+\paragraph{Beweis}
+\flushleft
+Reduzieren auf $\epsilon$-Halteproblem
+\begin{itemize}
+\item Sei $\emptyset \not\in P$
+\item Sei $M_L$ eine TM welche die Sprache L erkennt und L die Eigenschaft P hat (L $\in$ P)
+\item Konstruiere für eine beliebige TM M eine TM $M^*$ wie folgt für einen Input $w\in \Sigma^*$:
+\begin{enumerate}
+
+\item Simuliere M mit leerem Input ($\epsilon$)
+\item Hält M, dann simuliere $M_L$ auf w
+\end{enumerate}
+\item Dadurch gilt $L(M^*) = L \in P$ wenn M auf $\epsilon$ hält, da (2) lediglich $M_L$ auf w simuliert
+\item Sonnst gilt $L(M^*) = \emptyset \not\in P$, da $M^*$ in (1) festhängt
+\item \textbf{Die Überprüfung ob $\langle M^* \rangle \in P$ würde das $\epsilon$-Halteproblem entscheiden\\
+$\Rightarrow$ Unentscheidbar}
+\end{itemize}
+
+\paragraph{Anwendungen}
+\flushleft
+Unter anderem kann für folgende Eigenschaften für eine beliebige TM M mit Rice gezeigt werden, das die Sprachen unentscheidbar sind:
+\begin{itemize}
+\item Leerheit
+\item Endlichkeit
+\item Entscheidbarkeit
+\item Regularität
+\item Kontextfreiheit
+\item Wortproblem
+\end{itemize}
+
+\section{Rekursion}
+Eine \textbf{Quine} ist ein Programm, welches wenn gestartet, ohne zusätzlichen Input seinen eigenen Sourcecode ausgibt und dann hält\\
+Ziel: Konstruieren einer TM SELF welche sich selbst als Encoding zurück gibt
+\begin{itemize}
+\item Es gibt eine berechenbare Funktion $q: \Sigma^* \rightarrow \Sigma^*$, so dass $\forall w \in \Sigma^* : q(w) = print (\langle M \rangle)$\\
+Der Teil mit 'für jedes Wort' heißt einfach: ignoriere den Input (Input-unabhängig)
+\item Man kann eine TM $P_w$ konstruieren, welche für jedes Wort den Tapeinhalt mit w ersetzt
+\item q kann man jetzt berechnen, indem man eine TM nimmt, welche mit w als input $P_w$ erzeugt und anschließend $\langle P_w \rangle$ ausgibt
+\end{itemize}
+Eine Quine kann in zwei Teile unterteilt werden:
+\begin{itemize}
+\item A: berechne den Sourcecode $\langle B \rangle$ eines Programms B
+\item B: nutze $\langle B \rangle$ um folgendes zu printen:\\
+Sourcecode $\langle A \rangle$ welcher $\langle B \rangle$ berechnet und den Sourcecode $\langle B \rangle$ selbst
+\end{itemize}
+A kann mit der zuvor konstruierten TM $P_{\langle B \rangle}$ implementiert werden\\
+B funktioniert wie folgt auf einem Input $\langle M \rangle$:
+\begin{itemize}
+\item berechne $q(\langle M \rangle)$
+\item konkatoniere die TM's gegeben durch $q(\langle M \rangle)$ und $\langle M \rangle$
+\item gebe die Kodierung dieser Konkatenation zurück
+\end{itemize}
+die TM SELF istnun eine TM konstruiert durch B auf dem Input $\langle B \rangle$
+
+\section{Zeitkomplexität}
+\paragraph{Definition}
+\flushleft
+Sei M eine TM und f eine Funktion mit $f: \mathbb{N} \rightarrow \mathbb{R}^+$\\
+M ist \textbf{f-time beschränkt}, wenn M auf jedem input $w \in \Sigma^*$ nach maximal $f(\vert w \vert)$ Schritten hält
+
+\subsection{Landau-Symbole}
+\paragraph{Big-O}
+\begin{itemize}
+\item Klassifiziert eine Funktion mit einer asymptotischen oberen Schranke\\
+\item $f(n) = O(g(n)) \Leftrightarrow \exists c>0 \exists n_0 \in \mathbb{N} \forall n > n_0 : f(n) \leq c \cdot g(n)$
+\item es gibt also ein Punkt ($n_0$) ab dem die Funktion f dauerhaft kleiner gleich der Funktion g ist, selbst wenn g mit einer beliebigen Konstante ($c$) multipliziert wird
+\end{itemize}
+Note: für \textbf{small-o} sagt man auch f wird asymtotisch von g dominiert\\
+
+\textbf{Symboltabelle}:\\
+\begin{tabular}{|c|c|c|}
+\hline
+Notation & $ C = \lim_{n\rightarrow \infty} \frac{f(n)}{g(n)}$ & Bedeutung \\
+\hline
+$f \in O(g)$ & $c < 0$ & $f\leq g$\\
+\hline
+$f \in \Omega(g)$ & $c >0$ & $f\geq g$\\
+\hline
+$f \in \Theta(g)$ & $0<c<\infty$ & $f=g$\\
+\hline
+$f \in o(g)$ & $c=0$ & $f<g$\\
+\hline
+$f \in \omega(g)$ & $c=\infty$ & $f>g$\\
+\hline
+\end{tabular}
+
+\end{document}

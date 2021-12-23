@@ -1,0 +1,818 @@
+\documentclass[12pt,a4paper, hyperref]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{color}
+\usepackage{setspace}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+
+\newcommand{\tbar}[1]{\ensuremath{\bar{#1}}}
+\newcommand{\tsnake}[1]{\ensuremath{\tilde{#1}}}
+
+\title{Zusammenfassung Optinum}
+\author{Henrik Tscherny}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Basics}
+
+\subsection{Begriffe}
+\begin{itemize}
+\item Zielfunktion f
+\item zulässiger Bereich G
+\item $x \in G$ zulässiger Punkt
+\end{itemize}
+
+\subsection{Wann ist ein(e) Punkt/Lösung optimal ?}
+
+x* sei eine optimale Lösung in zulässigen Bereich gdw. 
+\begin{itemize}
+\item Es gibt keinen Wert f(x) welcher echt kleiner ist als f(x*)
+\item x* liegt in G
+\end{itemize}
+
+
+ $f(x*) \leq f(x)$ für $x \in G$
+
+\subsection{Wann ist ein Optimierungsproblem linear ?}
+ein OP sei linear gdw.
+\begin{itemize}
+\item G ist durch lineare Bedingungen beschreibbar
+\item die ZF kann durch $c^\intercal x$ beschrieben werden. e.g.
+$f=\begin{bmatrix} 2 \\ -3 \\ 7\end{bmatrix}^\intercal x = \begin{bmatrix}
+2x && -3x && 7x\end{bmatrix}$
+\end{itemize}
+
+
+\subsection{Was ist eine Relaxation ?}
+eine Funktion g heißt Relaxation von f gdw.
+\begin{itemize}
+\item g(x) ist für alle x kleiner oder gleich f(x)
+\item der optimale ZF der Relaxation ist der Schrankenwert
+\item $g(x) \leq f(x)$
+\end{itemize}
+
+
+\subsection{Wann ist eine Lösung einer Relaxation auch Lösung der nicht-Relaxation ?}
+Wenn gilt:
+\begin{itemize}
+\item  \tbar x löst die Relaxation
+\item \tbar x liegt auch im zulässigen Bereich von f
+\item f(\tbar x) = g(\tbar x)
+\end{itemize}
+Note: Verschiedene Relaxationen liefern verschieden gute Näherungswerte\\
+Eine Relaxation Q1 mit größerem Schrankenwert als Q2 heißt 'stärker'
+
+
+\subsection{Wann existiert eine globale optimale Lösung ?}
+Es gibt eine globale Lösung des OP gdw.
+\begin{itemize}
+\item G ist kompakt (beschränkt und abgeschlossen)
+\item G ist nicht leer
+\item die ZF ist stetig 
+\end{itemize}
+How To:
+\begin{itemize}
+\item Stelle ZF nach einer beliebigen Variable um
+\item Kann der ZF nun beliebig klein gewählt werden und trotzdem eine zugehörige Koordinate errechnet werden so gibt es kein Minimum
+\end{itemize}
+
+
+\subsection{Wann ist eine lokale Lösung zugleich eine globale Lösung ?}
+Eine lokales Optimum ist auch das globale Optimum gdw.
+\begin{itemize}
+\item G ist eine konvexe Menge
+\item f ist eine konvexe Funktion
+\end{itemize}
+Note: Ist f streng konvex so existiert höchstens genau eine Lösung,
+
+
+\subsection{Was ist ein Kegelmenge}
+Ein Kegelmenge sei:
+\begin{itemize}
+\item alle nicht negativen vielfachen der Elemente einer Menge
+\item $x \in K \Rightarrow \forall\lambda\geq 0: \lambda x \in K$
+\end{itemize}
+des weiteren ist ein Kegel konvex wenn:
+\begin{itemize}
+\item die Summe zweier Punkte aus der Menge ebenfalls in der Menge liegen
+\item $x, y \in K \Rightarrow x+y \in K$
+\end{itemize}
+ein Kegel der zulässigen Richtung eines Punktes \tsnake x ist:
+\begin{itemize}
+\item alle Punkte welche vom Punkt \tsnake x aus mit der Schrittweite t in die Richtung d, wobei der gesamte Weg dabei in G liegen muss
+\item die Schrittweite ist abh. von \tsnake x selbst und der aus $d \in \mathbb{R}^n$ gewählten Richtung
+\item $Z(\tilde{x}) = \{d \in \mathbb{R}^n | \exists \tilde{t} = \tsnake t (\tilde{t} x ,d) >0, sodass \hspace{5pt} \tilde{x} + td \in G \forall t \in [0, \tilde{t} ]\}$
+\end{itemize}
+
+\subsection{notwendige und hinreichende Optimalitätsbedingung}
+notwendige Bedingung:
+\begin{itemize}
+\item der Gradient ist am Minimum \tsnake x für alle Richtungen > 0 $\rightarrow$ es gibt keine Richtung in welche man gehen kann, sodass der ZF-Wert kleiner wird
+\item $\nabla f(\tilde{x})^\intercal (x-\tilde{x}) \geq 0 \forall x \in G$
+\item ist $G \in \mathbb{R}^n$ so gilt das \tsnake x ein Minimum ist wenn der Gradient 0 ist
+\item $\nabla f(\tilde{x}) = 0$
+\end{itemize}
+
+\flushleft hinreichende Bedingung:
+\begin{itemize}
+\item f ist konvex
+\item f ist stetig differenzierbar
+\item es existiert ein $\tilde{x} \in G$ welches die notwendigen Bedingungen erfüllt
+\end{itemize}
+
+\flushleft Sind die notwendigen und hinreichenden OB erfüllt, so ist \tsnake x ein globales Minimum
+
+\subsection{Was ist eine polyedrische Menge ?}
+Eine Menge heißt polyedrisch gdw.
+\begin{itemize}
+\item kann durch eine Menge linearer Restringtionen definiert werden.
+\item die linearen Resringtionen bilden einen Polyeder
+\item $G = \{ x \in G \mathbb{R}^n | Ax \leq b \}$ 
+\end{itemize}
+Note: eine polyedrische Menge ist konvex und abgeschlossen aber nicht immer beschränkt
+
+
+\subsection{Was besagt das Lemma von Farkas ?}
+das Lemma von Farkas besagt:
+\begin{itemize}
+\item Es ist eine m x n Matrix A gegeben
+\item dann ist genau ein der folgenden Gleichungen Lösbar:
+\begin{itemize}
+\item $Az \leq 0, a^\intercal z >0$
+\item $A^\intercal u = a, u \geq 0$
+\end{itemize}
+\end{itemize}
+
+\section{Ecken und Simplex}
+\subsection{Definitionen}
+\begin{itemize}
+\item die allgemeine Form einer OP ist: $z = c^\intercal x \rightarrow min, x \in G .= \{x \in \mathbb{R}^n : Ax=b,x\geq 0\}$
+\item G ist dabei eine polyedrische Menge
+\item Alle Spalten der Basismenge sind linear unabhängig
+\item $I_B$ ist die Menge der Basisindices
+\item $_N$ ist die Menge der Nichtbasisindices mit $I_N = I\textbackslash I_N$
+\item $A_B = (A^{i}_{i\in I_B}$, $A_N = (A^{i}_{i\in I_N}$
+\item $c_B = (c_{i})_{i\in I_B}$, $c_N = (c_{i})_{i\in I_N}$
+\item $x_B = (x_{i})_{i\in I_B}$, $x_N = (x_{i})_{i\in I_N}$
+\end{itemize}
+\subsection{Basislösung und Ecken}
+\textbf{Basislösungen}:\\
+\begin{itemize}
+\item Ein Punkt x heißt Basislösung zu wenn eine gültige Belegung für jedes $x_B$ gefunden werden kann und dabei jedes $x_N=0$ ist\\
+\item Eine Basislösung heißt zulässig gdw.alle $x_B\geq 0$
+\end{itemize}
+\textbf{Ecken}:\\
+\begin{itemize}
+
+\item Eine Ecke ist ein Punkt in G wenn er nicht als Mittelpunkt zweier anderer Punkte in G dargestellt werden kann
+\item $x = \frac{1}{2} (x_1 + x_2 ), x_1 , x_2 \in G \Rightarrow x=x_1 = x_2$
+\item Zu jeder Ecke gibt es mindestens eine zulässige Basislösung
+\item degenerierte Ecke: Ecke mit mehreren zulässigen Basislösungen
+\item ist eine Wert in der Basis 0 so ist die Ecke degeneriert
+\item nicht-degenerierte Ecke: Ecke mit genau einer zulässigen Basislösung
+\item in G gibt es mindestens eine aber maximal endlich viele Ecken
+\end{itemize}
+Es reicht bei einer linearen OP die Ecken nach der optimalen Lösung zu durchsuchen, da die Ecken die zulässigen Basislösungen sind\\
+\hspace{1pt}\\
+Eine Basislösung löst das OP gdw.
+\begin{itemize}
+
+\item Die Koeffizienten der Nichtbasis minus der Koeffizienten der Basis mal der Basismatrix mal der Nichtbasismatrix größer gleich 0 sind
+\item $c_{N}^\intercal - c_{B}^\intercal (A_B)^{-1} A_N \geq 0$
+\end{itemize}
+
+
+\subsection{Primaler Simplex}
+Besteht aus 2 Phasen:\\
+1. Finden einer zul. Lösung
+2. Finden der optimalen Lösung
+\begin{itemize}
+\item finden einer optimalen Lösung durch Wahl einer zulässigen Richtung mit maximaler Schrittweite $\rightarrow$ Verringerung des Zielfunktionswertes
+\item x ist Optimal wenn alle $q \geq 0, q = c^\intercal_B (A_B )^{-1}b$
+\item alle p müssen größer gleich 0 sein für eine Zulässigkeit
+\item Solange ein Element in q < 0 gehe vom Punkt $x = (p^\intercal ,0^\intercal)^\intercal)$ in Richtung d mit $d_i= \begin{cases}
+P_{i\tau}, & \text{wenn i in der Basisindexmenge liegt} \\
+1, & \text{i = $\tau$ ist} \\
+0, & \text{i in der Nichtbasisindexmenge ohne $\tau$ liegt}
+\end{cases}$
+\item $\tau$ sei der Index eines in q liegenden Elements kleiner 0
+\item die maximale Schrittweite ergibt sich aus $\bar{t}(x, d) := min\{\frac{p_i}{P_{i\tau}}:P_{i\tau}<0, i\in I_B\}$
+\item ist die maximale Schrittweite unendlich, gibt es keine Lösung da die ZF unbeschränkt ist
+\item für entartete Ecken kann man eine Schrittweite von 0 erhalten
+\end{itemize}
+
+\textbf{Entscheidbarkeit}
+\begin{itemize}
+\item alle ZF-Koeffizienten sind größer gleich 0, d.h. es ist eine optimale Lösung
+\item min ein Eintrag in q ist negativ, alle Einträger in P sind jedoch größer gleich 0, d.h. die ZF ist unbeschränkt und das Problem ist nicht lösbar
+\item liegt keiner der beiden Fälle vor ist das Tableau nicht-entscheidbar, d.h. es muss ein Austauschschritt durchgeführt werden
+\end{itemize}
+
+\textbf{Simplex-Rechenregeln}
+\begin{itemize}
+\item Pivotspalte: Zeile mit kleinstem negativen ZF-Koeffizient
+\item Pivotzeile: $-\frac{Eintrag rechte Seite}{Eintrag Pivotspale}$ für alle negativen Elemente der Pivotspalte, davon den kleinen Wert wählen
+\item Pivorelement: Kreuzung aus PS und PZ
+\item $PE_{neu} = \frac{1}{PE_{alt}}$
+\item $PS_{neu} = \frac{PS_{alt}}{PE_{alt}}$
+\item $PZ_{neu} = -\frac{PZ_{alt}}{PE_{alt}}$
+\item $Rest_{neu} = Rest_{alt}-\frac{PS_{alt} PZ_{alt}}{PE_{alt}}$
+\end{itemize}
+Note: ist ein Element in q negativ, aber in der zugehörigen Spalte in A kein negatives Element, so ist die ZF unbeschränkt, die Abstiegsrichtung ist dabei $(x_i, s_i)^\intercal$ wobei das negative Element 1 gesetzt wird\\
+\hspace{1pt}
+
+\textbf{Finden einer zul. Ausgangslösung (Hilfszielfunktionsmethode)}\\
+Sei das Problem $z=c^\intercal x \rightarrow min, \hspace{5pt} Ax = b, x \in \mathbb{R}_{+}^n$ gegeben
+\begin{itemize}
+\item Definiere Hilfsfunktion $h = e^\intercal y \rightarrow y$ mit $y+Ax=b, x\in \mathbb{R}_{+}^{n}, y \in \mathbb{R}_{+}^{m}$
+\item e ist ein Vektor aus Einsen in der Dimension von y $e=(1,....1)^\intercal \in \mathbb{R^m}$
+\item Erste Basislösung in Tableau mit $P = -A$, $p = b$, $q = -e^\intercal A$ und $ZFW = e^\intercal b$
+\end{itemize}
+
+\subsection{Dualer Simplex}
+
+\begin{itemize}
+\item Das Verfahren startet mit einem unzulässigen Punkt (anders als primaler Simplex)
+\item die Folge der ZFW ist nicht monoton fallend (anderes als primaler Simplex)
+\item Wird eine zul. Basislösung gefunden, wird diese auch optimal
+\item Ist optimal wenn $p \geq 0, q \geq 0$
+\item zulässig wenn alle Elemente in q größer gleich 0
+\item p darf anderes als beim primalen Simplex Elemente kleiner 0 enthalten, sind alle Elemente in p > 0 ist es optimal
+\end{itemize}
+
+\textbf{Entscheidbarkeit}
+\begin{itemize}
+\item die rechte Seite sind alle größer gleich 0 $p \geq 0$, d.h. das Tableau ist optimal
+\item eine Zeile in p ist negativ und alle Einträge in $p \leq 0$, d.h. das Problem ist nicht lösbar, der zulässige Bereich ist leer
+\item trifft keine von beiden Aussagen zu ist das Tableau nicht-entscheidbar, d.h. es muss ein Austauschschritt durchgeführt werden
+\end{itemize}
+
+\textbf{Simplex-Rechenregeln}
+\begin{itemize}
+\item Pivotzeile: kleinster negativer Wert aus p
+\item Pivotspalte: bilde $\frac{Eintrag ZF (q)}{Eintrag PZ}$ für alle positiven Werte der PZ, wähle den kleinsten Wert
+\item Pivorelement: Kreuzung aus PZ und PS
+\item $PE_{neu} = \frac{1}{PE_{alt}}$
+\item $PS_{neu} = \frac{PS_{alt}}{PE_{alt}}$
+\item $PZ_{neu} = -\frac{PZ_{alt}}{PE_{alt}}$
+\item $Rest_{neu} = Rest_{alt}-\frac{PS_{alt} PZ_{alt}}{PE_{alt}}$
+\end{itemize}
+
+\paragraph{Dualität} 
+\flushleft
+\begin{itemize}
+\item Sei (P) eine OA mit $z = c^\intercal x \rightarrow min, \hspace{5pt} Ax \leq b$
+\item Sei (D) eine OA mit $z_D = -b^\intercal u \rightarrow max, \hspace{5pt}, A^\intercal u \geq -c$
+\item um also ein primales in ein duales Problem umzuwandeln: Transponiere das vorhergehende Tableau, $p \leftrightarrow q^\intercal, A \leftrightarrow A^\intercal$
+\end{itemize}
+\hspace{1pt} \\
+Dann ist (D) die duale OA zu (P)
+
+
+
+\subsection{Branch and Bound}
+\textbf{Vorgehensweise}:
+\begin{itemize}
+\item Benutzen einer Relaxation der zu optimierenden Funktion f durch Erweiterung des zulässigen Bereiches
+\item Zerlegen des zulässigen Bereiches in Teilmengen $\rightarrow$ Zerlegung in Teilprobleme
+\item Finden einer unteren Schranke $b(P_i)$ für jedes Teilproblem
+\item für die untere Schranke muss gelten:
+\begin{itemize}
+\item muss kleiner gleich allen Funktionswerten von f(x) sein im Teilbereich
+\item $b(P_i) \leq min\{f(x): x\in D \cap E_i \}$
+\item die untere Schranke ist gleich dem Optima von f wenn das Teilproblem nur das Optima enthält
+\item $b(P_i) = f(\hat{x}\text{, falls } D \cap E_i = \{\hat{x}\}$
+\item die untere Schranke eines Teilbereiches $E_i$ ist kleiner gleich der eines Teilbereiches $E_j$ wenn $E_j$ Teil von $E_i$ ist
+\item $b(P_i) \leq b(P_j)\text{, falls } E_j \subset E_i$
+\end{itemize}
+\end{itemize}
+\textbf{Algorithmus}:
+\flushleft Sei R Menge der noch zu bearbeitenden Teilprobleme\\
+Sei z der ZF Wert der bisher besten gefundenen Lösung
+\paragraph{Initialisierung}
+\begin{itemize}
+\item berechne untere Schranke
+\item ist ein x für f(x) bekannt was gleich dieser Schranke ist, STOP: x löst P
+\item Setze $R=\{P_0\}, z:=+\infty$ oder wenn ein x bekannt ist $z:=f(x)$
+\end{itemize}
+\paragraph{Abbruchtest}
+\begin{itemize}
+\item ist $R=\emptyset$ STOP
+\item ist $z=+\infty$, dann ist P nicht lösbar
+\item andernfalls ist x die Lösung von P
+\end{itemize}
+\paragraph{Strategie}
+\begin{itemize}
+\item wähle ein $P_i \in R$ und entferne dieses aus R ($R := R\setminus \{P_i\}$)
+\item verschiedene Auswahlstrategien sind möglich z.B. Minimalsuche, DFS, BFS
+\end{itemize}
+\paragraph{Branch}
+\begin{itemize}
+\item Zerlegung von $P_i$ in Teilprobleme
+\item setze j:=1
+\end{itemize}
+\paragraph{Bound}
+\begin{itemize}
+\item berechne untere Schranke für das erste Teilproblem ($b(P_{ij}$)
+\item wird dabei ein x mit f(x) mit einem kleineren ZF z, setze z auf den neuen Wert
+\item ist die untere Schranke kleiner als der ZF z dann füge das Teilproblem R hinzu ($R:=R \cup \{P_{ij}\}$)
+\item wdh. für jedes Teilproblem den Bound Schritt
+\item entferne alle Teilprobleme welche eine größere oder gleiche untere Schranke wie z haben ($R:=R \setminus \{P_k\}, b(P_k) \geq z$)
+\item gehe zu Initialisierung
+\end{itemize}
+
+\section{Optimierung auf Graphen}
+\subsection{Graphen}
+Ein Graph ist:
+\begin{itemize}
+\item Menge an Tupeln $G=(V, E)$
+\item V... Knotenmenge
+\item E... Kantenmenge
+\item sind die Kanten gerichtet (Bogen), so ist E ein Tupel aus Knoten (u,v), (von u nach v)
+\item Zwei Knoten heißen adjazent, wenn sie durch eine Kannte verbunden sind
+\item $N(v)$ sei die Menge der Nachbarknoten von v
+\item ein Knoten ohne Nachbarn heißt isoliert
+\item $\delta (v) := |\{u \in V: (u, v) \in E\}|$, ist der Knotengrad, also die Anzahl der Nachbarn
+\item Sei $\delta^+(v)$ der Ausgangsgrad und $\delta^-(v)$ der Eingangsgrad eines Knoten v
+\item Ein Knoten ohne Vorgänger heißt Quelle
+\item Ein Knoten ohne Nachfolger heißt Senke
+\item ein Zyklus ist eine Folge von Kanten, wobei mindestens der Start und Endpunkt der Selbe sind
+\item ein Kreis ist eine Folge von Kanten, wobei nur der Start und Endpunkt der Selbe sind
+\end{itemize}
+Man unterscheidet folgende Graphen:
+\begin{itemize}
+\item schlichter Graph: keine Schleifen oder Mehrfachkanten
+\item vollständiger Graph: besitzt alle möglichen Kannten
+\item gewichteter Graph: jede Kannte $e \in E$ besitzt ein Gewicht $c(e)$
+\end{itemize}
+
+\subsection{Minimum Spanning Tree}
+Ein Spannbaum/Gerüst ist:
+\begin{itemize}
+\item eine Teilmenge T eines Graphen G
+\item G ist zusammenhängend, ungerichtet und gewichtet
+\item der induzierte Subgraph von T soll kreisfrei sein
+\item es ist also ein Graph welcher alle Knoten eines Graphen kreisfrei verbindet
+\end{itemize}
+\textbf{Ziel}:\\
+Finde T mit kleinstmöglichem Gesamtgewicht $\sum_{e\in T} c(e)$
+
+\subsubsection{Kruskal}
+\begin{itemize}
+\item Initialisiere eine leere Kantenmenge T
+\item füge der Kantenmenge den kürzesten (von den Kosten geringsten) Weg hinzu
+\item überprüfe ob T nun einen Kreis enthält
+\begin{itemize}
+\item wenn Ja, entferne diesen Weg wieder und fahre mit den nächst größeren fort
+\item wenn Nein, fahre mit den nächst größeren Weg fort
+\end{itemize}
+\end{itemize}
+
+\subsection{Max Flow}
+Problem:
+\begin{itemize}
+\item gerichteter Graph G mit Kapazitäten k an allen Kanten $G = (V, E, k)$
+\item es gibt eine Quelle und eine Senke
+\item eine Funktion $x: E \rightarrow \mathbb{R}$ heißt Fluss, wenn eingehende "Flüssigkeit" gleich der ausgehenden "Flüssigkeit" ist, für alle Knoten
+\item Es gilt Flusserhaltung, d.h. Die Menge welche an der Quelle austritt, muss in der Senke eingehen
+\end{itemize}
+\textbf{Ziel}:
+Finde einen Graphen G mit einem Fluss welcher die maximale Flussstärke besitzt
+
+\subsubsection{Residualgraph (Restkapazitätsgraph)}
+\begin{itemize}
+\item r(e) ist die Restkapazität (Residuum) einer Kannte, Kapazität der Kannte minus ausgehender Fluss plus eingehende Flüsse
+\item $r(e) = k_e - x_e + x_{(v, u)}$
+\item E(x) sei die Menge aller Kanten mit positiver Restkapazität
+\item $E(x) = \{e \in E | r(e) >0 \}$
+\item Sei G(x) der Residualgraph
+\item $G(x) := (V, E(x), r(e)_{e\in E(x)})$
+\end{itemize}
+
+\subsubsection{Ford-Fulkerson}
+Der Ablauf ist wie folgt:
+\begin{itemize}
+\item Setzte alle Flüsse im Graphen auf 0
+\item X: Erstelle den Residualgraphen
+\item gibt es keinen Weg von Quelle nach Senke mit positiver Flussstärke, dann STOP
+\item sonnst, finde einen Weg von Quelle nach Senke mit maximaler Flussstärke f' entlang des Weges, 
+\item aktualisiere dabei $x_e = x_e + x'_e$ für alle Kannten mit positivem Fluss
+\item gehe zu X
+\end{itemize}
+Note: bei irrationalen Zahlen muss der Algorithmus nicht terminieren\\
+Note: der Algorithmus verbessert die Lösung pro Iteration um min 1
+
+\section{Auswahl an OP}
+
+\subsection{Transportoptimierung}
+gegeben ist:
+\begin{itemize}
+\item Erzeuger $i \in I = \{|I|\}$
+\item Verbraucher $j \in J = \{|J|\}$
+\item Kosten $c_{ij}$ für 1 Einheit von i nach j
+\item Vorrat $a_i > 0$
+\item Bedarf $b_j > 0$
+\end{itemize}
+\textbf{Ziel}: minimiere die Gesamtkosten
+
+Sei  $x_{ij} \in \mathbb{R}_+$ Transportmenge von i nach j\\
+
+\flushleft Constraints:
+\flushleft gelieferte Einheiten zum Verbraucher dürfen dessen Bedarf nicht überschreiten
+\[ \sum_{i\in I} x_{ij}\hspace{25pt} , j \in J  \]\\
+
+\flushleft vom Vorrat verbrauchte Einheiten dürfen nicht größer als der Vorrat sein
+\[ \sum_{j\in J} x_{ij}\hspace{25pt} , i \in I   \]\\
+
+\flushleft es gibt nur positive Transportmengen
+\[ x_{ij} \in \mathbb{R}_{+}\hspace{25pt} , (i,j) \in I \times J \]\\
+
+Zielfunktion:
+Kosten mal transportierte Einheiten für alle Transportwege\\
+\[z= \sum_{i\in I} \sum_{j\in J} c_{ij}x_{ij} \rightarrow min \]
+
+\subsection{Rucksackproblem}
+gegeben ist:
+\begin{itemize}
+\item Rucksack mit Kapazität $b \in \mathbb{Z}_+$
+\item m zu verpackende Teile
+\item Gewicht eines Teiles $a_i \in \mathbb{Z}_+$
+\item Nutzwert eines Teiles $c_i \in \mathbb{Z}_+$
+\item $i \in I = \{|I|\}$
+\end{itemize}
+\textbf{Ziel}: wähle Teile für maximalen Nutzwert\\
+\hspace{1pt}\\
+
+Sei $x_i = \begin{cases}
+0, & \text{Teil i wird nicht mitgenommen} \\
+1, & \text{Teil i wird mitgenommen}
+\end{cases}$
+
+\flushleft Constraints:
+\flushleft dürfen nicht mehr Teile mitgenommen werden als in den Rucksack passen
+\[ \sum_{i\in I} a_{i}x_{i} \leq b \]\\
+
+0-1 Rucksackproblem
+\flushleft ein Teil kann nur mitgenommen werden oder nicht
+\[ x_i \in \mathbb{B}\hspace{25pt} , i\in I \]\\
+
+klassisches Rucksackproblem
+\flushleft ein Teil kann nur ganzzahlig positiv oft mitgenommen werden
+\[ x_i \in \mathbb{Z}_+\hspace{25pt} , i\in I \]\\
+
+Zielfunktion: Wertsumme der mitgenommen Teile maximieren
+\[ \sum_{i\in I}c_{i}x_{i} \rightarrow max  \]
+
+\subsection{Bin Packing Problem}
+gegeben ist:
+\begin{itemize}
+\item unendlich viele Behälter mit Kapazität $L \in \mathbb{N}$
+\item Teile $b_i, i \in I = \{|I|\}$
+\item Gewicht eines Teils $l_i, i \in I = \{|I|\}$
+\item Packung $a_i, i \in I = \{|I|\}$
+\end{itemize}
+\textbf{Ziel}: minimal benötige Behälteranzahl\\
+
+\flushleft Constraints:
+\flushleft Gewicht einer Packung darf die Kapazität des Behälters nicht überschreiten
+\[ \sum_{i\in I} l_{i}a_{i} \leq L \]\\
+
+\subsection{Standortplanung}
+gegeben ist:
+\begin{itemize}
+\item Kunden $k \in K = \{|K|\}$
+\item Standorte $s \in S = \{|S|\}$
+\end{itemize}
+\textbf{Ziel}: 
+\begin{itemize}
+\item minimale Baukosten
+\item minimale Laufkosten
+\item Bedarf aller Kunden Bedienen
+\end{itemize}
+Seien: \begin{itemize}
+\item $d_{ks} \in \mathbb{R}$ Kosten um Kunde k am Standort s zu bedienen
+\item $c_s \in  \mathbb{R}$ Baukosten für den Standort
+\item $x_s = \begin{cases}
+0, & \text{Standort wird nicht genommen} \\
+1, & \text{Standort wird genommen}
+\end{cases}$
+\item $y_{ks}$ Teil des Bedarfs des Kunden k welcher durch den Standort s gedeckt wird
+\end{itemize}
+
+\flushleft Constraints:
+\flushleft der Gesamtbedarf des Kunden muss gedeckt sein
+\[ \sum_{k\in K}y_{ks} = 1\hspace{25pt} ,k\in K \]\\
+
+\flushleft Ein Standort kann maximal den gesamten Bedarf eines Kunden decken
+\[y_{ks} \leq x_s\hspace{25pt} , (k,s) \in K\times S  \]\\
+
+\flushleft Der Bedarf kann nicht negativ sein (und nicht größer als 1 durch constraint 1)
+\[ y_{ks} \in \mathbb{R}_+\hspace{25pt} , (k,s) \in K\times S \]\\
+
+\flushleft Ein Standort kann nur liefern oder nicht liefern
+\[ x_s \in \mathbb{B}\hspace{25pt} , s\in S \]\\
+
+Zielfunktion:
+\begin{itemize}
+\item Baukosten der Standorte (erster Summand) Summe der zu bauenden Standorte (selektiert durch $x_s = 1$)
+\item Laufkosten der Standorte (zweiter Summand) Summe Bedienkosten des Kunden mal Anteil des von Kunden geforderten gesamt Bedarfs
+\end{itemize}
+\[ \sum_{s\in S}c_{s}x_{s} + \sum_{k\in K} \sum_{s\in S} d_{ks}y_{ks} \rightarrow min \]
+
+
+\section{How to solve}
+
+\subsection{Ermitteln ob eine Richtung zulässig im Punkt x ist}
+\textbf{gegeben}:
+\begin{itemize}
+\item Punkt x
+\item Menge G mit Restringtionen a
+\item Richtung d
+\end{itemize}
+\paragraph{Ermittle alle in x aktiven Restringtionen $I_0$\\}
+
+Errechne $I(x,d) := \{i \in I: a_{i}^\intercal d \leq 0\}$\\
+
+\paragraph{Überprüfe ob die Richtung zulässig ist\\}
+Für alle $i \in I$ (aus step 1) rechne $a_{i}^\intercal d$
+\begin{itemize}
+\item wenn > 0: keine zulässige Richtung
+\item wenn $\leq$ 0: zulässige Richtung
+\end{itemize}
+
+\subsection{Ermitteln der Intervall von \tsnake t}
+\textbf{gegeben}:
+\begin{itemize}
+\item Punkt x
+\item Menge G mit Restringtionen ax = b
+\item Richtung d
+\end{itemize} 
+\paragraph{Errechne M\\}
+
+Berechne $M = A^\intercal (x + td)$ A ist die Matrix welche sich aus allen $a_i$ ergibt
+
+\paragraph{Ermittle untere Grenze für t\\}
+\begin{itemize}
+\item Vergleiche M und b zeilenweise mit $\forall t \in \mathbb{R}^+$
+\item Maximale Schrittweite ist das Maximum für t wobei $m_i \leq b_i$ noch gilt
+\item Oder: Stelle Zeile $m_i \leq b_i$ nach t um = untere Schranke $t \in [s, \inf)$
+\end{itemize}
+
+\paragraph{Ermittle obere Grenze für t (\tsnake t)\\}
+\begin{itemize}
+\item Errechne $(x+td)$
+\item Löse $(x+td) \geq \vec{0}$ nach t auf für jede Zeile
+\item der kleine erhaltene Wert ist die obere Grenze \tsnake t
+\end{itemize}
+
+\subsection{Ermitteln des Kegels der zulässigen Richtung}
+\textbf{gegeben}:
+\begin{itemize}
+\item Restringtionsmatrix A
+\item Absolutteil der Restingtionen b
+\item Punkte $x^i$
+\end{itemize}
+Berechne Z(x)
+\begin{itemize}
+\item berechne $A*x^i \leq b, i \in I$
+\item überprüfe Spaltenweise ob das Ergebnis kleiner gleich dem Vektor b ist
+\item Folge Fälle können für $a_i * x^i$ und $b_i$ eintreten:
+\begin{itemize}
+\item alle Elemente sind kleiner: es handelt sich um einen inneren Punk, alle Richtungen sind zulässig
+\item alle Elemente sind größer: es gibt keine valide Richtung, es handelt sich um einen äußeren Punkt
+\item eine/alle Zeile(n) erfüllt(en) die Bedingung mit Gleichheit: es sind alle Richtung valide, welche die Restringtion der entsprechenden Zeile(n) verletzen
+\end{itemize}
+\end{itemize}
+
+\subsection{Finden einer zulässigen Anfangslösung für Transportalgorithmus}
+\subsubsection{NW-Regel}
+\begin{itemize}
+\item Starte oben links und weise maximale Kapazität zu
+\item wenn alle zu vergebenden Einheiten der Zeile oder benötigten Einheiten der Spalte verbraucht sind, setzte entsprechende Spalte (oder Zeile) auf 0
+\item bewege nur nach rechts oder unten, gehe nie nach links oder oben
+\end{itemize}
+\subsubsection{Minimale-Kosten-Regel}
+\begin{itemize}
+\item suche kleinen Kostenwert
+\item weise dort maximal mögliche Kapazität zu
+\item gehe zum nächst größerem Wert
+\item ist Verbraucher/Erzeuger leer, fülle Zeile (oder Spalte) mit 0
+\end{itemize}
+
+\subsection{Lösen des Transportplans}
+Anfangend mit einer zulässigen Lösung:
+\begin{itemize}
+\item berechne für alle Basiszellen (alles wo keine 0 drin steht) $u_i + v_k = c_{ik}$
+\item berechne für den Rest $w_{ik} = c_{ik} - u_i - v_k$, sind alle $w_{ik} \geq 0$ ist der Plan optimal
+\item wähle das kleinste errechnete Element der Nichtbasiszellen
+\item bilde von diesem Element aus einen Zyklus durch 3 andere Basiszellen
+\item markiere die Nichtbasiszelle des Zyklus mit einem (+)
+\item markiere nun abwechselnd alle Zellen des Zyklus mit (-) und (+)
+\item bilde $\delta$, dass Minimum der (-) Zellen
+\item rechne je nach Markierung Zelle +/- $\delta$
+\item dadurch wird ein Element des Zyklus 0, dieses wird Teil der Nichtbasis, das andere nun größer als 0 Element wird dafür Teil der Basis
+\end{itemize}
+
+\subsection{Ganzzahlige Optimierung mit Simplex}
+\begin{itemize}
+\item löse Simplextableau ganz normal mit primalen Simplex
+\item für alle nicht ganzzahligen erzeuge zwei Teilprobleme, einmal auf bzw. abgerundet
+\item führe neue Schlupfvariable ein und setze bekannte Werte ein
+\item überprüfe ob zulässiger Bereich dadurch leer wird, wenn ja STOP
+\item erstelle neues Tableau und löse mit dualem Simplex
+\item wdh. bis alle Werte ganzzahlig
+\item bei mehreren möglichen Verzweigungen schauen welche in einem kleineren ZF resultiert
+\end{itemize}
+
+\subsection{Branch and Bound mit TSP}
+\textbf{Zeilen/Spalten Reduktion}
+\begin{itemize}
+\item Ziehe von jedem Element der Zeile/Spalte den Wert des kleinsten Elementes der Zeile/Spalte ab
+\item Addiere die Abgezogenen Werte, dies ist die untere Schranke b
+\item je nachdem ob erst Zeilen oder Spalten reduziert werden kann eine andere untere Schranke entstehen
+\end{itemize}
+\textbf{Aufstellen der Kostenmatrix}
+\begin{itemize}
+\item Errechne Kosten für alle Nulleinträge
+\item Kosten ergeben sich aus dem kleinem Wert der Spalte und dem kleinem Wert der Zeile des Elementes, das Element selbst zählt nicht
+\item $w_{ik} = \min d_{ik} + \min d_{pk}, q \neq k, p \neq i$
+\end{itemize}
+\textbf{Branch}
+Verzweige für das Element mit den größten Kosten, es gibt folgende Optionen
+\begin{itemize}
+\item $x_{ik} = 0$ benutze diesen Weg nicht
+\begin{itemize}
+\item setze das Element auf $\infty$
+\item führe Spalten/Zeilenreduktion aus
+\item errechne neue Schranke
+\item Ist die Schranke größer als der bekannte ZF muss diese Verzweigung nicht weiter untersucht werden
+\end{itemize}
+\item $x_{ik} = 1$ benutze diesen Weg
+\begin{itemize}
+\item setze alle Elemente in der Zeile und Spalte, außer das Element selbst auf $\infty$
+\item setze ebenfalls das Element welches eine Subtour erzeugt auf $\infty$ z.B. bei $x_{32}$ setze $x_{23}$ auf $\infty$
+\item führe Zeilen/Spaltenreduktion aus und berechne neue untere Schranke
+\item Ist die Schranke größer als der bekannte ZF muss diese Verzweigung nicht weiter untersucht werden
+\end{itemize}
+\item führe diese Verzweigungen solange aus bis der ZFW mit der unteren Schranke erreicht wird, oder feststeht das es nicht besser geht
+\end{itemize}
+
+
+\subsection{ganzzahlige Lösung mittel Gomory-Schnitt}
+\begin{itemize}
+\item ersetze eine Zeile mit ungerader Lösung im gelösten Simplextableaus mit einer Gomory Zeile
+\item für die Einträge in A, runde die Einträge auf und ziehe davon den ungerundeten Einträg ab
+\item für den Eintrag in p, ziehe den abgerundeten Wert vom ungerundeten ab
+\item \[ p_i - \lfloor p_i \rfloor \leq \sum_{j\in N} (\lceil P_{ij} \rceil - P_{ij})x_j \]
+\item führe Schlupfvariable ein, stelle nach dieser um und füge sie dem Tableau hinzu
+\item löse das neue Simplextableau
+\end{itemize}
+wdh. bis alle Variablen ganzzahlig sind
+
+
+\subsection{Erstellung eines Residualgraphen}
+\begin{itemize}
+\item für jede benutzte Kapazitätseinheit einer kannte geht im Residualgraph eine Kannte entgegengesetzt dazu
+\item als Kapazität steht dann das Residuum, also das was zuvor noch übrig war
+\item bei einer zuvor voll belasteten Kante ist es also (0/(Kapazität)) sonst (0/(Kapazität - untere Schranke))
+\item war die Kante zuvor nicht voll ausgelastet, so bleibt eine Kante in die ursprüngliche Richtung bestehen
+\item die Kapazität davon ist dann (0/(zuvor ungenutzte Kapazität))
+\end{itemize}
+
+\section{Beispiele}
+\subsection{Welche Richtungen d sind vom Punkt x aus zulässig, was ist die maximale Schrittweite}
+
+\textbf{gegeben}:
+\begin{itemize}
+\item Punkt $x = (1, 1, 1)^\intercal$
+\item Richtungen $d^{i} = \begin{pmatrix} 1 & -1 \\ 1 & -2 \\ 1 & -1 \end{pmatrix}$
+\item Restringtionsmatrix  $A = \begin{pmatrix} 1 & 3 \\ 2 & 1 \\ 1 & 1 \end{pmatrix}$
+\end{itemize}
+\textbf{Lösung}:\\
+Für $d_1$\\
+$A^\intercal d_1 \leq \vec{0} = (4, 5)^\intercal \leq (0 0)^\intercal$ ist nicht erfüllt, keine zulässige Richtung\\
+
+Für $d_2$\\
+$A^\intercal d_2 \leq \vec{0} = (-6, -6)^\intercal \leq (0 0)^\intercal$ ist erfüllt, d2 ist eine zulässige Richtung\\
+
+$M = A^\intercal (x+dt) = \begin{pmatrix} 1 & 2 & 1 \\ 3 & 1 & 1 \end{pmatrix} (\begin{pmatrix}1 \\ 1 \\ 1 \end{pmatrix}+ \begin{pmatrix} -1 \\ -2 \\ -1 \end{pmatrix}t)
+= \begin{pmatrix} -4t + 4 \\ -6t + 5 \end{pmatrix}$\\
+
+Stelle $m_i \leq b_i$ nach t um:\\
+$-4t +4 \leq 4 \Leftrightarrow t \geq 0$\\
+$-6t +5 \leq 6 \Leftrightarrow t \geq \frac{-1}{6}$\\
+\hspace{1pt}\\
+$\Rightarrow t \in [-1/6, \inf)$
+
+Stelle $(x+dt) \geq \vec{0}$ nach t um:\\ 
+$t \leq 1$\\
+$t \leq \frac{1}{2}$\\
+$t \leq 1$\\
+$\Rightarrow$ nehme das Minimum
+\tsnake t = 1/2
+
+\subsection{finden des Kegels der zulässigen Richtung}
+\textbf{gegeben}:
+\begin{itemize}
+\item ZF: $ z = -x_1 - x_2 \rightarrow min$
+\item Restingtionen:
+\begin{itemize}
+\item $x_1 + 2x_2 \leq 8$
+\item $x_1 + x_2 \leq 5$
+\item $x_1,x_2 \geq 0$
+\end{itemize} 
+\item Punkte: $x^1 = (1, 1)^\intercal, x^2 = (3, 3)^\intercal, x^3 = (4, 1)^\intercal, x^4 = (2, 3)^\intercal, x^5 = (0, 0)^\intercal$
+\end{itemize}
+\textbf{Lösung}:
+\begin{itemize}
+\item schreibe die Punke in Matrix $X = \begin{pmatrix}1 & 3 & 4 & 2 & 0 \\
+ 1 & 3 & 1 & 3 & 0
+\end{pmatrix} $
+\item stelle Restringtionsmatrix A und Absolutvektor b auf: $A = \begin{pmatrix}
+1 & 2 \\ 1 & 1 \\ 1 & 1
+\end{pmatrix}, b = \begin{pmatrix}
+8 \\ 5 \\ 0
+\end{pmatrix}$
+
+\item rechne und vergleiche Spaltenweise $A\cdot X \leq b$: $\begin{pmatrix}
+3 & 9 & 6 & 8 & 0 \\ 2 & 6 & 5 & 5 & 0 \\ 2 & 6 & 5 & 5 & 0 \end{pmatrix} \leq \begin{pmatrix}
+8 \\ 5 \\ 0
+\end{pmatrix}$
+\end{itemize}
+\textbf{Ergebnis}:
+\begin{itemize}
+\item $x^1$ ist ein innerer Punk, da beide Koordinaten kleiner b: $Z(x^1) = \mathbb{R}^2$
+\item $x^2$ ist außerhalb des zulässigen Bereichs, da beide Koordinaten größer b: $Z(x^2) = \emptyset$
+\item $x^3$ erfüllt Zeile 2 mit Gleichheit, d.h. $Z(x^3) = \{d \in \mathbb{R}^2 | d_1 + d_2 \leq 0 \}$
+\item $x^4$ erfüllt die ersten beiden Zeilen mit Gleichheit, d.h. $Z(x^4) = \{d \in \mathbb{R}^2 | d_1 +d_2 \leq 0 , d_1 + 2d_2 \leq 0 \}$
+\item $x^5$ erfüllt die letzte Restingtion, d.h. $Z(x^5) = \{d \in \mathbb{R}^2 | d_1 \geq 0, d_2 \geq 0 \}$
+\end{itemize}
+
+\subsection{finden einer Ganzzahligen Lösung}
+\textbf{gegeben}:
+\begin{itemize}
+\item $\bar{z} = -z = -7x_1 -2x_2 \rightarrow min$ mit,
+\item $-x_1 + 2x_2 + s_3 = 4 \Rightarrow s_3 = x_1 -2x_2 +4$
+\item $5x_1 + x_2 + s_4 = 20 \Rightarrow s_4 = -5x_1 -x_2 + 20$
+\item $x_1, x_2, s_3, s_4 \geq 0$
+\end{itemize}
+\textbf{Schritt 1, Simplex}.
+Lösung mit primalem Simplex ergibt
+\begin{itemize}
+\item $x_1 = \frac{36}{11}$
+\item $x_2 = \frac{40}{11}$
+\item $s_3, s_4 = 0$
+\item $z = -\frac{332}{11}$
+\end{itemize}
+\textbf{Schritt 2, Branch}
+Verzweige für $x_2$ da nicht ganzzahlig (und am wenigsten an einer ganzen Zahl dran)
+\begin{itemize}
+\item $x_2$ liegt zwischen 3 und 4
+\item 1. TP $x_2 \geq 4 \Rightarrow s_3 = x_2 -4$
+\item 2. TP $x_2 = \leq 3 \Rightarrow s_3 = 3 - x_2$
+\item setzte $x_2$ in jeweiliges TP ein und überprüfe ob zul. Bereich leer ist
+\item TP 1 ist leer da TP 1 < 0 für $s_4, s_3 \geq 0$, TP 2 ist nicht leer, verzweige
+\item nehme neue Gleichung für TP 2 in Simplextableau auf ($ s_3 = \frac{1}{11} + \frac{5}{11} + -\frac{7}{11}$)
+\end{itemize}
+\textbf{Schritt 3, dualer Simplex}
+Nach lösung mit dualem Simplex
+\begin{itemize}
+\item $x_2 = 3$
+\item $x_1 = \frac{17}{5}$
+\item $s_3 = \frac{7}{5}$
+\end{itemize}
+\textbf{Wdh Schritt 2 und 3 für $x_1 \geq 4$}
+Nach Verzweigung und Simplex ist
+\begin{itemize}
+\item $x_2 = 0$
+\item $x_1 = 4$
+\item $x_3 = 8$
+\item $s_2 = 3$
+\end{itemize}
+der ZFW beträgt bei dieser Wahl -28
+
+\textbf{Wdh Schritt 2 und 3 für $x_1 \leq 3$}
+Nach Verzweigung und Simplex ist
+\begin{itemize}
+\item $x_2 = 3$
+\item $x_1 = 3$
+\item $x_3 = 2$
+\item $s_2 = 1$
+\end{itemize}
+der ZFW beträgt bei dieser Wahl -27\\
+
+Die optimale Lösung ist $z_{max} = 28, x_1 = 4, x_2 = 0$
+
+
+
+\end{document}

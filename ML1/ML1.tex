@@ -1,0 +1,193 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{color}
+\usepackage{setspace}
+\usepackage{xcolor}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{stix}
+\title{Machine Learning 1}
+\author{Henrik Tscherny}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\newcommand{\nl}{\\[0.1cm]}
+\newcommand{\red}[1]{\textcolor{red} {#1}}
+\newcommand{\blue}[1]{\textcolor{blue} {#1}}
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Supervised learning}
+Ziel: Finde in einer Funktionsfamilie, z.B. lineare Funktionen, eine Funktion z.B. $f = 5x+3$ welche eine gewichtete Summe über input-output-Paaren minimiert, dabei sollte die Funktion die gegebenen Daten bestmöglich beschreiben ohne dabei zu komplex zu sein\\
+
+Beispiel:
+\begin{itemize}
+\item $g: \Theta \rightarrow Y^X$ -> Ordnet jeder Messung zu ob gesund oder krank\\
+$g_{\theta}(x_s) = \begin{cases} 0, & \displaystyle\sum_{j=1}^n \Theta_j x_j > 0 \\ 1, & sonnst \end{cases}$, für ein Sample $x_s\in \mathbb{R}^m$
+\begin{itemize}
+\item $x \in X=\mathbb{R}^n$: Inputs ->  Messung mit m Messpunkten
+\item $y \in Y = \{0,1\}$: Labels -> gesund = 1, krank = 0
+\item $\theta \in \Theta = \mathbb{R}^n$: Parameter -> z.B. Koeffizienten einer linearen Funktion
+\end{itemize}
+\end{itemize}
+
+Die Qualität einer gelernten Funktion kann u.a. durch folgende Größen beschrieben werden:
+\begin{itemize}
+\item \textbf{Accuracy} (Verhältnis der korrekten Voraussagen zur Gesamtanzahl)\nl
+$\frac{L(0,0)+L(1,1)}{|S|}$ 
+\item \textbf{Error ratio} (Verhältnis der falschen Voraussagen zu Gesamtanzahl)\nl
+$\frac{L(0,1)+L(0,1)}{|S|}$
+\item \textbf{Precision} (Von den positiv getesteten, wie viele sind tatsächlich positiv) False-Positive-Rate\nl
+$\frac{L(1,1)}{L(1,0)+L(1,1)}$
+\item \textbf{Recall/Sensitivity} (Von den tatsächlich positiven, wie viele wurden tatsächlich positiv getestet) False-Negative-Rate\nl
+$\frac{L(1,1)}{L(0,1)+L(1,1)}$
+\end{itemize}
+
+\subsection{Formal}
+Optimieren einer Funktionsfamilie $g: \Theta \rightarrow \{0,1\}^X$, damit dies einfacher ist, optimieren einer Relaxation $f: \Theta \rightarrow \mathbb{R}^X$. Sei L eine Loss-function $L: \mathbb{R} \times \{0,1\} \rightarrow \mathbb{R}_0^+$ welche g im Bezug zu f definiert.\nl
+$\displaystyle \forall \theta \in \Theta \forall x \in X: g_\theta(x) \in \argmin_{\hat{y} \in \{0,1\}} L(f_\theta(x),\hat{y})$\\
+Bsp. Loss-function:\nl
+\textbf{0-1-Loss}:
+$\displaystyle L=\begin{cases} 0,& sample=label\\ 1, & sonnst \end{cases}$, der Loss ist 0\% wenn das Label stimmt\nl
+
+Definiere des Weiteren:
+\begin{itemize}
+\item S: Samples
+\item X: Attributspace
+\item $x: S\rightarrow X$: bildet ein konkretes Sample mit seinen Attributen ab
+\item $y: S\rightarrow \{0,1\}$ gibt einem konkreten Sample ein Label
+\end{itemize}
+
+Das Tupel $T=(S,X,x)$ nennt man \textbf{unlabled data}\\
+Das Tupel $T=(S,X,x,y)$ nennt man \textbf{labeled data}\nl
+
+Damit die Komplexität der zu lernenden Funktion begrenzt wird, führen wir zusätzlich noch einen \textbf{Regularizer}. Komplexität kann in diesem Fall z.B. die Anzahl der Koeffizienten oder die Länge einer Formel bemessen werden. Der Einfluss des Regularizers wird durch einen Parameter $\lambda$ gesteuert\nl
+$R: \Theta \rightarrow \mathbb{R}_0^+$ und $\lambda\in\mathbb{R}_0^+$\nl
+Das \textbf{supervised learning problem} kann dann wie folgt formuliert werden:\nl
+$\displaystyle \inf_{\theta\in\Theta} \; \lambda R(\theta) + \frac{1}{|S|} \sum_{s\in S} L(f_\theta (x_s), y_s)$
+\begin{itemize}
+\item der Regularizer wird durch $\lambda$ gewichtet
+\item es wird die Summe der individuellen Loss-Werte minimiert
+\item die Loss-Summe wird über die Anzahl der Samples Normalisiert, das macht man, damit man lediglich die Parameter übertragen muss, wenn man das Model weitergibt
+\item Da der Regularizer zum Gesamtloss addiert wird, wird versucht diesen Term ebenfalls möglichst klein zu halten
+\end{itemize}
+Das \textbf{separation problem} ist definiert durch:\nl
+$\displaystyle \inf_{\theta \in \Theta} R(\theta) \\ \forall s\in S: f_\theta(x_s) = y_s$
+\begin{itemize}
+\item finden des minimalen Regularizers
+\item alle Daten sind korrekt gelabeled
+\end{itemize}
+Das \textbf{bounded separability problem} lautet:\nl
+$R(\theta) \leq m \\ \forall s\in S: \; f_\theta(x_s) = y_s$
+\begin{itemize}
+\item finden eines Regularizers welcher die Komplexität für jeden Parameter unter einer Schranke m hält
+\end{itemize}
+Das \textbf{inference problem} (Anwenden des trainierten Modells) kann nun wie folgt formuliert werden:\nl
+$\displaystyle \min_{y'\in \{0,1\}^S}\sum_{s\in S}L(\hat{f}(x_s),y'_s)$
+$\displaystyle = \sum_{s\in S} \min_{y'\in \{0, 1\}^S} L(\hat{f}(x_s),y'_s)$
+
+\section{Disjunktive Normalformen (DNF'S)}
+Probleme können ebenfalls als logische Gleichungen interpretiert werden, diese Gleichungen können dann in eine DNF (Mit oder verbundene und-Terme) umgeformt werden.
+\subsection{Formal}
+\begin{itemize}
+\item $\Gamma = \{(V_0, V_1) \in 2^V \times 2^V \vert V_0 \cap V_1 = \emptyset\}$\nl
+Jede Variable kann entweder negiert oder nicht-negiert vorkommen
+\item $\Theta = 2^\Gamma$
+\item $\displaystyle \forall x \in \{0,1\}^V: \; f_\theta(x)= \bigwedge_{(V_0,V_1)\in\theta}\prod_{v\in V_0} (1-x_v) \prod_{v\in V_1} x_v$\nl
+Definition einer DNF, veroderte negierte und nicht-negierte Variablen
+\end{itemize}
+
+\textbf{Beispiel}
+$\{(\emptyset,  \{v_1, v_2\}), (\{v_1\}\{v_3\})\} = \theta \in \Theta \; \rightarrow f_\theta(x) = x_{v_1}x_{v_2} \lor (1-x_{v_1})x_{v_3}$\nl
+
+Des Weiteren können Regularizer für DNF's definiert wenn, um deren Komplexität zu bemessen:
+\begin{itemize}
+\item $\displaystyle R_d(\theta) = \max_{(V_0,V_1)\in\theta} (|V_0| + |V_1|)$\nl
+Tiefe der Formel, e.g. Anzahl der Variablen des längsten und-Terms
+\item $\displaystyle R_l(\theta) = \sum_{(V_0,V_1)\in\theta} (|V_0| + |V_1|)$\nl
+Länge der Formel, e.g. Gesamtanzahl der Variablen in der Gesamtformel (auch doppelte zählen)
+\end{itemize}
+\textbf{Beispiel} $\theta = \{(\emptyset, \{0\}),\,(\{0\},\,\{3\}),(\{0,3\},\{1,2\}))\}\\
+\rightarrow f_\theta(x) = x_0 \lor (1-x_0)x_3\lor (1-x_0)(1-x_3)x_1 x_2 \rightarrow R_l(\theta) = 7 ,\; R_d(\theta)=4$\nl
+
+
+Das \textbf{Supervised learning problem of DNF's} kann wie folgt formuliert werden:\nl
+$\displaystyle \min_{\theta \in \Theta} R(\theta) \\ \forall s\in S: f_\theta(x_s) = y_s$
+\begin{itemize}
+\item Der Unterschied ist lediglich, dass ein $\min$ statt eines $\inf$ benutzt wird\
+\item min: kleinstes Element einer Menge und muss in der Menge selbst liegen
+\item inf: größte untere Schranke, muss nicht in der Menge selbst liegen, es müssen nur alle Elemente kleiner sein
+Des Weiteren erhält man das \textbf{bounded depth/length DNF Problem} indem man den Regularizer aus dem bounded sparability problem mit $R_d/R_l$ austauscht
+\end{itemize}
+
+\textbf{Das bounded length/depth DNF problem ist NP-hard}\\
+Beweis durch Reduktion des set cover problems auf das bounded length/depth DNF problem (Haussler):\nl
+Was ist ein Set-Cover:
+\begin{itemize}
+\item Sei S eine eine Menge
+\item Sei $\Sigma \subseteq 2^S, \; \emptyset\not\in\Sigma$ ein Cover, gdw. $\displaystyle \bigcup_{U\in\Sigma} U = S$
+\item $m\in\mathbb{N}$
+\item Die Entscheidung ob ein $\Sigma' \subseteq \Sigma$ existiert, s.d. $|\Sigma'|\leq m$ nennt man das \textbf{set cover problem} (S, $\Sigma$, m)
+\end{itemize}
+Beispiel:\\
+Sei $S = \{1,2, 3, 4, 5, 6\}$, dann ist ein mögliches Cover $\Sigma = \{\{1, 2, 3\},\{4, 5, 6\}\}$ (m=2)
+
+\subsection{Beweis der NP-hardness von set-cover}
+Wir zeigen das set-cover NP-hard ist indem wir es auf bounded length/depth DNF reduzieren (Haussler)
+\begin{itemize}
+\item Sei $(S', \Sigma, m)$ eine Instanz von set-cover
+\item Definiere nun \textbf{Haussler data} $(S, X, x, y)$ s.d.:
+\begin{itemize}
+\item $S = S' \cup \{\red{1}\}$, wir fügen S ein spezielles distinktes Element \red{1} hinzu
+\item $X = \{0, 1\}^\Sigma$
+\item wir definieren uns eine Funktion welche angibt ob ein Element in einer Menge vorkommt wie folgt:\\
+$\displaystyle \forall s \in S' \, \forall \sigma \in \Sigma: \; x_s(\sigma) = \begin{cases}0, \; s\in \sigma \\ 1, \; \text{otherwise}\end{cases}$\\
+Beispiel:
+\begin{itemize}
+\item $S = S' \cup \{\red{1}\} = \{2, 3\} \cup \{\red{1}\} = \{\red{1}, 2, 3\}$
+\item $\Sigma = \{\{2\},...,\{1, 2\},...,\{2, 3\}\}$
+\item $x_2(\{2, 3\}) = 0, \; x_3(\{2\}) = 1$
+\end{itemize}
+\item $x_{\red{1}} = 1^\Sigma$, das spezielle Element kommt nirgends vor
+\item $y_{\red{1}} = 1$ und $\forall s \in S': y_s = 0$, wir definieren das label das  spezielle Element 1, für alle anderen 0
+\end{itemize}
+\item z.z. Lemma: $\displaystyle \bigcup_{\sigma \in \Sigma'} = S' \Leftrightarrow \forall s\in S' : \prod_{\sigma\in\Sigma'}x_s(\sigma) = 0$\\
+set-cover kann umgeschrieben werden in ein Produkt mittel der Funktion $x_s$ (das Produkt verhält sich wie ein logisches UND)
+\begin{itemize}
+\item $\displaystyle \bigcup_{\sigma \in \Sigma'} = S'$
+\item $\Leftrightarrow \forall s\in S' \, \exists \sigma \in \Sigma': \; s\in\sigma$, für jedes Sample ex. eine TM mit diesem Sample
+\item $\Leftrightarrow$ für dieses Sample gilt somit $x_s(\sigma) = 0$, d.h. es ex. ein Sample für die die Funktion 0 ist
+\item $\Leftrightarrow$ Existenz kann mittel des logischen UND's repräsentiert werden\\
+$\displaystyle \forall s\in\Sigma':\; \prod_{\sigma\in\Sigma'}x_s(\sigma)=0$
+\end{itemize}
+\item \textbf{Beweis NP-hardness}:\\
+z.z.: $\exists\, \Sigma' \subseteq \Sigma$ von $S'$ mit $|\Sigma'|\leq m$ $\Leftrightarrow \exists\, \theta\in\Theta: R(\theta) \leq m$ und\\
+$\forall s \in S: \, f_\theta(x_s)=y_s$\\
+d.h., es ex. ein Lösung von set-cover mit bound m gdw. es Parameter $\theta$ mit Komplexität $\leq$ m gibt und alle Samples korrekt inferred werden
+
+\item ($\Rightarrow$)
+\begin{itemize}
+\item Sei $\Sigma' \subseteq \Sigma$ ein Cover von S mit $\Sigma'|\leq m$
+\item Sei $V_0 = \emptyset, \; V_1=\Sigma'$, d.h wir definieren das Cover als Menge der nicht-negierten Variablen einer DNF
+\item $\displaystyle \forall x' \in X:\; f_\theta(x')=\prod_{\sigma\in\Sigma'} x'(\sigma),\;$ (DNF mit nur positiven Variablen)
+\item siehe Lemma muss dieses Produkt gleich 0 sein $\forall s \in S':\;f(x_s)=0$
+\item Laut Definition gilt zudem $f(1^\Sigma)=1$
+\item daraus folgt, dass alle Daten richtig gelabelt wurden\\ $\forall s\in S': f(x_s)=y_s$
+\item Da wir $V_1 = \Sigma'$ und $V_0 = \emptyset$ gesetzt haben, ist der Regularizer auch gleich $R(\theta)= |\Sigma'| \leq m$
+\end{itemize}
+\item ($\Leftarrow$)
+\begin{itemize}
+\item Sei $\theta \in \Theta$ s.d. alle Daten richtig inferred werden und $R(\theta) \leq m$
+\item 
+\end{itemize}
+\end{itemize}
+
+\end{document}
