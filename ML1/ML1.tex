@@ -11,6 +11,7 @@
 \usepackage{enumerate}
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{subfigure}
 \usepackage{amssymb}
 \usepackage{float}
 \usepackage{stix}
@@ -186,8 +187,121 @@ d.h., es ex. ein Lösung von set-cover mit bound m gdw. es Parameter $\theta$ mi
 \item ($\Leftarrow$)
 \begin{itemize}
 \item Sei $\theta \in \Theta$ s.d. alle Daten richtig inferred werden und $R(\theta) \leq m$
-\item 
+\item TODO: verstehe Beh. am Anfang
+\item TODO: what is going on here ?
 \end{itemize}
 \end{itemize}
 
+\section{BTD's}
+\subsection{Formal}
+Ein V-variant BTD kann als Tupel $\theta = (V,Y,D,D',d*,E,\delta,v,y)$ wie folgt dargestellt werden
+\begin{itemize}
+\item eine Menge von Variablen: $V \neq \emptyset$
+\item eine Menge von Werten: $Y \neq \emptyset$
+\item einem (Sub)Tree $(D\cup D', E)$
+\begin{itemize}
+\item eine Menge von Inner-Nodes: $D$
+\item eine Menge von Leaves: $D'$
+\item ein Wurzelknoten: $d^*$
+\item Kanten: $E$
+\end{itemize}
+\item Kantenfunktion: $\delta: E \rightarrow \{0,1\}$
+\begin{itemize}
+\item Jede Inner-Node $(d\in D)$ hat genau 2 ausgehende Kanten
+\item $e=(d,d')$ mit $\delta(e) = 0$
+\item $e'=(d,d'')$ mit $\delta(e') = 1$
+\end{itemize}
+\item Variablenfunktion: $v:D\rightarrow V$, Weißt Inner-Nodes eine Variable zu 
+\item Wertefunktion: $y:D'\rightarrow Y$, Weißt Blättern einen Wert zu
+\end{itemize}
+Des Weiteren definieren wir noch den \textbf{Nachfolgeknoten von d}, wenn wir den \textbf{Weg j} nehmen als $\mathbf{d_{\downarrow j}}$
+
+\begin{figure}[H]
+\subfigure[BTD]{\includegraphics[width=.43\textwidth]{./resources/btd.png}}
+\subfigure[$d_\downarrow$]{\includegraphics[width=.45\textwidth]{./resources/btd_down.png}}
+\end{figure}
+
+Für den Subtree von $\theta$ mit der Wurzel d schreibt man $\theta[d]$\\
+Jeder Subtree von $\theta$ mit Wurzel d ist selbst wieder ein V-variante Y-valued BTD\nl
+Für jeden BTD $\theta$ lässt sich ebenfalls wieder eine Funktion $f_\theta$ wie folgt definieren: $f_\theta : \{0, 1\}^V \rightarrow Y,\; \forall x\in \{0,1\}^V$
+$\displaystyle f_\theta(x) = \begin{cases} y(d^*), & D = \emptyset\\
+f_{\theta [d^*_{\downarrow 0}]}(x), & D \neq \emptyset \land x_v(d^*) = 0\\
+f_{\theta [d^*_{\downarrow 1}]}(x), & D \neq \emptyset \land x_v(d^*) = 1\end{cases}$
+Diese Funktion löst den BTD nacheinander rekursiv auf und betrachtet dabei in jeder Iteration einen kleineren Sub-BTD, bis dieser nur noch aus einen einzelnen Knoten besteht
+\begin{itemize}
+\item ist der BTD leer, d.h. es gibt nur eine Node, d.h. die Wurzel ist zugleich ein Leave, dann nehme den Wert davon, Ende der Rekursion
+\item ist der Baum nicht leer, dann überprüfe die Variable an der Wurzel $x_v(d^*)$ und dann:
+\begin{itemize}
+\item nimm den linken Sub-BTD (0-Pfad) falls $x_v = 0$
+\item nimm den rechten Sub-BTD (1-Pfad) falls $x_v = 1$
+\end{itemize}
+\item Fahre mit dem Sub-BTD rekursiv weiter fort
+\end{itemize}
+Wie auch Für DNF's kann für BTD's ein Regularizer angegeben werden, dieser gibt die \textbf{Tiefe} des BTD's an und ist ebenfalls rekursiv definiert:\nl
+$\displaystyle R(\theta) = \begin{cases}0, & D = \emptyset \\
+1+\max\{R(\theta[d^*_{\downarrow 0}]), R(\theta[d^*_{\downarrow 1}])\}, & \text{else}\end{cases}$\nl
+Quasi, \textbf{Wie lang ist der längste Pfad im Baum, beginnend von der Wurzel}\nl
+Ebenfalls kann für BTD's analog das supervised learning bzw. das bounded depth BTD problem definiert werden
+
+\subsection{NP-hard Beweis}
+Dazu reduzieren wir das das NP-schwere \textbf{exact cover by 3-sets} Problem auf das \textbf{bounded depth BTD} Problem\nl
+Ein \textbf{exact cover} ist ein cover bei welchem alle Elemente paarweise disjunkt sind\nl
+\textbf{exact cover by 3-sets problem}:
+\begin{itemize}
+\item Sei S eine Menge
+\item Sei $\Sigma \subseteq 2^S \setminus \{\emptyset\}$
+\item Lässt sich ein $\Sigma' \subseteq \Sigma$ finden, s.d. es nur Mengen der Größe 3 gibt, welche S exakt überdecken (dazu muss S natürlich ein vielfaches von 3 Elemente enthalten)
+\end{itemize}
+Definitionen:
+\begin{itemize}
+\item Sei $(S',\Sigma)$ eine Instanz des exact cover by 3-sets problem
+\item Sei $|S'| = 3n$ mit $n\in\mathbb{N}$
+\item Wir konstruieren eine Instanz des m-bounded depth BTD Problems wie folgt:
+\begin{itemize}
+\item Sei $V=\Sigma$, die Variablen des BTD's sind die möglichen Mengen welche zum Überdecken benutzt werden können
+\item $S=S'\cup\{\red{0}\}$, wir fügen ein distinktes Element \red{0} hinzu
+\item Sei $x:S\rightarrow \{0,1\}^\Sigma$, eine Funktion welche angibt ob ein Element in einer Menge vorkommt (analog wie bei DNF, nur invertiert)
+\item Das spezielle Element \red{0} kommt dabei nirgends vor, d.h. $x_{\red{0}} = 0$
+\item $y:S\rightarrow \{0,1\}$, weißt dem speziellen Element \red{0} das Label 0 zu, allen anderen das Label 1, d.h. $y_{\red{0}} = 0$
+\item $m=n$
+\end{itemize}
+\end{itemize}
+Wir zeigen nun, dass es ein exact cover gibt gdw. das bounded BTD problem eine Lösung hat
+Beweis:
+\begin{itemize}
+\item ($\Rightarrow$)
+\begin{itemize}
+\item Sei $\Sigma' \subseteq \Sigma$ eine Lösung des exact cover Problems
+\item Wir definieren uns eine beliebige Ordnung der TM's des Covers und ordnen sie demzufolge in einem BTD untereinander im 0-Pfad an\\
+$\sigma':[n]\rightarrow\Sigma'$
+\item da wir m Variablen haben ist der Baum auch nur m tief, d.h. $R(\theta) = m$
+\item der BTD entscheidet alle Label korrekt
+\begin{itemize}
+\item $f_\theta(x_0) = 0 = y_s$ (\red{Warum ?})
+\item Da an jedem Knoten 3 Elemente auf 1 gemappt werden, sind am Ende $3m$ Elemente gemappt, und das sind alle Elemente, ausgenommen \red{0}
+\end{itemize}
+\end{itemize}
+\item ($\Leftarrow$)
+\begin{itemize}
+\item Sei $\theta = (V,Y,D,D',d^*,E,\delta,\blue{\sigma},y')$ ein BTD, die Variablenfunktion wurde mit $\sigma$ ausgetauscht
+\item Wir nehmen an, dass jeder 1-Pfad zu einem Blatt führt, mit dem Wert 1 $y'(d_{\downarrow 1}) = 1,\; \forall d \in D$
+\item Damit ist $f_\theta(x) = 1$, wenn es entlang des Weges im BTD, mindestens einmal das Element in einer Covermenge vorkommt (wird jeweils an den Knoten abgefragt, daher kann die Struktur wie ein großes UND aufgefasst werden)
+\item $\forall x \in X: f_\theta(x) \begin{cases}1, & \exists j\in [N]: x(\sigma_j)=1\\0, & \text{else}\end{cases}$
+\item durch Definition von $x_s$ gilt, $x(\sigma_j) = 1 \Leftrightarrow s \in \sigma_j$
+\item damit gibt es ein gültiges Set-Cover, d.h.\\
+$\displaystyle \bigcup_{j=0}^{N-1} \sigma_j = S'$, s.d. alle Labels außer für \red{0} gleich 1 sind\\
+($\forall s \in S': y_S = 1$)
+\item außerdem gilt $N=m$, da:
+\begin{itemize}
+\item $|S'| = 3m$ nach Definition
+\item $\displaystyle = \big\vert \bigcup_{j=0}^{N-1} \sigma_j \big\vert$
+\item $\displaystyle \leq \sum_{j=0}^{N-1} |\sigma_j |$
+\item $\displaystyle = \sum_{j=0}^{N-1} 3 = 3N \leq 3m$
+\end{itemize}
+\item Somit gibt es keine Überschneidungen, d.h. das Cover ist exakt\\
+$\forall\{j,l\}\in\binom{[N]}{2}: \sigma_k\cap\sigma_l = \emptyset$
+\item damit ist $\displaystyle \bigcup_{j=0}^{N-1} \sigma_j$ eine Lösung für das exact cover by 3-sets problem
+\end{itemize}
+\end{itemize}
+\section{lernen linearer Funktionen}
 \end{document}
