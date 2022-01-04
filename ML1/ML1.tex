@@ -304,4 +304,110 @@ $\forall\{j,l\}\in\binom{[N]}{2}: \sigma_k\cap\sigma_l = \emptyset$
 \end{itemize}
 \end{itemize}
 \section{lernen linearer Funktionen}
+Die Problemstellung ist es, eine lineare Funktion zu finden, welche 2 Klassen (Label 0 oder 1) von Punkten trennt. Dabei sind die jeweiligen Koordinaten der Datenpunkte die Attributswerte, diese sind aus $\mathbb{R}$
+\subsection{Formal}
+
+\begin{itemize}
+\item $X=\mathbb{R}^V$ Attribute sind reell (z.B. Gewicht, Größe, etc.)
+\item $x:S\rightarrow\mathbb{R}^V$
+\item $y:S\rightarrow \{0,1\}$ Es gibt 2 Klassen
+\item da wir lineare Funktionen lernen:
+\begin{itemize}
+\item $\Theta = \mathbb{R}^V$, reelle Koeffizienten der linearen Funktion\\
+z.B. $f(x) = ax+b$ mit $\Theta = (a\; b)^\top$
+\item $f: \Theta\rightarrow\mathbb{R}^X$
+\item $\displaystyle \forall \theta\in\Theta \, \forall \hat{x}\in X: f_\theta(\hat{x}) = \langle \theta, \hat{x} \rangle = \sum_{v\in V} \theta_v \hat{x}_v$\\
+(abstrakte Form einer linearen Funktion)
+\end{itemize}
+\end{itemize}
+Zufallsvariablen:
+\begin{itemize}
+\item $s\in S$, Sample s der Samplemenge S
+\item $X_s$ mit $x_s \in \mathbb{R}^V$, Attributsvektor von s
+\item $Y_s$ mit $y_s \in  \{0.1\}$, Label von s
+\item $\Theta_v$ mit $\theta_v \in \mathbb{R}$, Parameter der zu lernenden linearen Funktion
+\end{itemize}
+über diese Zufallsvariablen können nun folgende Aussagen getroffen werden:
+\begin{itemize}
+\item $\displaystyle P(X,Y,\Theta) = \prod_{s\in S} (P(Y_s|X_s, \Theta)P(X_s)) \prod_{v\in V} P(\Theta_v)$\\
+\red{Was genau ist das ?}
+\item $\displaystyle P(\Theta | X,Y) = \frac{P(X,Y,\Theta)}{P(X,Y)} = \frac{P(Y|X, \Theta)P(X))P(\Theta)}{P(X,Y)}$\\Wsk. das unsere Modelparameter stimmen (Likelihood), unter gegebenen Attributwerten und Labels\\
+$\displaystyle \propto P(Y|X,\Theta)P(\Theta) = \prod_{s\in S} P(Y_s|X_s,\Theta)\prod_{v\in V} P(\Theta_v)$\\
+\red{Warum ist das prop (Wsk vom Label unter Modelparam und Attr. Wert)?}
+\end{itemize}
+Um das beste Modell zu finden benutzen wir logistische Regression, dafür benötigen wir die folgende Funktion:
+
+\begin{figure}[H]
+\subfigure[$\forall s\in S: p_{Y_s|X_s,\Theta}(1)=\frac{1}{1+2^{-f_\theta(x_s)}}$]{\includegraphics[width=.4\textwidth]{./resources/log_res.png}}
+\subfigure[$\forall v\in V: p_{\Theta_v}(\theta_v)=\frac{1}{\sigma\sqrt{2\pi}}e^{\frac{-\theta^2_v}{2\sigma^2}}$]{\includegraphics[width=.4\textwidth]{./resources/normal_dist.png}}
+\end{figure}
+Man kann nun Zeigen, dass das Finden der besten Parameter $\theta$, unter gegebenen Attributen x und Labeln y, äquivalent zum supervised learning Problem ist, sofern man die Lossfunktion, den Regularizer und $\lambda$ entsprechend wählt:\nl
+\begin{itemize}
+\item $\displaystyle\argmax_{\theta\in\mathbb{R}^m} p_{\Theta|X,Y}(\theta, x, y) \Leftrightarrow \displaystyle \inf_{\theta\in\Theta} \; \lambda R(\theta) + \frac{1}{|S|} \sum_{s\in S} L(f_\theta (x_s), y_s)$
+\item wenn für L,R und $\lambda$ gilt:
+\begin{itemize}
+\item $\forall r\in \mathbb{R}\, \forall \hat{y}\in \{0,1\}: L(r, \hat{y}) = -\hat{y}r+\log(1+2^r)$
+\item $\forall \theta\in \Theta: R(\theta) = \|\theta\|^2_2$
+\item $\lambda = \frac{\log e}{2\sigma^2}$
+\end{itemize}
+\item Dieses Problem wir auch das \textbf{$\mathbf{l_2}$-regularized logistic regression problem} genannt (mit Bezug auf x, y, $\sigma$)
+\end{itemize}
+Beweis:
+\begin{itemize}
+\item $\displaystyle \argmax_{\theta\in\mathbb{R}^m} p_{\Theta|X,Y}(\theta, x, y)$
+\item $\displaystyle =\; \argmax_{\theta\in\mathbb{R}^m} \prod_{s\in S} p_{Y_s|X_s,\Theta}(y_s,x_s,\theta)\prod_{v\in V} p_{\Theta_v}(\theta_v)$ 
+\item $\displaystyle =\; \argmax_{\theta\in\mathbb{R}^m} \sum_{s\in S} \log\,p_{Y_s|X_s,\Theta}(y_s,x_s,\theta)+\sum_{v\in V} \log\,p_{\Theta_v}(\theta_v)$\\
+gleich zur Zeile darüber, da der Logarithmus monoton ist und somit sich zwar der Wert des Maximums ändert, nicht aber die Stelle (arg), Umformung der Produkte in Summen mittels: $\log(x \cdot y) = \log(x) + \log(y)$
+\item $\log p_{Y_s|X_s,\Theta}(y_s,x_s,\theta)$
+\item $=\; y_s \log p_{Y_s|X_s,\Theta}(1,x_s,\theta) + (1-y_s)\log p_{Y_s|X_s,\Theta}(0,x_s,\theta)$\\
+\red{Wie ? irgendwas mit gegenwsks ?}
+\item $=\; y_s \log \frac{p_{Y_s|X_s,\Theta}(1,x_s,\theta)}{p_{Y_s|X_s,\Theta}(0,x_s,\theta)}+p_{Y_s|X_s,\Theta}(0,x_s,\theta)$\\
+erhalten durch das Ausklammern von $y_s$, Anwendung von $\log (x) - \log (y) = \log \frac{x}{y}$
+\item $\frac{p_{Y_s|X_s,\Theta}(1,x_s,\theta)}{p_{Y_s|X_s,\Theta}(0,x_s,\theta)}=\frac{\frac{1}{1+2^{-\langle x_s, \theta \rangle}}}{1-\frac{1}{1+2^{-\langle x_s, \theta \rangle}}}=\frac{1}{1+2^{-\langle x_s, \theta \rangle} -1}=2^{\langle x_s, \theta \rangle}$\\
+Im Nenner ist das Gegenereignis vom Zähler, daher 1-..., da wir logistische Regression benutzen setzen wir hier die Formel dafür ein
+\item $\displaystyle \argmin_{\theta \in \mathbb{R}^m} \sum_{s\in S} (-y_s \langle\theta,x_s\rangle + \log(1+2^{\langle \theta,x_s\rangle}))+\frac{\log e}{2\sigma^2}\|\theta\|^2_2$\\
+\red{how ? detailed explain}
+\end{itemize}
+\subsection{Algorithmus}
+Das $l_2$-regularized logistic regression problem kann mittel des \textbf{steepest descent Algorithmus} gelöst werden mit einem \textit{Toleranzparameter} $\epsilon \in \mathbb{R}^+_0$
+\begin{itemize}
+\item $\theta := 0$\\
+initialisiere $\theta$
+\item repeat:
+\begin{itemize}
+\item $d := \nabla \varphi(\theta)$\\
+berechne die Schrittrichtung (Gradient)
+\item $\displaystyle \eta := \argmin_{\eta'\in\mathbb{R}} \varphi(\theta - \eta'd)$ (line search)\\
+Suche in Schrittrichtung d jene Schrittdistanz $\eta$ für welche der Loss+Regularizer am kleinsten ist
+\item $\theta := \theta - \eta d$\\
+gehe von $\theta$ in Richtung d um $\eta$ Einheiten, dort ist dann das neue $\theta$
+\item if $\|d\| < \epsilon$\\
+ist die gelaufene Strecke kleiner als unserer Toleranzparameter bricht ab, da wir uns nah genug am Minimum befinden
+\begin{itemize}
+\item return $\theta$
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\red{ToDO Letzter Beweis von linear funcion Kapitel}
+
+
+\section{Wahrscheinlichkeit}
+\subsection{Example 1}
+Seien $A$ und $B$ zwei Würfel und sei $X=A+B$ die Summe beider Würfel
+\begin{itemize}
+\item $P(A=2,B=3,X=7) = 0$, da es unmöglich ist, das alle 3 sich im angegebenen Zustand befinden
+\item $P(A=2,B=3,X=5) = \frac{1}{36}$, genau 1 Ereignis (von 36) erfüllt alle Zustände
+\item $P(X=5|A=2, B=3) = 1$ die Wsk. dass $A+B =5$ wenn wir wissen, das $A=2$ und $B=3$ ist natürlich 1
+\item $P(A,B|X=5) = \frac{1}{4}$ es gibt nur 4 verschiedene Kombinationen von $A$ und $B$, s.d. $A+B=5$\\
+$X=A+B \rightarrow 5=1+4=2+3=3+2=4+1$
+\end{itemize}
+\subsection{Example 2}
+\begin{itemize}
+\item $P(B|A)=\frac{P(A,B)}{P(A)}=\frac{P(A,B)}{\sum P(A,B)}$
+\item $P(A,B)=P(A|B)P(B)$
+\item $P(A,B)=P(A\cup B)$
+\item $P(A,B,C) = P(A|B,C)P(B,C)=P(A|B,C)P(B|C)P(C)$
+\end{itemize}
+
 \end{document}
