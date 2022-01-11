@@ -22,6 +22,11 @@
 \newcommand{\nl}{\\[0.1cm]}
 \newcommand{\red}[1]{\textcolor{red} {#1}}
 \newcommand{\blue}[1]{\textcolor{blue} {#1}}
+
+
+% \pagecolor[rgb]{0,0,0}
+% \color[rgb]{0,0.7,0}
+
 \begin{document}
 \maketitle
 \tableofcontents
@@ -251,6 +256,7 @@ Ein \textbf{exact cover} ist ein cover bei welchem alle Elemente paarweise disju
 \item Sei S eine Menge
 \item Sei $\Sigma \subseteq 2^S \setminus \{\emptyset\}$
 \item Lässt sich ein $\Sigma' \subseteq \Sigma$ finden, s.d. es nur Mengen der Größe 3 gibt, welche S exakt überdecken (dazu muss S natürlich ein vielfaches von 3 Elemente enthalten)
+\red{Warum müssen es 3 sein geht doch auch mit einer anderen Zahl ?}
 \end{itemize}
 Definitionen:
 \begin{itemize}
@@ -296,7 +302,8 @@ $\displaystyle \bigcup_{j=0}^{N-1} \sigma_j = S'$, s.d. alle Labels außer für 
 \item $|S'| = 3m$ nach Definition
 \item $\displaystyle = \big\vert \bigcup_{j=0}^{N-1} \sigma_j \big\vert$
 \item $\displaystyle \leq \sum_{j=0}^{N-1} |\sigma_j |$
-\item $\displaystyle = \sum_{j=0}^{N-1} 3 = 3N \leq 3m$
+\item $\displaystyle = \sum_{j=0}^{N-1} 3 = 3N \leq 3m$\\
+Da alle Covermengen die Größe 3 haben
 \end{itemize}
 \item Somit gibt es keine Überschneidungen, d.h. das Cover ist exakt\\
 $\forall\{j,l\}\in\binom{[N]}{2}: \sigma_k\cap\sigma_l = \emptyset$
@@ -386,11 +393,104 @@ ist die gelaufene Strecke kleiner als unserer Toleranzparameter bricht ab, da wi
 \begin{itemize}
 \item return $\theta$
 \end{itemize}
-\end{itemize}
+\end{itemize}	
 \end{itemize}
 
-\red{ToDO Letzter Beweis von linear funcion Kapitel}
+\red{ToDO Letzter Beweis von linear function Kapitel}
 
+\section{Semi-supervised / Unsupervised Learning}
+\red{Details ergänzen}\\
+Anderes als beim Supervised learning ist beim Semi/Unsupervised learning nicht jedem Sample ein Label zugeordnet, außerdem muss anderes als beim supervised learning auch nicht jede Labelzuodnung gültig sein. Darum verwenden wir im Weiteren eine Menge $\mathcal{Y} \subseteq \{0,1\}^S$ genannt \textbf{feasible labelings} für welche zudem gilt:
+\begin{itemize}
+\item $\mathcal{Y} = \{0,1\}$, Spezialfall entspricht unlabled data
+\item $|\mathcal{Y}| = 1$, Spezialfall entspricht labled data
+\item nicht-triviale (d.h. andere als die zwei Fälle oberhalb) erlaubt es endliche Strukturen zu kodieren, z.B. Maps, Äquivalenzrelationen oder Ordnungen
+\end{itemize}
+
+\subsection{learning und inference}
+Sei folgendes gegeben:
+\begin{itemize}
+\item $T=(S,X,x,\mathcal{Y})$, constrained data
+\item $\Theta \neq \emptyset$ mit $f: \Theta \rightarrow \mathbb{R}^X$
+\item $R: \Theta \rightarrow \mathbb{R}^+_0$, Regularizer
+\item $L:\mathbb{R}\times\{0,1\}\rightarrow\mathbb{R}^+_0$, Lossfunction
+\item $\lambda\in\mathbb{R}^+_0$, regularizarion Parameter
+\end{itemize}
+Daraus lässt sich nun das \textbf{learning and inference Problem} definieren:\nl
+$\displaystyle \min_{y\in\mathcal{Y}} \inf_{\theta\in\Theta}\; \lambda R(\theta) + \frac{1}{|S|}\sum_{s\in S} L(f_\theta (x_s), y_s)$\nl
+Den Spezialfall wenn $\mathcal{Y} = \{\hat{y}\}$ nennt man \textbf{supervised learning problem}. Den Spezialfall wenn $\Theta = \{\hat{\theta}\}$ nennt man \textbf{inference problem}, dieses kann wie folgt formuliert werden:\nl
+$\displaystyle \min_{y\in\mathcal{Y}}\; \sum_{s\in S} L(f_{\hat{\theta}} (x_s),y_s)$
+
+Dieses inference Problem kann in ein binäres lineares Optimierungsproblem umgewandelt werden:
+\begin{itemize}
+\item $\displaystyle \argmin_{y\in\mathcal{Y}} \sum_{s\in S} L(f_{\hat{\theta}} (x_s),y_s)$
+\item $\displaystyle = \; \argmin_{y\in\mathcal{Y}} \sum_{s\in S} y_s L(f_{\hat{\theta}} (x_s),1) + (1-y_s) L(f_{\hat{\theta}} (x_s),0)$
+\item $\displaystyle = \; \argmin_{y\in\mathcal{Y}} \sum_{s\in S} y_s (L(f_{\hat{\theta}} (x_s),1) - L(f_{\hat{\theta}} (x_s),0)$
+\end{itemize}
+
+\section{Klassifizierung}
+Bei der Klassifizierung versuchen wir eine Abbildung $\varphi$ zu finden, welche Elemente einer Menge A exakt ein \textbf{Klassenlabel} aus einer Menge B zuweist, d.h. $\varphi: A\rightarrow B$\\
+
+\subsection{Formal}
+Suche jene $\varphi: A\rightarrow B$ aus $\varphi \subseteq	A \times B$ für die gilt:
+\begin{itemize}
+\item $\forall a\in A \, \exists b\in B: (a,b) \in \varphi$\\
+Jedes Element aus A muss ein Klassenlabel erhalten
+\item $\forall a\in A, \, \exists b,b' \in B: (a,b) \in \varphi \land (a,b')\in\varphi \Rightarrow b=b'$\\
+Jedes Element aus A hat exakt ein Klassenlabel
+\end{itemize}
+für diese Abbildung gilt somit auch:\nl
+$\displaystyle \forall a\in A: \sum_{b\in B} y_{ab} = 1$,\nl
+d.h. die Zuweisungsflag y ist genau einmal 1, also wird nur genau ein Klassenlabel zugewiesen, $y(a,b) = 1$ bedeutet dabei nicht, dass die Klassifikation von a als b korrekt ist, sondern lediglich, dass die gelernte Funktion a als b klassifiziert\nl
+Wir betrachten bei der Klassifizierung \textbf{constrained data} $(S,X,x,\mathcal{Y})$ mit:
+\begin{itemize}
+\item $S = A \times B$, Paare aus Elementen und Klassenlabeln
+\item $X=B\times \mathbb{R}^V$, Class-Sampleattribute-pairs, s.d. das erste Element \textbf{immer} die Klasse ist\\
+$\forall a \in A\, \forall b\in B \, \exists \hat{x} \in \mathbb{R}^V: x_{ab} = (b,\hat{x})$\\
+z.B. x = (label, $atr_1$, $atr_2$, ...) -> Label wird immer am Anfang appended
+\item $\displaystyle \mathcal{Y} = \big\{y\in \{0,1\}^S \, \big\vert \, \forall a \in A : \sum_{b\in B} y_{ab} = 1 \big\}$\\
+jedes Sample wird zu genau einem Label gemappt
+\end{itemize}
+Wir nehmen uns nun eine \textbf{Menge linearer Funktionen mit separaten Koeffizienten}\nl
+$\displaystyle \forall \theta\in\Theta \, \forall b\in B \, \forall \hat{x} in \mathbb{R}^V: f_\theta((b,\hat{x})) = \sum_{v\in V} \theta_{bv} \hat{x}_v = \langle \theta_b, \hat{x}\rangle$\nl
+Aus dieser Funktionsschar wählen wir uns dann mittels des Klassenlabels b die benötigte Funktion aus. Z.B. gäbe es bei der Klassifizierung von handschriftlichen Ziffern 10 verschiedene Funktionen\nl
+
+Seien folgende Zufallsvariablen gegeben:
+\begin{itemize}
+\item $X_{ab}$, Attributsvektor
+\item $Y_{ab}$, Decisionflag
+\item $\theta_{bv}$, Parameter
+\item $\mathcal{Z}\subseteq \{0,1\}^{A\times B}$, feasible descisions (wir suchen $\mathcal{Z} = \mathcal{Y}$)
+\end{itemize}
+Für diese ZF's lassen sich dann wieder Supervised Learning $P(\Theta|X,Y,Z)$ und Inference $P(Y|X,Z,\theta)$ formulieren\nl
+Die ZF's sind dabei für $P(Y|X)$ logistisch verteilt, für die Parameter $\Theta$ normal verteilt und für $P(Z|Y$ gleich verteilt\nl
+\textbf{uniform distribution}\\
+$\displaystyle \forall \mathcal{Z} \{0,1\}^{A\times B} \, \forall y \in \{0,1\}^{A\times B}: p_{Z|Y}(\mathcal{Z},y) \propto \begin{cases} 1 & y\in \mathcal{Z}\\0 & \text{else} \end{cases}$
+Man stellt fest, dass das Finden der besten Parameter $\theta$ unter Attributen x und Decisions y in $|B|$ separate unabhängige Teilprobleme aufgeteilt werden kann, diese können dann auch separat gelöst werden.\\
+\textbf{Beweis}:
+\begin{itemize}
+\item $\displaystyle \argmax_{\theta \in \mathbb{R}^{B\times V}} p_{\Theta |X,Y,Z}(\theta,x,y,\mathcal{Y})$
+\item $\displaystyle =\; \argmin_{\theta \in \mathbb{R}^{B\times V}} \; \sum_{(a,b)\in A\times B} (-y_{ab} f_\theta(x_{ab}) + \log (1+2^{f_\theta(x_{ab})}))+ \frac{\log e}{2\sigma^2} \| \theta \|^2_2$\\
+flipping sign macht aus max ein min, einsetzen der Formel für Supervised learning, dort dann einsetzen von normal und log. distribution, aus Produkt mach Summe mit Logarithmus
+\item $\displaystyle \min_{\theta \in \mathbb{R}^{B\times V}} \; \sum_{(a,b)\in A\times B} (-y_{ab} \langle \theta_b, x'_{ab} \rangle + \log (1+2^{\langle \theta_b, x'_{ab} \rangle}))+ \frac{\log e}{2\sigma^2} \| \theta \|^2_2$\\
+einsetzen der weighted sum für $f_\theta$
+\item $\displaystyle =\; \min_{\theta \in \mathbb{R}^{B\times V}} \;  \sum_{b\in B} \big(\sum_{a\in A}  (-y_{ab} \langle \theta_b, x'_{ab} \rangle + \log (1+2^{\langle \theta_b, x'_{ab} \rangle})) \big)+ \frac{\log e}{2\sigma^2} \| \theta \|^2_2$\\
+aufteilen der Summe über Paaren in 2 Summen
+\item $\displaystyle =\; \sum_{b\in B} \; \min_{\theta \in \mathbb{R}^{B\times V}} \;   \big(\sum_{a\in A}  (-y_{ab} \langle \theta_b, x'_{ab} \rangle + \log (1+2^{\langle \theta_b, x'_{ab} \rangle})) \big)+ \frac{\log e}{2\sigma^2} \| \theta \|^2_2$\\
+\red{rausziehen der Summe da konstant ???}
+\end{itemize}
+Für jede constrained data, Parameter, und Descision gibt es eine Lösung für das Inference Problem, wenn bestimmte Bedingungen gelten:
+\begin{itemize}
+\item $\displaystyle \min_{y\in \mathcal{Y}} \; \sum_{(a,b)\in A\times}  L(f_\theta(x_{ab}),y_{ab})$ hat eine Lösung wenn:
+\begin{itemize}
+\item $\displaystyle \forall a \in A: \varphi(a) \in \max_{b\in B} \langle \theta_b,x'_{ab} \rangle$, jedes Element bekommt irgendein Label zugeordnet (aus den Maximas der Funktionsschar)
+\item $\forall (a,b)\in A \times B: \hat{y}_{a} = 1 \Leftrightarrow \varphi(a) = b$, Wenn das Klassenlabel b dem Element a zugeordnet wurde so muss das Mapping das gleiche Ergebnis repräsentieren
+\end{itemize}
+\end{itemize}
+\textbf{Beweis}:
+\begin{itemize}
+\item \red{Todo}
+\end{itemize}
 
 \section{Wahrscheinlichkeit}
 \subsection{Example 1}
@@ -398,8 +498,8 @@ Seien $A$ und $B$ zwei Würfel und sei $X=A+B$ die Summe beider Würfel
 \begin{itemize}
 \item $P(A=2,B=3,X=7) = 0$, da es unmöglich ist, das alle 3 sich im angegebenen Zustand befinden
 \item $P(A=2,B=3,X=5) = \frac{1}{36}$, genau 1 Ereignis (von 36) erfüllt alle Zustände
-\item $P(X=5|A=2, B=3) = 1$ die Wsk. dass $A+B =5$ wenn wir wissen, das $A=2$ und $B=3$ ist natürlich 1
-\item $P(A,B|X=5) = \frac{1}{4}$ es gibt nur 4 verschiedene Kombinationen von $A$ und $B$, s.d. $A+B=5$\\
+\item $P(X=5|A=2, B=3) = 1$, die Wsk. dass $A+B =5$ wenn wir wissen, das $A=2$ und $B=3$ ist natürlich 1
+\item $P(A,B|X=5) = \frac{1}{4}$, es gibt nur 4 verschiedene Kombinationen von $A$ und $B$, s.d. $A+B=5$\\
 $X=A+B \rightarrow 5=1+4=2+3=3+2=4+1$
 \end{itemize}
 \subsection{Example 2}
@@ -409,5 +509,7 @@ $X=A+B \rightarrow 5=1+4=2+3=3+2=4+1$
 \item $P(A,B)=P(A\cup B)$
 \item $P(A,B,C) = P(A|B,C)P(B,C)=P(A|B,C)P(B|C)P(C)$
 \end{itemize}
+
+
 
 \end{document}
