@@ -4,6 +4,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{times}
 \usepackage{graphicx}
+\usepackage{adjustbox}
 \usepackage{url}
 \usepackage{color}
 \usepackage{setspace}
@@ -15,6 +16,7 @@
 \usepackage{amssymb}
 \usepackage{float}
 \usepackage{stix}
+\usepackage{pifont}
 \title{Machine Learning 1}
 \author{Henrik Tscherny}
 \DeclareMathOperator*{\argmin}{argmin}
@@ -22,7 +24,10 @@
 \newcommand{\nl}{\\[0.1cm]}
 \newcommand{\red}[1]{\textcolor{red} {#1}}
 \newcommand{\blue}[1]{\textcolor{blue} {#1}}
-
+\newcommand{\green}[1]{\textcolor{green} {#1}}
+\newcommand{\yellow}[1]{\textcolor{yellow} {#1}}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
 
 % \pagecolor[rgb]{0,0,0}
 % \color[rgb]{0,0.7,0}
@@ -491,6 +496,120 @@ Für jede constrained data, Parameter, und Descision gibt es eine Lösung für d
 \begin{itemize}
 \item \red{Todo}
 \end{itemize}
+
+\section{Partitionierung}
+Bei der Partitionierung versucht man eine Menge in kleinere disjunkte Teilmengen so zu zerlegen, ohne die Größte, die Anzahl oder irgendwelche andere Eigenschaften davor zu wissen.
+
+\subsection{Formal}
+eine \textbf{Partition} $\Pi \subseteq 2^A$ ist ein Zerlegung von A in nicht-leere disjunkte Teilmengen,\\
+alle Elemente von A müssen dabei in einer Teilmenge vorkommen $\displaystyle \bigcup_{\pi\in\Pi} \pi = A$\nl
+Für Partitionen lässt sich ebenfalls eine Äquivalenzrelation definieren:\nl
+$\forall a, a' \in A: a \equiv_{\Pi} a' \Leftrightarrow \exists U \in \Pi : a \in U \land a' \in U$\nl
+Zwei Elemente $a$ und $a'$ sind gleich in $\Pi$ wenn sie in der gleichen Teilmenge der Partition liegen\\
+gilt dies Für alle Elemente aus A, so sind zwei Partitionen gleich\\
+Wir können dieses Äquivalenzrelation als Entscheidung y wie folgt ausdrücken
+\begin{itemize}
+\item $y : \binom{A}{2} \rightarrow \{0,1\}$
+\begin{itemize}
+\item $y_{\{a,b\}} = 1$, a und b sind in der gleichen TM
+\item $y_{\{a,b\}} = 0$, a und b sind in unterschiedlichen TM's
+\end{itemize}
+\end{itemize}
+Die Menge dieser Entscheidungen sind alle jene, welche folgende Gleichung erfüllen:\nl
+$\forall a\in A \, \forall b \in A \setminus \{a\} \, \forall c \in A \setminus \{a,b\}: y_{\{a,b\}} + y_{\{b,c\}} -1 \leq y_{\{a,c\}}$\nl
+\begin{figure}[ht]
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\includegraphics[width=0.9\linewidth]{./resources/y_partition.png}
+\end{minipage}%
+\begin{minipage}[t]{0.5\linewidth}
+\begin{tabular}{|c|c|c|c|}
+\hline
+$y_{\{a,b\}}$ & $y_{\{b,c\}}$ & $y_{\{a,c\}}$ & $y_{\{a,b\}} + y_{\{b,c\}} -1\leq y_{\{a,c\}}$ \\
+\hline
+0 & 0 & 0 & \green{\cmark}\\
+\hline
+0 & 0 & 1 & \green{\cmark}\\
+\hline
+0 & 1 & 0 & \green{\cmark}\\
+\hline
+0 & 1 & 1 & \green{\cmark}\\
+\hline
+1 & 0 & 0 & \green{\cmark}\\
+\hline
+1 & 0 & 1 & \green{\cmark}\\
+\hline
+1 & 1 & 0 & \red{\xmark}\\
+\hline
+1 & 1 & 1 & \green{\cmark}\\
+\hline
+\end{tabular}
+\end{minipage}
+\end{figure}
+Wir lernen die Partitionen indem wir die Äquivalenzen von Elementen einer Menge als Entscheidungen von Constrained Data abbilden.
+\subsection{Formal}
+Constrained Data: $(S,X,x,Y)$:
+\begin{itemize}
+\item $S=\binom{A}{2}$
+\item $\displaystyle \mathcal{Y} =\big\{ y:\binom{A}{2} \rightarrow \{0,1\} \big\vert \, y_{\{a,b\}} + y_{\{b,c\}} -1\leq y_{\{a,c\}} \big \}$
+\item $X = \mathbb{R}^V$
+\end{itemize}
+
+\subsection{Algorithmen}
+\subsubsection{Greedy-Moving}
+Sei $\displaystyle \text{move}_{aU}[\Pi] = \Pi \setminus \{U\} \setminus \{W\in\Pi \vert \, a\in W\}\\
+\cup\{U\cup \{a\}\}\\
+\cup \bigcup_{W\in\Pi \vert \, a\in W \land \{a\} \neq W\}} \{W\setminus \{a\}\}$\\
+Die Operation das Element $a\in A$ in die Untermenge $U \in \Pi \cup \{\emptyset\}$ innerhalb der Partition $\Pi$ zu verschieben\nl
+$\Pi' = \text{greedy-moving}(\Pi)$
+\begin{itemize}
+\item choose $\displaystyle (a,U) \in \argmin_{(a',U')\in A\times(\Pi \cup \{\emptyset\})} \varphi(y^{\text{move}_{a'U'}[\Pi]}) - \varphi(y^\Pi)$, suche die beste Move-Operation aus
+\item if $\varphi(y^{\text{move}_{a'U'}[\Pi]}) - \varphi(y^\Pi) < 0$, tatsächliche Verbesserung liegt vor ?
+\begin{itemize}
+\item $\Pi' := \text{greedy-moving}(\text{move}_{aU}\Pi)$, commit result
+\end{itemize}
+\item else
+\begin{itemize}
+\item $\Pi' = \Pi$, disgard result
+\end{itemize}
+\end{itemize}
+Das Problem mit diesem Algorithmus ist, dass er sich in jedem kleinen lokalen Minima verfängt und dort terminiert, um das Problem zu beheben wurde der Algorithmus mit der Technik von Kernighan und Lin verbessert. Dabei werden anstelle von einzelnen Moves, längere Sequenzen von Moves ausgeführt, es wird dann die Sequenz genommen welche den größten kumulativen abstieg erzielt. So ist es Möglich innerhalb der Sequenz auch möglich aus Perspektive der Kostenfunktion einen Rückschritt zu machen, wenn dies dann in der Summe eine größere Verbesserung ermöglicht.\nl
+
+$\Pi' = \text{greedy-moving-kl}(\Pi)$
+\begin{itemize}
+\item $\Pi_0 := \Pi$
+\item $\delta_0 := 0$
+\item $A_0 := A$, active set
+\item $t:=0$
+\item repeat
+\begin{itemize}
+\item $\displaystyle \text{choose}\; (a_t,U_t) \in \argmin_{(a,U)\in A_t \times (\Pi \cup \{\emptyset\})}\varphi(y^{\text{move}_{a'U'}[\Pi_t]}) - \varphi(y^{\Pi_t})$, wähle die beste Move-Operation unter allen Elementen welche sich noch im Active-Set befinden
+\item $\Pi_{t+1} := \text{move}_{a_t U_t}[\Pi_t]$, führe Move-Operation aus
+\item $\delta_{t+1} := \varphi(y^{\Pi_{t+1}}) - \varphi(y^{\Pi_t})$, berechne Verbesserung
+\item $A_{t+1} := A_t \setminus \{a_t\}$, entferne das benutzte Element aus dem Active-Set
+\item $t:=t+1$
+\end{itemize}
+\item until $A_t = \emptyset$
+\item $\displaystyle \hat{t} := \min \argmin_{t'\in\{0,...,|A|\}} \sum_{\tau = 0}^{t'} \delta_t$, Wähle die Stelle (argmin) in der Sequenz aus an der beste Verbesserung ist, gibt es mehrere, dann nehme die kürzeste (min)
+\item if $\displaystyle \sum_{\tau = 0}^{t'} \delta_t < 0$ Sequenz bringt Verbesserung (siehe Tabelle)
+\begin{itemize}
+\item $\Pi' := \text{greedy-moving-kl}(\Pi_{\hat{t}})$, commit result
+\end{itemize}
+\item else
+\begin{itemize}
+\item $\Pi' = \Pi$, disgard result
+\end{itemize}
+\end{itemize}
+\begin{tabular}{|c|c|c|}
+\hline
+t & $\delta_t$ & $\sum \delta_t$ \\
+\hline
+0 & 0 & 0\\
+1 & -2 & -2\\
+2 & 1 & -1\\
+3 & -8 & -9\\
+4 & 10 & -19\\
+\end{tabular}
 
 \section{Wahrscheinlichkeit}
 \subsection{Example 1}
