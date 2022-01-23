@@ -7,6 +7,7 @@
 \usepackage{url}
 \usepackage{color}
 \usepackage{setspace}
+\usepackage{pbox}
 \usepackage{enumerate}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -19,6 +20,7 @@
 \newcommand{\green}[1]{\textcolor{green} {#1}}
 \newcommand{\yellow}[1]{\textcolor{yellow} {#1}}
 \newcommand{\nl}{\\[0.1cm]}
+\newcommand{\floor}[1]{\lfloor #1 \rfloor}
 \title{Zusammenfassung Software-orientierte Informatik}
 \author{Henrik Tscherny}
 \begin{document}
@@ -35,9 +37,13 @@ Der Output zum Zeitpunkt t ($y(t)$) ist nur von dem zu gleichen Zeitpunkt am Inp
 Der Output ($y(t)$) ist von dem am Input anliegenden Signal ($x(t)$) und dem inneren Zustand des Systems ($\vec{Z}$) abhängig. Dabei kann man sich den inneren Zustand als eine Art Gedächtnis vorstellen
 
 \paragraph{Lineare Systeme}
-Ein System ist linear, wenn der Überlagerungssatz/Superpositionsprinzip gilt, bzw nicht-linear falls dieser nicht gilt.\\
+Ein System ist linear, wenn der Überlagerungssatz/Superpositionsprinzip gilt, bzw nicht-linear falls dieser nicht gilt, d.h. Stellt man den Input als die Summe von zwei verschiedenen Inputs dar, so kann man auch den Output als die Summe der beiden Outputs darstellen.\\
 $f(x_1 + x_2) = f(x_1) + f(x_2) \Rightarrow y(t) = f(x_1(t) + x_2(t)) = f(x_1(t)) + f(x_2(t))$\\
 lineare Systeme werden durch lineare Differenzialgleichungen mit konstanten Koeffizienten beschrieben
+\begin{figure}[H]
+\includegraphics[scale=0.3]{./resources/linear-system.png}
+\caption{Veranschaulichung des Superpositionsprinzips}
+\end{figure}
 
 \paragraph{Zeit(in)variante Systeme}
 Ändern sich die Systemeigenschaften sich nicht mit der Zeit, d.h. es gilt das Verschiebungsprinzip ($y(t-t_0) = f(x(t-t_0))$), ist das System zeitinvariant, andernfalls ist es zeitvariant
@@ -96,5 +102,73 @@ $G_i = k_i$: statische Übertragungsfaktor & $G_i(f)$: Übertragungsfunktion des
 $\displaystyle k_{ges} = \frac{y}{x} = \frac{k_1}{1 \pm k_1 k_2}$ & $\displaystyle G_{ges}(f) = \frac{G_1(f)}{1 \pm G_1(f)G_2(f)}$\\
 \hline
 \end{tabular}
+
+\subsection{Grundsysteme}
+\begin{tabular}{|c|c|c|}
+\hline
+Type & Differenzialgleichung & Differenzengleichung\\
+\hline
+\begin{tabular}{c}
+Proportionalsystem (P)\\
+\includegraphics[scale=0.3]{./resources/p-sys.png} 
+\end{tabular} & $\frac{dy}{dx} = K_p$ & $y(i) = K_p x(i)$\\
+\hline
+\begin{tabular}{c}
+Integralsystem (I)\\
+\includegraphics[scale=0.3]{./resources/i-sys.png}
+\end{tabular} & \begin{tabular}{c}
+$\frac{dy}{dt} = K_I x(t)$\\
+$\displaystyle y(t) = K_I \int_0^t x(\tau) d\tau$
+\end{tabular} & $y(i) = TK_I x(i) + y(i-1)$ \\
+\hline
+\begin{tabular}{c}
+Differentialsystem (D) \\
+\includegraphics[scale=0.3]{./resources/d-sys.png}
+\end{tabular} & $\frac{dx}{dt}K_D = y(t)$ & $y(i) = \frac{K_D}{T}(x(i)-x(i-1))$\\
+\hline
+\begin{tabular}{c}
+Totzeitsystem ($T_t$)\\
+\includegraphics[scale=0.3]{./resources/tt-sys.png}
+\end{tabular} & $y(t) = x(t-T_t)$ & \begin{tabular}{c}
+$y(i) = x(i-n)$\\
+$n=\frac{T_t}{T}$
+\end{tabular}\\
+\hline
+\begin{tabular}{c}
+Verzögerunssystem ($T_1$)\\
+\includegraphics[scale=0.3]{./resources/t1-sys.png}
+\end{tabular} & $\frac{dy}{dt}T_1 + y(t) = x(t)$ & \begin{tabular}{c}
+$y(i) = (1-\alpha)x(i) +\alpha y(i-1)$\\
+$\alpha=\frac{T_1}{T+T_1}$
+\end{tabular}\\
+\hline
+\end{tabular}
+
+\section{Faltung/Konvolution}
+Die Faltung beschriebt einen mathematischen Operator ($\ast$) welcher für zwei Funktionen f und g eine dritte Funktion $f \ast g$ liefert.\nl
+$\displaystyle (f\ast g)(x) = \int_{\mathbb{R^n}} f(\tau) g(x-\tau)dt$\nl
+In einem linearen System kann der Input als eine unendliche Summe von Input-Impulsen betrachtet werden, woraus das System dann wiederum eine unendliche Summe von Output-Funktionen macht, wobei jede der Output-Funktionen mit dem dazugehörigen Input-Impuls multipliziert wird, die Output-Funktionen können sich dabei auch überlagern\nl
+
+\textbf{Eigenschaften der Faltung}:
+\begin{itemize}
+\item Kommutativität: $f \ast g = g \ast f$
+\item Assoziativität: $f \ast (g \ast h) = (f \ast g) \ast h$
+\item Distributivität: $f \ast (g+h) = (f \ast g) + (f \ast h)$
+\end{itemize}
+\flushleft
+Für den zeitdiskreten Fall gibt es äquivalent zum Faltungsintegral die Faltungssumme:\nl
+$\displaystyle f(kT) \ast g(kT) = \begin{cases} 0 & k<0 \\
+\displaystyle \sum_{j=0}^k f((k-j)T)g(jT) & k \geq 0
+\end{cases}$
+
+\paragraph{Stabilität}
+Ein System ist \textbf{BIBO-stabil}, wenn es für jeden beschränkten Input Wert auch nur maximal einen beschränkten 
+Output wert liefert\nl
+\begin{itemize}
+\item zeitkontinuierlich: $\displaystyle \int_{-\infty}^{+\infty} |g(t)|dt < \infty$
+\item zeitdiskret: $\displaystyle \sum_{-\infty}^{+\infty} |g(kT)|T < \infty$
+\end{itemize}
+
+
 
 \end{document}
