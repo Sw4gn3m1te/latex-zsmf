@@ -3,13 +3,15 @@
 \usepackage[german]{babel}
 \usepackage[T1]{fontenc}
 \usepackage{times}
-\usepackage{graphicx}
 \usepackage{url}
 \usepackage{color}
 \usepackage{setspace}
 \usepackage{pbox}
+\usepackage{graphicx}
+\usepackage{adjustbox}
 \usepackage{enumerate}
 \usepackage{amsmath}
+\usepackage{subfigure}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{float}
@@ -146,8 +148,9 @@ $\alpha=\frac{T_1}{T+T_1}$
 
 \section{Faltung/Konvolution}
 Die Faltung beschriebt einen mathematischen Operator ($\ast$) welcher für zwei Funktionen f und g eine dritte Funktion $f \ast g$ liefert.\nl
-$\displaystyle (f\ast g)(x) = \int_{\mathbb{R^n}} f(\tau) g(x-\tau)dt$\nl
-In einem linearen System kann der Input als eine unendliche Summe von Input-Impulsen betrachtet werden, woraus das System dann wiederum eine unendliche Summe von Output-Funktionen macht, wobei jede der Output-Funktionen mit dem dazugehörigen Input-Impuls multipliziert wird, die Output-Funktionen können sich dabei auch überlagern\nl
+$\displaystyle (f\ast g)(x) = \int_{\mathbb{R^n}} f(\tau) g(x-\tau)d\tau$\nl
+Intuitiv kann man sich die Faltung von zwei Funktionen f und g so vorstellen, dass man die Funktion g entlang der x-Achse schiebt (daher $x-\tau$) und dabei diese über die Funktion f hinweg schiebt. Dabei berechnet man dann in Jedem Schritt die Fläche in welcher sich die beiden Funktionen überlappen. Der Flächeninhalt der Überlappung ist dann der Funktionswert der Funktionswert der Funktion $(f \ast g) (x)$
+\flushleft
 
 \textbf{Eigenschaften der Faltung}:
 \begin{itemize}
@@ -168,6 +171,61 @@ Output wert liefert\nl
 \item zeitkontinuierlich: $\displaystyle \int_{-\infty}^{+\infty} |g(t)|dt < \infty$
 \item zeitdiskret: $\displaystyle \sum_{-\infty}^{+\infty} |g(kT)|T < \infty$
 \end{itemize}
+
+\subsection{Beispiel}
+Faltung der Rechteckfunktion mit sich selbst:\nl
+
+\begin{minipage}{\linewidth}
+\centering
+\begin{minipage}{0.45\linewidth}
+\begin{figure}[H]
+\includegraphics[width=0.9\linewidth]{./resources/einheitssprung_funktion.png}
+\end{figure}
+\end{minipage}
+\hspace{0.05\linewidth}
+\begin{minipage}{0.45\linewidth}
+\begin{figure}[H]
+Sei $u(x) = \displaystyle \begin{cases} 0, & x<\tau \\ 1, & x\geq \tau \end{cases}$\\
+der Einheitssprung beginnend ab\\ $x = \tau$
+\end{figure}
+\end{minipage}
+\end{minipage}
+\nl
+
+\begin{minipage}{\linewidth}
+\centering
+\begin{minipage}{0.45\linewidth}
+\begin{figure}[H]
+\includegraphics[width=0.9\linewidth]{./resources/rechteck_funktion.png}
+\end{figure}
+\end{minipage}
+\hspace{0.05\linewidth}
+\begin{minipage}{0.45\linewidth}
+\begin{figure}[H]
+Stelle die Rechteckfunktion als die Differenz von zwei Einheitssprüngen dar\\
+$r(x) = u(x) - u(x-1)$
+\end{figure}
+\end{minipage}
+\end{minipage}
+\nl
+
+
+\begin{minipage}{\linewidth}
+\centering
+\begin{minipage}{0.45\linewidth}
+\begin{figure}[H]
+\includegraphics[width=\linewidth]{./resources/rechteck_faltung.png}
+\end{figure}
+\end{minipage}
+\hspace{0.05\linewidth}
+\begin{minipage}{0.45\linewidth}
+\begin{figure}[H]
+Faltung mit sich selbst: $(r\ast r)(x) = \displaystyle \int_{\mathbb{R}^n} r(\tau)r(x-\tau)d\tau = \begin{cases} 0,& x<0 \\ 2x, & 0 \leq x \leq 0.5 \\ -2(x-1), & 0.5 \leq x \leq 1 \end{cases}$
+\end{figure}
+\end{minipage}
+\end{minipage}
+\nl
+Man kann leicht sehen, dass der Wert von $(f \ast f) (0.5) = 1$, da sich dort die beiden Rechteckfunktionen exakt überlagern, somit ist die Fläche gleich 1
 
 
 
