@@ -149,7 +149,7 @@ $\alpha=\frac{T_1}{T+T_1}$
 \section{Faltung/Konvolution}
 Die Faltung beschriebt einen mathematischen Operator ($\ast$) welcher für zwei Funktionen f und g eine dritte Funktion $f \ast g$ liefert.\nl
 $\displaystyle (f\ast g)(x) = \int_{\mathbb{R^n}} f(\tau) g(x-\tau)d\tau$\nl
-Intuitiv kann man sich die Faltung von zwei Funktionen f und g so vorstellen, dass man die Funktion g entlang der x-Achse schiebt (daher $x-\tau$) und dabei diese über die Funktion f hinweg schiebt. Dabei berechnet man dann in Jedem Schritt die Fläche in welcher sich die beiden Funktionen überlappen. Der Flächeninhalt der Überlappung ist dann der Funktionswert der Funktionswert der Funktion $(f \ast g) (x)$
+Intuitiv kann man sich die Faltung von zwei Funktionen f und g so vorstellen, dass man die Funktion g entlang der x-Achse schiebt (daher $x-\tau$) und dabei diese über die Funktion f hinweg schiebt. Dabei berechnet man dann in jedem Schritt die Fläche in welcher sich die beiden Funktionen überlappen. Der Flächeninhalt der Überlappung ist dann der Funktionswert der Funktionswert der Funktion $(f \ast g) (x)$. Die Funktion f wird also mit der Funktion g an jedem Punkt x gewichtet.
 \flushleft
 
 \textbf{Eigenschaften der Faltung}:
@@ -157,12 +157,14 @@ Intuitiv kann man sich die Faltung von zwei Funktionen f und g so vorstellen, da
 \item Kommutativität: $f \ast g = g \ast f$
 \item Assoziativität: $f \ast (g \ast h) = (f \ast g) \ast h$
 \item Distributivität: $f \ast (g+h) = (f \ast g) + (f \ast h)$
+\item Assoziativ mit Skalarmultiplikation: $a(f\ast g) = (af)\ast g = f \ast (ag)$
 \end{itemize}
 \flushleft
 Für den zeitdiskreten Fall gibt es äquivalent zum Faltungsintegral die Faltungssumme:\nl
 $\displaystyle f(kT) \ast g(kT) = \begin{cases} 0 & k<0 \\
 \displaystyle \sum_{j=0}^k f((k-j)T)g(jT) & k \geq 0
-\end{cases}$
+\end{cases}$\nl
+$k \in \mathbb{Z}$ , T: Abtastperiode
 
 \paragraph{Stabilität}
 Ein System ist \textbf{BIBO-stabil}, wenn es für jeden beschränkten Input Wert auch nur maximal einen beschränkten 
@@ -227,6 +229,31 @@ Faltung mit sich selbst: $(r\ast r)(x) = \displaystyle \int_{\mathbb{R}^n} r(\ta
 \nl
 Man kann leicht sehen, dass der Wert von $(f \ast f) (0.5) = 1$, da sich dort die beiden Rechteckfunktionen exakt überlagern, somit ist die Fläche gleich 1
 
+\section{Fourier Transformation}
+Die FT erlaubt es eine gegebene Funktion f in ein Spektrum, bzw. in eine Spektralfunktion zu zerlegen. Man kann die Zerlegung am Beispiel eines gespielten Akkords veranschaulichen. Jeder Ton des Akkords ist eine Schwingung mit seiner eigenen Frequenz. Diese Frequenzen überlagern sich dann alle zusammen zu einer neuen Schwingung und bilden so den Akkord. Man kann nun FT benutzten um aus der Akkordschwingung die Schwingungen der einzelnen Noten zurückzugewinnen. Die Spektralfunktion welche man erhält, hat dann für jeden Ton des Akkords einen Ausschlag mit x=Frequenz. und mit der Höhe je nachdem wie laut, d.h. wie groß die Amplitude des jeweiligen Tons ist y=Amplitude.\nl
+$e^{i\theta}  =  \cos (\theta) + i \sin (\theta)$
 
+\subsection{Beispiele}
+\paragraph{FT eines Rechtecks}
+Sei $f(t) = \begin{cases}1& t\in[0,1[ \\ 0&\text{else} \end{cases}$
+\begin{itemize}
+\item Setze $f(t)$ die Formel für FT ein\nl
+$\displaystyle F(w) = \int_{-\infty}^{\infty} f(t) e^{-iwt} dt = \begin{cases} \displaystyle\int_0^1 1\cdot e^{-iwt} dt & t\in[0,1[ \\ 0 & \text{else} \end{cases}$
+\item Umformung mittels partieller Integration\nl
+Using: $u=1, u'=0, v'=e^{iwt}, v=\frac{-e^{-iwt}}{iw}$\nl
+$\displaystyle \int_0^1 u\cdot v' = \int_0^1 1\cdot e^{-iwt} dt \Rightarrow u\cdot v - \int_0^1 u'\cdot v dt \Rightarrow 1\cdot \frac{-e^{-iwt}}{iw} - \int_0^1 0\cdot \frac{-e^{-iwt}}{iw}$\nl
+$\displaystyle F(w) = \big[\frac{-e^{-iwt}}{iw}\big]^1_0 = \frac{1}{w}(e^{-iwt}-1)$
+\item Berechne Real- und Imaginärteil von $F(w)$\nl
+$\frac{1}{w}(e^{-iwt}-1) = \frac{1}{w}(\cos(w) - i\cdot \sin(w) -1)$\\
+$=\;\frac{\cos(w)}{w} - \frac{1}{w} -\frac{i\sin(w)}{w} = \frac{\cos(w) -1 }{w} - \frac{i\sin(w)}{w}$\nl
+\begin{itemize}
+\item $\Re(F(w)) = \frac{\cos(w)-1}{w}$
+\item $\Im(F(w)) = \frac{\sin(w)}{w}$
+\end{itemize}
+\end{itemize}
+\begin{figure}[H]
+\includegraphics[width=0.9\textwidth]{./resources/ft_res.png}
+\caption{$\Re(F(w))$: \blue{Blau}, $\Im(F(w))$: \green{Grün}}
+\end{figure}
 
 \end{document}
