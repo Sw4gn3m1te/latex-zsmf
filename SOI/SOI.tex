@@ -4,7 +4,6 @@
 \usepackage[T1]{fontenc}
 \usepackage{times}
 \usepackage{url}
-\usepackage{color}
 \usepackage{setspace}
 \usepackage{pbox}
 \usepackage{graphicx}
@@ -16,11 +15,14 @@
 \usepackage{amssymb}
 \usepackage{float}
 \usepackage{stix}
-\usepackage{xcolor}
+\usepackage[dvipsnames]{xcolor}
 \newcommand{\red}[1]{\textcolor{red} {#1}}
 \newcommand{\blue}[1]{\textcolor{blue} {#1}}
-\newcommand{\green}[1]{\textcolor{green} {#1}}
+\newcommand{\green}[1]{\textcolor{ForestGreen} {#1}}
 \newcommand{\yellow}[1]{\textcolor{yellow} {#1}}
+\newcommand{\magenta}[1]{\textcolor{magenta} {#1}}
+\newcommand{\cyan}[1]{\textcolor{cyan} {#1}}
+\newcommand{\orange}[1]{\textcolor{orange} {#1}}
 \newcommand{\nl}{\\[0.1cm]}
 \newcommand{\floor}[1]{\lfloor #1 \rfloor}
 \title{Zusammenfassung Software-orientierte Informatik}
@@ -229,11 +231,71 @@ Faltung mit sich selbst: $(r\ast r)(x) = \displaystyle \int_{\mathbb{R}^n} r(\ta
 \nl
 Man kann leicht sehen, dass der Wert von $(f \ast f) (0.5) = 1$, da sich dort die beiden Rechteckfunktionen exakt überlagern, somit ist die Fläche gleich 1
 
-\section{Fourier Transformation}
+
+\section{Fourier}
+\subsection{Fourier Reihe}
+Die Fourier Reihe ist eine Funktion welche aus einer unendlichen Summe von gewichteten Sinus- und Kosinusschwingungen besteht. $\displaystyle f(t) = \frac{a_0}{2} + \sum_{n=1}^\infty (a_n \cdot \cos (n\omega t) + b_n\cdot \sin(n\omega t))$\nl
+Man kann so eine periodische Funktion f mit Periode $T>0$, als eine Reihe von Sinus- und Kosinusfunktionen darstellen. Die Frequenzen der einzelnen Funktionen müssen dabei ganzzahlige Vielfache der Grundfrequenz $\omega = \frac{2\pi}{T}$ sein, da sonnst die Grundperiodizität verletzt wird.
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{./resources/grundperiode.png}
+\caption{$\cyan{\cos(2x)}$, $\orange{\sin(x)}$, $\magenta{\sin(2.5x)}$}
+\end{figure}
+Die \green{grüne} Funktion kann unmöglich aus der \magenta{pinken} Funktion bestehen, da diese die Grundperiodizität derer verletzt.\\
+$\frac{4\pi}{3} = T_{\magenta{pink}} \nmid 2\pi = T_{\green{gr"un}}$\nl
+Jedoch \textbf{kann} die \green{grüne} Funktion aus der \orange{orangenen} oder der \cyan{blauen} Funktion bestehen.\\$\pi = T_{\cyan{blau}} \mid 2\pi = T_{\orange{orange}} \mid 2\pi = T_{\green{gr"un}}$\nl
+
+Die Koeffizienten der Entwicklung von f können dann wie folgt berechnet werden:\nl
+\begin{itemize}
+\item $\displaystyle a_n = \frac{2}{T} \int_c^{c+T} f(t)\cdot \cos(n\omega t)dt$
+\item $\displaystyle b_n = \frac{2}{T} \int_c^{c+T} f(t)\cdot \sin(n\omega t)dt$
+\item c ist die Verschiebung des Intervalls und kann beliebig gewählt werden (auch $c=0$)
+\end{itemize}
+Note: Ist die Funktion nicht über eine ganze Periode integrierbar, z.B. wegen einer Sprungstelle, dann müssen mehrere Integrale benutzt werden, jeweils für die Teile in denen die Funktion integriert Werden kann\\
+\textbf{Herleitung}:\nl
+Um die Gleich für Koeffizienten zu erhalten benutzen wir die Orthogonalitätsrelationen der trigonometrischen Funktionen, welche wie folgt lauten:
+\begin{enumerate}
+\item $\displaystyle \int_0^{2\pi} \cos mx \cdot \cos nx \,dx = \begin{cases}\pi ,& m=n\\0 ,& m\neq n\end{cases}$
+\item $\displaystyle \int_0^{2\pi} \sin mx \cdot \sin nx \,dx = \begin{cases}\pi ,& m=n\\0 ,& m\neq n\end{cases}$
+\item $\displaystyle \int_0^{2\pi} \cos mx \cdot \sin nx \,dx = \int_0^{2\pi} \sin mx \cdot \cos nx \,dx = 0$
+\end{enumerate}
+Nun machen wir folgende Umformung:\nl
+$\displaystyle \green{\int_0^{2\pi}} f(t)\, \green{\sin mt \, dt}$
+$\displaystyle = \green{\int_0^{2\pi}} \bigg( \frac{a_0}{2} + \sum_{n=1}^\infty (a_n \cdot \cos n\omega t + b_n\cdot \sin n\omega t)\bigg)\, \green{\sin mt\, dt}$
+\begin{itemize}
+\item $\displaystyle \int_0^{2\pi} \frac{a_0}{2} \cdot \sin mt \, dt = 0$, \quad Sinus über eine Periode mal Konstante = 0
+\item $\displaystyle \int_0^{2\pi} a_n \cdot \cos nt \cdot  \sin mt \, dt = 0$, \quad$\rightarrow$ Folgt aus Gleichung (3)
+\item $\displaystyle \int_0^{2\pi} b_n \cdot \sin nt \cdot  \sin mt \, dt = b_m \pi$, \quad$\rightarrow$ Folgt aus Gleichung (2)\\
+\end{itemize}
+daraus folgt:
+$\displaystyle b_n = \frac{1}{\pi} \int_0^{2\pi} f(t) \sin nt \, dt$\nl
+$\displaystyle \green{\int_0^{2\pi}} f(t)\, \green{\cos mt \, dt}$
+$\displaystyle = \green{\int_0^{2\pi}} \bigg( \frac{a_0}{2} + \sum_{n=1}^\infty (a_n \cdot \cos n\omega t + b_n\cdot \sin n\omega t)\bigg)\, \green{\cos mt\, dt}$
+\begin{itemize}
+\item $\displaystyle \int_0^{2\pi} \frac{a_0}{2} \cdot \cos mt \, dt = 0$, \quad Cosinus über eine Periode mal Konstante = 0
+\item $\displaystyle \int_0^{2\pi} b_n \cdot \sin nt \cdot  \cos mt \, dt = 0$, \quad$\rightarrow$ Folgt aus Gleichung (3)
+\item $\displaystyle \int_0^{2\pi} a_n \cdot \cos nt \cdot  \cos mt \, dt = 0$, \quad$\rightarrow$ Folgt aus Gleichung (1)
+\end{itemize}
+daraus folgt:
+$\displaystyle a_n = \frac{1}{\pi} \int_0^{2\pi} f(t) \cos mt \, dt$\nl
+$\displaystyle \green{\int_0^{2\pi}} f(t)\, \green{1 \, dt}$
+$\displaystyle = \green{\int_0^{2\pi}} \bigg( \frac{a_0}{2} + \sum_{n=1}^\infty (a_n \cdot \cos n\omega t + b_n\cdot \sin n\omega t)\bigg)\, \green{1\, dt}$
+\begin{itemize}
+\item $\displaystyle \int_0^{2\pi} 1 \cdot \cos nt = 0$ \quad Cosinus über eine Periode = 0
+\item $\displaystyle \int_0^{2\pi} 1 \cdot \sin nt = 0$ \quad Sinus über eine Periode = 0
+\item $\displaystyle \int_0^{2\pi} 1 \cdot \frac{a_0}{2} = \frac{a_0}{2} \cdot 2\pi = a_0 \pi$ 
+\end{itemize}
+daraus folgt:
+$\displaystyle a_0 = \frac{1}{\pi} \int_0^{2\pi} f(t) 1\, dt$
+
+
+\subsection{Beispiel Rechteckfunktion}
+
+
+\subsection{Fourier Transformation}
 Die FT erlaubt es eine gegebene Funktion f in ein Spektrum, bzw. in eine Spektralfunktion zu zerlegen. Man kann die Zerlegung am Beispiel eines gespielten Akkords veranschaulichen. Jeder Ton des Akkords ist eine Schwingung mit seiner eigenen Frequenz. Diese Frequenzen überlagern sich dann alle zusammen zu einer neuen Schwingung und bilden so den Akkord. Man kann nun FT benutzten um aus der Akkordschwingung die Schwingungen der einzelnen Noten zurückzugewinnen. Die Spektralfunktion welche man erhält, hat dann für jeden Ton des Akkords einen Ausschlag mit x=Frequenz. und mit der Höhe je nachdem wie laut, d.h. wie groß die Amplitude des jeweiligen Tons ist y=Amplitude.\nl
 $e^{i\theta}  =  \cos (\theta) + i \sin (\theta)$
 
-\subsection{Beispiele}
+\subsubsection{Beispiele}
 \paragraph{FT eines Rechtecks}
 Sei $f(t) = \begin{cases}1& t\in[0,1[ \\ 0&\text{else} \end{cases}$
 \begin{itemize}
