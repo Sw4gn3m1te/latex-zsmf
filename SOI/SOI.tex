@@ -80,32 +80,65 @@ $\displaystyle k_{ges} = \prod_{i=1}^n k_i = \frac{\text{output}}{\text{input}}$
 $G_i = k_i$: statische Übertragungsfaktor & $G_i(f)$: Übertragungsfunktion des Teilsystems i \\
 \hline
 \end{tabular}
-\newpage
+
 \paragraph{Parallelschaltung}
-\hspace{1pt}
+\hspace{1pt}\\
+
+\begin{minipage}{\linewidth}
+\centering
+\begin{minipage}{0.45\linewidth}
 \begin{figure}[H]
-\includegraphics[scale=0.5]{./resources/parallelschaltung.png}
+\includegraphics[width=
+\linewidth]{./resources/parallelschaltung.png}
 \end{figure}
-\begin{tabular}{|c|c|}
+\end{minipage}
+\hspace{0.05\linewidth}
+\begin{minipage}{0.45\linewidth}
+\begin{figure}[H]
+\begin{tabular}{|c|}
 \hline
-\textbf{statisches System} & \textbf{dynamisches System} \\
-$\displaystyle k_{ges} = \sum_{i=1}^n k_i$ & $\displaystyle G_{ges}(f) = \sum_{i=1}^n G_i(f)$\\
+\textbf{statisches System}\\
+$\displaystyle k_{ges} = \sum_{i=1}^n k_i$\\
 \hline
-$G_i = k_i$: statische Übertragungsfaktor & $G_i(f)$: Übertragungsfunktion des Teilsystems i \\
+$G_i = k_i$: statische Übertragungsfaktor\\
+\hline
+\textbf{dynamisches System}\\
+$\displaystyle G_{ges}(f) = \sum_{i=1}^n G_i(f)$\\
+\hline
+$G_i(f)$: Übertragungsfunktion des Teilsystems i\\
 \hline
 \end{tabular}
+\end{figure}
+\end{minipage}
+\end{minipage}
 
 \paragraph{Rückkopplungsschaltung}
 \hspace{1pt}
+
+\begin{minipage}{\linewidth}
+\centering
+\begin{minipage}{0.45\linewidth}
 \begin{figure}[H]
-\includegraphics[scale=0.5]{./resources/rückkopplungsschaltung.png}
+\includegraphics[width=\linewidth]{./resources/rückkopplungsschaltung.png}
 \end{figure}
-\begin{tabular}{|c|c|}
+\end{minipage}
+\hspace{0.05\linewidth}
+\begin{minipage}{0.45\linewidth}
+\begin{figure}[H]
+\begin{tabular}{|c|}
 \hline
-\textbf{statisches System} & \textbf{dynamisches System} \\
-$\displaystyle k_{ges} = \frac{y}{x} = \frac{k_1}{1 \pm k_1 k_2}$ & $\displaystyle G_{ges}(f) = \frac{G_1(f)}{1 \pm G_1(f)G_2(f)}$\\
+\textbf{statisches System}\\
+$\displaystyle k_{ges} = \frac{y}{x} = \frac{k_1}{1 \pm k_1 k_2}$\\
+\hline
+\textbf{dynamisches System}\\
+$\displaystyle G_{ges}(f) = \frac{G_1(f)}{1 \pm G_1(f)G_2(f)}$\\
 \hline
 \end{tabular}
+\end{figure}
+\end{minipage}
+\end{minipage}
+
+
 
 \subsection{Grundsysteme}
 \begin{tabular}{|c|c|c|}
@@ -307,6 +340,28 @@ $\displaystyle a_0 = \frac{1}{\pi} \int_0^{2\pi} f(t) 1\, dt$
 
 \subsection{Fourier Transformation}
 Die Fourier Transformation ist eine Erweiterung der Fourier Reihen, welche man erhält wenn man erlaubt, dass die Periode der zu approximierenden Funktion gegen unendlich geht (d.h. es muss in der Praxis keine Wiederholungen innerhalb der Funktion geben). Wie auch bei den Fourier Reihen, erhält man bei der Fourier Transformation wieder ein Spektrum welches nun jedoch \textbf{kontinuierlich} ist.
+Damit eine Funktion fourier-transformierbar ist, muss sie absolut integrierbar sein, d.h. dass die von der Funktion eingeschlossene Fläche muss auch im unendlichen endlich sein\nl
+Man kann nun das Spektrum erhalten indem man die Funktion $f(t)$ Fourier Transformiert:\nl
+$\displaystyle \mathcal{F}\{f(t)\} = F(\omega) = \int_{-\infty}^\infty f(t)e^{-i\omega t}\,dt$\nl
+Nach der Eulerschen Formel gilt: $e^{-iwt} = \cos(\omega t) - i\sin(\omega t)$,\\ damit kann man die Formel wie folgt umformen:\nl
+$\displaystyle F(\omega) = \int_{-\infty}^\infty f(t) \cos(\omega t)\,dt -i\int_{-\infty}^\infty f(t) \sin(\omega t)\,dt$\nl
+Man kann sich die beiden Anteile nun auch als Dreieck in der Komplexen Zahlenebene vorstellen, wobei die Länge der Hypotenuse dem Funktionswert der Fourier Transformation entspricht:\nl
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.2]{./resources/ft_dreieck.png}
+\end{figure}
+\begin{enumerate}
+\item multipliziere $f(t)$ jeweils einmal mit $\cos(\omega t)$ und $\sin(\omega t)$
+\item setze $\omega = 0$
+\item berechne die Gesamtfläche unter beiden Funktionen
+\item berechne mit Satz des Pythagoras die Länge, diese ist gleich $F(\omega)$
+\item erhöhe $\omega$ infinitesimal
+\item GOTO (3)
+\end{enumerate}
+
+
+Hat man dagegen ein Spektrum gegeben, so kann man dies mittel der inversen Fourier Transformation wieder in die ursprüngliche Funktion umwandeln:\nl
+$\displaystyle \mathcal{F}^{-1}\{F(\omega)\} = f(t) = \int_{-\infty}^\infty F(\omega) e^{i\omega t}\,dt$\nl
 
 \subsubsection{Beispiel FT eines Rechteckimpulses}
 Sei $f(t) = \begin{cases}1& t\in[0,1[ \\ 0&\text{else} \end{cases}$
@@ -331,4 +386,70 @@ $=\;\frac{\cos(w)}{w} - \frac{1}{w} -\frac{i\sin(w)}{w} = \frac{\cos(w) -1 }{w} 
 \caption{$\Re(F(w))$: \blue{Blau}, $\Im(F(w))$: \green{Grün}}
 \end{figure}
 
+\section{Abtastung}
+Abtasten eines Signals $x(t)$ durch regelmäßiges multiplizieren ($T_A$: Abtastfrequenz) mit der Dirac-Delta-Funktion $\delta(x)$, es gilt:
+\begin{itemize}
+\item $\displaystyle a(t) = \sum_{k=-\infty}^\infty \delta(t-T_A\cdot k)$
+\item $\displaystyle x(t) = \sum_{k=-\infty}^\infty x(k\cdot T_A)\cdot \delta(t-T_A\cdot k)$
+\end{itemize}
+
+\begin{figure}[H]
+\begin{subfigure}{0.42\textwidth}
+\includegraphics[width=\textwidth]{./resources/abtast_1.png}
+\end{subfigure}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[width=\textwidth]{./resources/abtast_2.png}
+\end{subfigure}
+\end{figure}
+
+\subsection{Aliasing}
+Beim Abtasten eines Signals mit einer Frequenz $f_g$, und einer Abtastperiode $T_A = \frac{1}{f_g}$, werden weitere Signale mit Aliasfrequenzen $f_{al} = n \ast f_a$ erzeugt\\
+Man kann die Aliasfrequenzen bspw. mit einem Tiefpassfilter herausfiltern\\
+
+\paragraph{Nyquist-Shannon-Abtasttheorem $\mathbf{(f_a>2f_g)}$}
+Ein Signal mit einer maximalen Frequenz $f_g$ kann nur dann aus äquidistanten Abtastwerten exakt rekonstruiert werden, wenn das Signal mit einer Abtastfrequenz $f_a$ echt größter als $2\cdot f_g$ abgetastet wurde.
+
+
+\section{Filter}
+Filter können das Spektrum eines Signals beeinflussen durch:
+\begin{itemize}
+\item Herausfiltern
+\item Dämpfen
+\end{itemize}
+Arten von Filtern:\nl
+\begin{tabular}{|c|c|}
+\hline
+Type & Diagramm\\
+\hline
+\textbf{Hochpass} & \includegraphics[scale=0.3]{./resources/hochpass.png}\\
+\hline
+\textbf{Tiefpass} & \includegraphics[scale=0.3]{./resources/tiefpass.png}\\
+\hline
+\textbf{Bandpass} & \includegraphics[scale=0.3]{./resources/bandpass.png}\\
+\hline
+\textbf{Bandsperre} & \includegraphics[scale=0.3]{./resources/bandsperre.png}\\
+\hline
+\end{tabular}
+
+
+\paragraph{Finite Impulse Response (FIR)}
+\hspace{1pt}
+\begin{itemize}
+\item zeitlich begrenzte Impulsantwort auf Input
+\item beinhalten keinen Informationsspeicher
+\item können nur eine begrenzte Anzahl von Daten am Eingang zu Berechnung der Antwort benutzten
+\item sind stabil und können nicht selbst zu Schwingungen anregen
+\item keine Rekursion, bzw. Rückkopplung
+\end{itemize}
+
+\paragraph{Infinite Impulse Response (IIR)}
+\hspace{1pt}
+\begin{itemize}
+\item linear und verschiebungsinvariant
+\item kann eine unendlich lange Impulsantwort auf Input erzeugen
+\item rekursiv
+\end{itemize}
+
+\section{Laplace Transformation}
+Die Laplace Transformation versucht das Problem zu lösen, dass nur absolut integrierbare Funktionen fourier-transformiert werden können.
 \end{document}
