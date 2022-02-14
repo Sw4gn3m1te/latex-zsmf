@@ -343,7 +343,12 @@ Die Fourier Transformation ist eine Erweiterung der Fourier Reihen, welche man e
 Damit eine Funktion fourier-transformierbar ist, muss sie absolut integrierbar sein, d.h. dass die von der Funktion eingeschlossene Fläche muss auch im unendlichen endlich sein\nl
 Man kann nun das Spektrum erhalten indem man die Funktion $f(t)$ Fourier Transformiert:\nl
 $\displaystyle \mathcal{F}\{f(t)\} = F(\omega) = \int_{-\infty}^\infty f(t)e^{-i\omega t}\,dt$\nl
-Nach der Eulerschen Formel gilt: $e^{-iwt} = \cos(\omega t) - i\sin(\omega t)$,\\ damit kann man die Formel wie folgt umformen:\nl
+Hat man dagegen ein Spektrum gegeben, so kann man dies mittel der inversen Fourier Transformation wieder in die ursprüngliche Funktion umwandeln:\nl
+$\displaystyle \mathcal{F}^{-1}\{F(\omega)\} = f(t) = \int_{-\infty}^\infty F(\omega) e^{i\omega t}\,dt$\nl
+
+\paragraph{Intuition}
+\hspace{1pt}\\
+Nach der Eulerschen Formel gilt: $e^{-iwt} = \cos(\omega t) - i\sin(\omega t)$,\\ damit kann man die Formel der Fourier Transformation wie folgt umformen:\nl
 $\displaystyle F(\omega) = \int_{-\infty}^\infty f(t) \cos(\omega t)\,dt -i\int_{-\infty}^\infty f(t) \sin(\omega t)\,dt$\nl
 Man kann sich die beiden Anteile nun auch als Dreieck in der Komplexen Zahlenebene vorstellen, wobei die Länge der Hypotenuse dem Funktionswert der Fourier Transformation entspricht:\nl
 \begin{figure}[H]
@@ -358,10 +363,7 @@ Man kann sich die beiden Anteile nun auch als Dreieck in der Komplexen Zahlenebe
 \item erhöhe $\omega$ infinitesimal
 \item GOTO (3)
 \end{enumerate}
-
-
-Hat man dagegen ein Spektrum gegeben, so kann man dies mittel der inversen Fourier Transformation wieder in die ursprüngliche Funktion umwandeln:\nl
-$\displaystyle \mathcal{F}^{-1}\{F(\omega)\} = f(t) = \int_{-\infty}^\infty F(\omega) e^{i\omega t}\,dt$\nl
+Note: Der Algorithmus erzeugt nur die eine Hälfte der Fourier Transformation, durch infinitesimales reduzieren von $\omega$ erhält man die andere Seite\nl
 
 \subsubsection{Beispiel FT eines Rechteckimpulses}
 Sei $f(t) = \begin{cases}1& t\in[0,1[ \\ 0&\text{else} \end{cases}$
@@ -451,5 +453,66 @@ Type & Diagramm\\
 \end{itemize}
 
 \section{Laplace Transformation}
-Die Laplace Transformation versucht das Problem zu lösen, dass nur absolut integrierbare Funktionen fourier-transformiert werden können.
+Die Laplace Transformation versucht das Problem zu lösen, dass nur absolut integrierbare Funktionen fourier-transformiert werden können.\\
+Die Laplace Transformation konvertiert eine Funktion aus einer (Zeit)Domäne in eine andere komplexe Frequenzdomäne. So können Differenzialgleichungen mittels einfacherer algebraischer Ausdrücke beschrieben werden.\\
+Die Laplace Transformation einer Funktion $x(t)$ nach $X(s)$ lautet:\nl
+$\displaystyle X(s) = \mathcal{L}\{x(t)\} = \int_0^\infty \big( x(t) \cdot e^{-\delta t} \cdot e^{-i\omega t} \big) \, dt$\nl
+using $s := \delta + i\omega$\nl
+$\displaystyle X(s) = \mathcal{L}\{x(t)\} = \int_0^\infty \big( x(t) \cdot e^{-st} \big) \, dt$\nl
+\textbf{Eigenschaften}:
+\begin{itemize}
+\item Linearität (Skalar):\\ $\mathcal{L}\{k\cdot x(t)\} = k\cdot \mathcal{L}\{x(t)\} = k\cdot X(s)$
+\item Linearität (Überlagerung):\\ $\mathcal{L}\{x_1(t) \pm x_2(t)\} = \mathcal{L}\{x_1(t)\} \pm \mathcal{L}\{x_2(t)\} = X_1(s) \pm X_2(s)$
+\item Verschiebungsatz:\\ $\mathcal{L}\{x(t-T_t)\} = e^{-T_t\cdot s} \cdot \mathcal{L}\{x(t)\} = e^{-T_t\cdot s}\cdot X(s)$,\quad $T_t > 0$
+\item Ähnlichkeitssatz:\\ $\mathcal{L}\{x(a\cdot t)\} = \frac{1}{a} \cdot X\big(\frac{s}{a}\big) \; \rightarrow \; \mathcal{L}\{x\big( \frac{1}{a}\cdot t\big)\} = a\cdot X(a\cdot s)$
+\item Integrationssatz:\\ $\displaystyle \mathcal{L}\bigg\{\int_0^t x(\tau)\,d\tau \bigg\} = \frac{1}{s}\cdot \mathcal{L}\{x(t)\} = \frac{1}{s} \cdot X(s)$
+\item Differenzialsatz:\\ $\displaystyle\mathcal{L}\bigg\{\frac{d^nx(t)}{dt^n}\bigg\} = s^n\cdot X(s) - \sum_{i=1}^n \bigg(s^{n-i}\cdot \frac{d^{(i-1)}x(t)}{dt^{(i-1)}}\bigg\vert_{t=0}\bigg)$
+\begin{itemize}
+\item Für $n=1$: $\mathcal{L}\big\{\frac{dx(t)}{dt}\big\} = s\cdot X(s)-x(0)$
+\end{itemize}
+\item Faltungssatz:\\ $\displaystyle\mathcal{L}\{x_1(t)\ast x_2(t)\} = \mathcal{L}\bigg\{\int_0^t x_1(t-\tau)\cdot x_2(\tau) \, d\tau\bigg\} = X_1(s) \cdot X_2(s)$
+\end{itemize}
+\textbf{Transformation der Grundsysteme}:
+\begin{tabular}{|c|c|c|c|}
+\hline
+Type & Zeitdomain & Frequenzdomain & Übertragungsfunktion \\
+\hline
+P-System & $y(t) = k_P \cdot x(t)$ & $Y(s) = k_P \cdot X(s)$ & $G(s) = k_P$\\
+\hline
+I-System & $\displaystyle y(t) = k_I \cdot \int_{-\infty}^t x(\tau)\, d\tau$  & $Y(s) = \frac{k_I}{s} \cdot X(s)$ & $G(s) \frac{k_I}{s}$\\
+\hline
+D-System & $y(t) = k_D \cdot \frac{dx(t)}{dt}$ & $Y(s) = k_D\cdot s\cdot X(s)$ & $G(s) = k_D \cdot s$\\
+\hline
+$T_1$-System & $y(t) + \frac{dy(t)}{dt}\cdot T_1 = x(t)$ & $ Y(s) + T_1 \cdot s\cdot Y(s) = X(s)$ & $G(s) = \frac{1}{T_1\cdot s +1}$ \\
+\hline
+$T-t$-System & $y(t) = x(t-T_t)$ & $Y(s) = e^{-sT_t} \cdot X(s)$ & $ G(s) = e^{-sT_t}$\\
+\hline
+\end{tabular}
+Note: Die Übertragungsfunktion beschreibt die Beziehung zwischen dem Ein- und Ausgangssignal des Systems
+
+
+
+\subsection{Z-Transformation}
+Die Z-Transformation ist das \textbf{zeitdiskrete Analog zur Laplace Transformation}\nl
+$\displaystyle X(s) = \mathcal{L}\bigg\{\sum_{k=0}^\infty x(kT)\delta(t-kT)\bigg\}$\\
+$\displaystyle= \sum_{k=0}^\infty x(kT) \cdot \mathcal{L}\{\delta(t-kT)\}$\\
+$\displaystyle= \sum_{k=0}^\infty x(kT)e^{-kTs}$\\
+$\displaystyle=\sum_{k=0}^\infty x[k](e^{Ts})^{-k}$\nl
+using: $z=e^{Ts} \rightarrow e^{-kTs} = z^{-k}$\nl
+$\displaystyle \mathcal{Z}\{x[k]\} = X(z) = \sum_{k=0}^\infty x[k]z^{-k}$\nl
+\textbf{Eigenschaften}:
+\begin{itemize}
+\item Linearität (Skalar):\\ $\mathcal{Z}\{ax_k\} = a\mathcal{Z}\{x_k\} = aX(z)$
+\item Linearität (Überlagerung):\\ $\mathcal{Z}\{x_{1,k}\pm x_{2,k}\} = \mathcal{Z}\{x_{1,k}\} \pm \mathcal{Z}\{x_{2,k}\} = X_1(z) \pm X_2(z)$
+\item Ähnlichkeitssatz:\\ $\mathcal{Z}\{a^kx_k\}=X\big(\frac{z}{a}\big)$
+\item Rechtsverschiebung:\\ $\displaystyle \mathcal{Z}\{x_{k-n}\} = \mathcal{Z}\{x(kT-nT)\} = z^{-n}\mathcal{Z}\{x(kT)\}=z^{-n}X(z)$
+\item Linksverschiebung:\\ $\displaystyle \mathcal{Z}\{x_{k+n}\} = \mathcal{Z}\{x(kT+nT)\}= z^nX(z)-z^n \sum_{k=0}^{n-1} x[k]z^{-k}$
+\item Rückwärtsdifferenz:\\ $\mathcal{Z}\{x_k-x_{k-1}\} = \frac{z-1}{z}X(z)$
+\item Vorwärtsdifferenz:\\ $\mathcal{Z}\{x_{k+1}-x_k\} = (z-1)X(z)-zx(0)$
+\item Faltunssatz:\\ $\mathcal{Z}\{x_{1,k}\ast x_{2,k}\} = X_1(z)\cdot X_2(z)$
+\end{itemize}
+
+Die Z-Transformation kann auch umgekehrt werden, d.h. man überführt eine Funktion aus der Frequenzdomain in die Zeitdomain, das geht wie folgt:\nl
+$\displaystyle x_k = \mathcal{Z}^{-1}\{X(z)\} = \frac{1}{2\pi i} \oint X(z)z^{k-1}\, dz$
+
 \end{document}
