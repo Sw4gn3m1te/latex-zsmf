@@ -30,12 +30,14 @@
 \begin{document}
 \maketitle
 \tableofcontents
+\newpage
 
 \section{Systeme}
 Ein System ist ein natürliches oder künstliches Gebilde, welches aus Eingangssignalen ($E$) ein Ausgangssignal ($A$) macht. Das System besitzt zudem einen inneren Zustand, der durch Zustandsgrößen ($\vec{Z}$) beschrieben wird. Eine Systemfunktion ($F$) legt fest wie das Eingangssignal in das Ausgangssignal umgewandelt wird ($\vec{A} = F(\vec{E}, \vec{Z},...)$)
 
 \paragraph{Statische Systeme}
-Der Output zum Zeitpunkt t ($y(t)$) ist nur von dem zu gleichen Zeitpunkt am Input anliegenden Wert ($x(t)$) abhängig. Innere Zustände ($\vec{Z}$) sind egal. die dazugehörige Funktion $y=f(x)$ nennt man statische Kennlinie.
+Der Output zum Zeitpunkt t ($y(t)$) ist nur von dem zu gleichen Zeitpunkt am Input anliegenden Wert ($x(t)$) abhängig. Innere Zustände ($\vec{Z}$) sind egal. Die dazugehörige Funktion $y=f(x)$ nennt man statische Kennlinie.
+D.h. ändert sich $y(t)$ aber $x(t)$ nicht, so ist das System statisch.
 
 \paragraph{Dynamische Systeme}
 Der Output ($y(t)$) ist von dem am Input anliegenden Signal ($x(t)$) und dem inneren Zustand des Systems ($\vec{Z}$) abhängig. Dabei kann man sich den inneren Zustand als eine Art Gedächtnis vorstellen
@@ -181,10 +183,16 @@ $\alpha=\frac{T_1}{T+T_1}$
 \hline
 \end{tabular}
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{./resources/systembeziehung.png}
+\caption{Beziehungen zwischen den Grundsystemen}
+\end{figure}
+
 \section{Faltung/Konvolution}
 Die Faltung beschriebt einen mathematischen Operator ($\ast$) welcher für zwei Funktionen f und g eine dritte Funktion $f \ast g$ liefert.\nl
 $\displaystyle (f\ast g)(x) = \int_{\mathbb{R^n}} f(\tau) g(x-\tau)d\tau$\nl
-Intuitiv kann man sich die Faltung von zwei Funktionen f und g so vorstellen, dass man die Funktion g entlang der x-Achse schiebt (daher $x-\tau$) und dabei diese über die Funktion f hinweg schiebt. Dabei berechnet man dann in jedem Schritt die Fläche in welcher sich die beiden Funktionen überlappen. Der Flächeninhalt der Überlappung ist dann der Funktionswert der Funktionswert der Funktion $(f \ast g) (x)$. Die Funktion f wird also mit der Funktion g an jedem Punkt x gewichtet.
+Intuitiv kann man sich die Faltung von zwei Funktionen f und g so vorstellen, dass man die Funktion g entlang der x-Achse schiebt (daher $x-\tau$) und dabei diese über die Funktion f hinweg schiebt. Dabei berechnet man dann in jedem Schritt die Fläche in welcher sich die beiden Funktionen überlappen. Der Flächeninhalt der Überlappung ist dann der Funktionswert der Funktionswert der Funktion $(f \ast g) (x)$. Die Funktion f wird also mit der Funktion g an jedem Punkt x gewichtet. Der Einheitsimpuls $\delta(t)$ mit der Fläche $A=1$ verhält sich bei der Faltung wie ein neutrales Element.
 \flushleft
 
 \textbf{Eigenschaften der Faltung}:
@@ -339,7 +347,7 @@ daraus folgt:
 $\displaystyle a_0 = \frac{1}{\pi} \int_0^{2\pi} f(t) 1\, dt$
 
 \subsection{Fourier Transformation}
-Die Fourier Transformation ist eine Erweiterung der Fourier Reihen, welche man erhält wenn man erlaubt, dass die Periode der zu approximierenden Funktion gegen unendlich geht (d.h. es muss in der Praxis keine Wiederholungen innerhalb der Funktion geben). Wie auch bei den Fourier Reihen, erhält man bei der Fourier Transformation wieder ein Spektrum welches nun jedoch \textbf{kontinuierlich} ist.
+Die Fourier Transformation ist eine Erweiterung der Fourier Reihen, welche man erhält wenn man erlaubt, dass die Periode der zu approximierenden Funktion gegen unendlich geht (d.h. es muss in der Praxis keine Wiederholungen innerhalb der Funktion geben). Die Fourier Transformation ist also eine Art Scanner welcher eine Funktion nach Frequenzanteilen abscannt. Wie auch bei den Fourier Reihen, erhält man bei der Fourier Transformation wieder ein Spektrum welches nun jedoch \textbf{kontinuierlich} ist.
 Damit eine Funktion fourier-transformierbar ist, muss sie absolut integrierbar sein, d.h. dass die von der Funktion eingeschlossene Fläche muss auch im unendlichen endlich sein\nl
 Man kann nun das Spektrum erhalten indem man die Funktion $f(t)$ Fourier Transformiert:\nl
 $\displaystyle \mathcal{F}\{f(t)\} = F(\omega) = \int_{-\infty}^\infty f(t)e^{-i\omega t}\,dt$\nl
@@ -454,7 +462,7 @@ Type & Diagramm\\
 
 \section{Laplace Transformation}
 Die Laplace Transformation versucht das Problem zu lösen, dass nur absolut integrierbare Funktionen fourier-transformiert werden können.\\
-Die Laplace Transformation konvertiert eine Funktion aus einer (Zeit)Domäne in eine andere komplexe Frequenzdomäne. So können Differenzialgleichungen mittels einfacherer algebraischer Ausdrücke beschrieben werden.\\
+Die Laplace Transformation konvertiert eine Funktion aus einer (Zeit)Domäne in eine andere komplexe Frequenzdomäne. So können Differenzialgleichungen mittels einfacherer algebraischer Ausdrücke beschrieben werden. Ähnlich wie die Fourier Transformation kann man sich auch die Laplace Transformation als eine Art Scanner vorstellen, nur dass dieser nun zusätzlich nach Exponentialanteilen scannen kann.\\
 Die Laplace Transformation einer Funktion $x(t)$ nach $X(s)$ lautet:\nl
 $\displaystyle X(s) = \mathcal{L}\{x(t)\} = \int_0^\infty \big( x(t) \cdot e^{-\delta t} \cdot e^{-i\omega t} \big) \, dt$\nl
 using $s := \delta + i\omega$\nl
@@ -490,6 +498,12 @@ $T-t$-System & $y(t) = x(t-T_t)$ & $Y(s) = e^{-sT_t} \cdot X(s)$ & $ G(s) = e^{-
 \end{tabular}
 Note: Die Übertragungsfunktion beschreibt die Beziehung zwischen dem Ein- und Ausgangssignal des Systems
 
+\begin{figure}[H]
+\includegraphics[scale=0.4]{./resources/laplace-color-plot.png}
+\caption{Contour-Plot der Laplace Transformation von $e^{-t}\sin(t)$\\
+je dunkler/röter desto größer der Funktionswert, Polstellen bei $(-1, \pm i)$}
+\end{figure}
+Die Fourier Transformation der Funktion befindet sich ebenfalls in diesem Plot wieder, nämlich genau entlang der y-Achse. Betrachtet man des Weiteren die Polstellen (schwarz) der Laplace Transformation, so kann man an diesen ablesen, aus was für Anteilen die Funktion besteht. Je Weiter die Polstelle links ist, desto größer der negative Exponentialanteil der Funktion (exponentielle Dämpfung), je weiter rechts, desto der positive Exponentialanteil (exponentielles Wachstum der Funktion). Punkte genau auf der y-Achse haben keinen Exponentialanteil $\rightarrow$ wie bei der Fourier Transformation. Die Werte entlang der y-Achse entsprechen den Frequenzanteilen der Funktion.
 
 
 \subsection{Z-Transformation}
