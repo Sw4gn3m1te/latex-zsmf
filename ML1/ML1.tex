@@ -184,7 +184,7 @@ z.z.: $\exists\, \Sigma' \subseteq \Sigma$ von $S'$ mit $|\Sigma'|\leq m$ $\Left
 $\forall s \in S: \, f_\theta(x_s)=y_s$\\
 d.h., es ex. ein Lösung von set-cover mit bound m gdw. es Parameter $\theta$ mit Komplexität $\leq$ m gibt und alle Samples korrekt inferred werden
 
-\item ($\Rightarrow$)
+\item ($\Rightarrow$) wenn Set-Cover eine Lösung hat, dann gibt es eine DNF dazu
 \begin{itemize}
 \item Sei $\Sigma' \subseteq \Sigma$ ein Cover von S mit $\Sigma'|\leq m$
 \item Sei $V_0 = \emptyset, \; V_1=\Sigma'$, d.h wir definieren das Cover als Menge der nicht-negierten Variablen einer DNF
@@ -194,13 +194,42 @@ d.h., es ex. ein Lösung von set-cover mit bound m gdw. es Parameter $\theta$ mi
 \item daraus folgt, dass alle Daten richtig gelabelt wurden\\ $\forall s\in S': f(x_s)=y_s$
 \item Da wir $V_1 = \Sigma'$ und $V_0 = \emptyset$ gesetzt haben, ist der Regularizer auch gleich $R(\theta)= |\Sigma'| \leq m$
 \end{itemize}
-\item ($\Leftarrow$)
+\item ($\Leftarrow$) wenn DNF gegeben wie lautet das Set-Cover
 \begin{itemize}
 \item Sei $\theta \in \Theta$ s.d. alle Daten richtig inferred werden und $R(\theta) \leq m$
 \item TODO: verstehe Beh. am Anfang
 \item TODO: what is going on here ?
 \end{itemize}
 \end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{./resources/set-cover.png}
+\end{figure}
+\red{Erklärung v2}\\
+Wir wollen zeigen die Np-hardness von mDNF indem wir zeigen, dass es ein Cover von S mit Bound m gibt, gdw. es eine m bounded DNF gibt, welche die Elemente korrekt labelt
+\begin{itemize}
+\item $\Rightarrow$ (wenn Set-Cover eine Lösung hat, dann gibt es eine DNF dazu)
+\begin{itemize}
+\item Sei ein Cover $\Sigma' = \{\alpha, \beta, \gamma \}$ mit $m=3$ und $S=\{A,B,C,D,E,F\}$ gegeben, wie lautet eine DNF, s.d. $f(x_s) = 0$ ?
+\item Existiert für jedes Element aus S ein Cover aus $\Sigma'$ s.d. das Element aus S in einem Cover von $\Sigma'$ liegt ?
+\item z.B. liegt A in $\alpha$ oder in $\beta$ oder in $\gamma$ ?
+\item für die Abfrage benutzen wir die durch die Haussler-Data definierte Funktion $x_s(\sigma)$, JA Antwort = 0
+\item Darum können wir ein Produkt benutzten um ein logisches oder zu simulieren
+\item $\displaystyle f_\theta(x_s) = \prod_{\sigma\in\Sigma'} x_s(\sigma)$
+\item da wir ein Cover für S gegeben haben, muss es für jedes $s\in S$ auch eine Menge in $\Sigma'$ geben, s.d. $s\in\sigma$, d.h. die Funktion ist 0 für alle Sample
+\item nur das spezielle Element liegt nirgendwo drin (per Definition), d.h. es ist die einzige zu mappende NEIN Instanz des Problems
+\item $\rightarrow$ Die angegebene Funktion labelt alle Elemente (ob sie covert sind oder nicht) richtig
+\end{itemize}
+$\Leftarrow$ (wenn DNF, dann Set-Cover)
+\begin{itemize}
+\item Die von Haussler Definierte Funktion $x_s$ muss für alle Elemente des Covers 0 sein (per Definition)
+\item Nehmen wir nun alle Elemente für die die DNF, 0 ergibt und vereinigen diese, so erhalten wir ein valides Set-Cover für S
+\item das spezielle Element wird also nicht in das Cover aufgenommen, so wie es sein soll per Definition
+\end{itemize}
+\end{itemize}
+
+
 
 \section{BTD's}
 \subsection{Formal}
@@ -315,6 +344,37 @@ $\forall\{j,l\}\in\binom{[N]}{2}: \sigma_k\cap\sigma_l = \emptyset$
 \item damit ist $\displaystyle \bigcup_{j=0}^{N-1} \sigma_j$ eine Lösung für das exact cover by 3-sets problem
 \end{itemize}
 \end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{./resources/btd_np.png}
+\end{figure}
+\red{Erklärung v2}\\
+Wir zeigen, dass das Lernen von BDTs NP-hard ist, indem wir das Cover-by-3-Sets Problem darauf reduzieren
+\begin{itemize}
+\item Die zu Covernde Menge hat ein drei oder ein Vielfaches von 3 Elementen, sonnst kann es ja keine Lösung zu dem Problem geben
+\item außerdem definieren wir wie bei Haussler Data wieder eine Funktion welche angibt ob ein Element in einer Teilmenge des Covers liegt, nur dass der Output diesmal geflippt ist (1 wenn $s\in\sigma$, 0 sonnst)
+\item $\Rightarrow$ (hat man ein Cover, so gibt es einen Baum der die Elemente korrekt entscheidet)
+\begin{itemize}
+\item Wir konstruieren den BDT so, dass wir an jedem Knoten fragen: liegt s in dieser Teilmenge des Covers ?
+\item Die Antwort der Frage ist dabei immer der Wert der Funktion $x_s(\sigma)$
+\begin{itemize}
+\item wenn JA: gehe auf dem 1 Pfad dieser führt immer zu einem Blatt mit $y=1$
+\item wenn NEIN: gehe auf dem 0 Pfad zu nächsten Frage
+\end{itemize}
+\item man schreitet nun solange tiefer in den Baum hinein bis eine Frage mit JA beantwortet wird
+\item kann man keine Frage mit ja beantworten, so ist nur noch das spezielle Element übrig, dieses wird dann auf $y=0$ gemappt (links unten im Baum)
+\item da wir immer fragen, ob $s\in\sigma$ und $|\sigma| = 3$ 'verbrauchen' wir pro Frage 3 mögliche Elemente, somit ist der Baum nur m tief
+\item Note: die Reihenfolge der Fragen im Baum ist egal
+\end{itemize}
+\item $\Leftarrow$ (Sei ein BTD gegeben, wie sieht das Set-Cover aus)
+\begin{itemize}
+\item wir gehen einfach für jedes Element durch den Baum durch und fragen ob das Element zum Cover gehört
+\item vereinigt man alle diese Elemente für die der Baum JA sagt, erhält man das Cover
+\item nur das spezielle Element ist hier wieder ausgenommen
+\end{itemize}
+\end{itemize}
+
 \section{lernen linearer Funktionen}
 Die Problemstellung ist es, eine lineare Funktion zu finden, welche 2 Klassen (Label 0 oder 1) von Punkten trennt. Dabei sind die jeweiligen Koordinaten der Datenpunkte die Attributswerte, diese sind aus $\mathbb{R}$
 \subsection{Formal}
