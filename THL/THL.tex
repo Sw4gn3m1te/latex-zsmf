@@ -370,13 +370,14 @@ Gegeben ist folgender Sachverhalt:
 \item Frage: kann man eine Kombination aus gegeben Dominosteinen finden, sodass die beiden Gesamtwörter (also oben und unten) gleich sind?
 \item modifizieren des PCP, sodass ein Startsein gegeben ist mit dem man anfangen muss (MPCP)
 \item das PCP ist unentscheidbar
+\item Intuition: Die TM ersetzt das was oben auf dem Stein steht mit dem was unten steht 
 \end{itemize}
 \subsection{Beweis der Unentscheidbarkeit}
-Ziel: Reduzieren des MPCP auf das Halteproblem, und des MPCP auf das PCP\\
-\textbf{Konstruktion}\\
+Ziel: Reduzieren des Halteproblems auf das MPCP, und des MPCP auf das PCP\\
+\textbf{Konstruktion}:\\
 \begin{itemize}
 \item Nimm eine Instanz des MPCP, d.h. das PCP mit einem gegebenen Startstein
-\item Finde dazu eine Many-One Reduktion die das MPCP auf das Halteproblem reduziert (MPCP ist mindestens so schwer wie das Halteproblem)
+\item Finde dazu eine Many-One Reduktion die das Halteproblem auf das MPCP reduziert (MPCP ist mindestens so schwer wie das Halteproblem)
 \item Kodiere das entstehende Lösungswort des MPCP als Abfolge von Konfigurationen (Zustand, Bandinhalt, HEAD-Position) wie folgt:
 \begin{itemize}
 \item $(vqw)$ sei eine Konfiguration (v = Bandinhalt links, q = HEAD, w = Bandinhalt rechts)
@@ -393,14 +394,14 @@ $ \left[ {\# \atop \# c_0 \#} \right]$
 \item dazu benutze die folgenden Regeln und das untere Wort nach oben zu kopieren$$
 \begin{cases}
 \left[ {qa \atop bp} \right] \rightarrow \delta(q,a) = \langle p,b,R \rangle,\\
-\left[ {cqa \atop pcb} \right] \rightarrow \delta(q,a) = \langle p,b,L \rangle \text{und $c \in \Gamma$ beliebig},\\
+\left[ {cqa \atop pcb} \right] \rightarrow \delta(q,a) = \langle p,b,L \rangle \, \text{und $c \in \Gamma$ beliebig},\\
 \left[ {qa \atop pb} \right] \rightarrow \delta(q,a) = \langle q,b,N \rangle\\
 \end{cases}
 $$
 \item zusätzliche Randregeln:$$
 \begin{cases}
-\left[ {\# qa \atop \# bp} \right] \rightarrow \delta(q, a) = \langle p, b, L \rangle \text{anstoßen am linken Rand},\\
-\left[ {q \# \atop q \mathvisiblespace \# } \right] \rightarrow \forall q \in Q \text{unendlich nach rechts}\\
+\left[ {\# qa \atop \# bp} \right] \rightarrow \delta(q, a) = \langle p, b, L \rangle \, \text{anstoßen am linken Rand},\\
+\left[ {q \# \atop q \mathvisiblespace \# } \right] \rightarrow \forall q \in Q \, \text{unendlich nach rechts}\\
 \end{cases}
 $$
 \item zusätzlich nehmen wir eine Kopierregel welche es erlaubt von unten nach oben zu kopieren:\\
@@ -432,7 +433,7 @@ $$
 \item Sei eine Reduktion nun wie folgt:
 \begin{itemize}
 \item beginne mit einem Domino mit beidseitigem Trennzeichen oben und nur linksseitigen Trennzeichen unten
-$ \left[ { _\#x_{1\#} \atop _\#y_1 } \right]$
+$ \left[ { _\#x_{1\#} \atop _\#y_1 } \right]$ (neuer Stein)
 \item setze die Kette nun mit Steinen fort, welche oben rechtsseitig und unten linksseitig getrennt sind
 $ \left[ { x_{n\#} \atop _\#y_n } \right]$
 \item der letzte Stein soll ein spezieller Stein sein
@@ -441,7 +442,8 @@ $ \left[ { \$ \atop \# \$ } \right]$
 \item Besitzt nun das MPCP eine Lösung, so hat das entsprechende PCP auch eine Lösung
 \item jedes Symbol ist dabei von einer $\#$ umgeben
 \item das Wort endet auf $\$ $
-\item Besitzt das PCP eine Lösung, so muss es mit dem ersten Wortpaar beginnen, da nur dies oben und unten eine $ \# $ besitzt
+\item Besitzt das PCP eine Lösung, so muss es mit dem ersten Wortpaar beginnen, da nur dies oben und unten eine $ \# $ besitzt\\
+Man zwingt das PCP dazu, falls es Lösungen gibt, dass diese mit nur exakt einem speziellen Stein anfangen können, der Stein welcher eben $\#$ oben und unten am Anfang hat, da alle anderen Steine nicht mit dem gleichen Buchstaben beginnen $\rightarrow$ das ist das gleiche wie MPCP
 \item lässt man alle $ \# $ und  $ \$ $ weg, so hat man wieder eine Lösung für das MPCP
 \item d.h. PCP und MPCP unterscheiden sich nur durch Trennzeichen
 \item $\Rightarrow$ \textbf{PCP und MPCP sind semi-entscheidbar}
@@ -568,23 +570,23 @@ Sei f(n) Eine obere Schranke von Einheiten einer Resource welche benutzt werden 
 \textbf{Wichtige Sprachklassen}\\
 \begin{tabular}{|c|c|}
 \hline
-$P = PTime = \cup_{d\geq 1}DTime(n^d)$ & det. poly. Zeit \\
+$\displaystyle P = PTime = \bigcup_{d\geq 1}DTime(n^d)$ & det. poly. Zeit \\
 \hline
-$Exp = ExpTime = \cup_{d\geq 1}DTime(2^{n^d})$ & det. exp. Zeit \\
+$\displaystyle Exp = ExpTime = \bigcup_{d\geq 1}DTime(2^{n^d})$ & det. exp. Zeit \\
 \hline
-$E = ETime = \cup_{d\geq 1}DTime(2^{dn})$ & det. exp. Zeit m. lin. exp. \\
+$\displaystyle E = ETime = \bigcup_{d\geq 1}DTime(2^{dn})$ & det. exp. Zeit m. lin. exp. \\
 \hline
-$L = LogSpace = DSpace(log\hspace{3pt}n)$ & det. log. Speicher \\
+$\displaystyle L = LogSpace = DSpace(log\hspace{3pt}n)$ & det. log. Speicher \\
 \hline
-$PSpace = \cup_{d\geq 1}DSpace(n^d)$ & det. poly. Speicher \\
+$\displaystyle PSpace = \bigcup_{d\geq 1}DSpace(n^d)$ & det. poly. Speicher \\
 \hline
-$NP = NPTime = \cup_{d\geq 1} NTime(n^d)$ & n. det. poly Zeit \\
+$\displaystyle NP = NPTime = \bigcup_{d\geq 1} NTime(n^d)$ & n. det. poly Zeit \\
 \hline
-$NExp = NExpTime \cup_{d\geq 1} NTime(2^{n^d})$ & n. det exp. Zeit \\
+$\displaystyle NExp = NExpTime \bigcup_{d\geq 1} NTime(2^{n^d})$ & n. det exp. Zeit \\
 \hline
-$NL = NLogSpace = NSpace(log\hspace{3pt}n)$ & n. det. log. Speicher \\
+$\displaystyle NL = NLogSpace = NSpace(log\hspace{3pt}n)$ & n. det. log. Speicher \\
 \hline
-$NPSpace = \cup_{d\geq 1} NSpace(n^d)$ & n. det. poly. Speicher \\
+$\displaystyle NPSpace = \bigcup_{d\geq 1} NSpace(n^d)$ & n. det. poly. Speicher \\
 \hline
 \end{tabular}
 \hfill \\
@@ -678,13 +680,19 @@ Gibt es eine Teilmenge $T \subseteq S$ sodass $\sum_{a\in T} v(a) = z$
 \item Definiere Gegenstände $t_i$ und $f_i$ für jede Variable $p_i$
 \item die Kosten $v(t_i)$ und $v(f_i)$ seien also Binärfolge $a_1...a_n c_1...c_k$ gegeben
 \begin{itemize}
-\item die $a_i$'s kodieren die Variablen in 2er Potenzen
-\item die $c_i$'s geben jeweils an ob die Variable $p_i$ für $t_i$ oder $\neq p_i$ für $f_i$ in der jeweiligen Disjunktion der KNF vorkommt
+\item die $a_i$'s 1 wenn der Index i von $f_i$ bzw $t_i$ gleich dem von $a_i$ ist, sonnst 0
+\item die $c_i$'s geben jeweils an ob die Variable $p_i$ für $t_i$ oder $\neq p_i$ für $f_i$ in der jeweiligen Disjunktion der KNF vorkommt\\
+$\rightarrow$ 1 für $t_i$ falls $p_i$ in der i-ten Klausel\\
+$\rightarrow$ 0 für $f_i$ falls $\lnot p_i$ in der i-ten Klausel vorkommt
+\item außerdem definieren wir auch noch so viele Gegenstände $m_{i,j}$ wie Literate in der i-ten Klausel vorkommen minus 1\\
+$\rightarrow\, (p_1 \lor p_2 \lor p_3) \Rightarrow m_{1,1},\, m_{1,2}$
+\item $m_{i,j} = 1$ in der Spalte wo $c_i$ steht, sonnst 0 $\rightarrow$ wert unabh. von j
 \end{itemize}
 \item definiere ein $r = |C_i| - 1$
 \item definiere die Menge S als $S = \{t_i f_i | 1 \leq i \leq n \} \cup \{m_{i,j} | 1 \leq i \leq k, 1 \leq j \leq |C_i| -1 \}$
-\item z kann nun wie folgt bestimmt werden: $z=a_1...a_n c_1....c_k$ mit $a_i = 1$ und $c_i = |C_i|$
-\item Die Teilmengen-Summe ist erfüllbar gdw. F erfüllbar ist
+\item z kann nun wie folgt bestimmt werden: $z=a_1...a_n c_1....c_k$ mit $a_i = 1$ und $c_i = |C_i|$\\
+z hat Anzahl der Variablen Einsen gefolgt von der Spaltensumme der $c_i$'s der $t_i$'s und $f_i$'s
+\item $\Rightarrow$ es gibt eine Teilmenge von S mit der gesuchten Zahl z gdw. F erfüllbar ist
 \begin{itemize}
 \item Sei w eine erfüllende Belegung für F mit $w(p_i) = 1$ falls $t_i \in T$ und $w(p_i) = 0$ falls $f_i \in T$
 \item definiere $T_1 = \{t_i | w(p_i) = 1, 1 \leq i \leq m \} \cup \{f_i | w(p_i) = 0, 1 \leq i \leq m \}$
@@ -699,25 +707,29 @@ Gibt es eine Teilmenge $T \subseteq S$ sodass $\sum_{a\in T} v(a) = z$
 \includegraphics[scale=0.4]{./resources/TMS_beweis.png}
 \end{figure}
 
+\subsubsection{Clique}
+\textbf{Problem}
+Sei der Graph G eine Clique (vollständig verbundener Subgraph) der Größe k ?
+\begin{itemize}
+\item Clique $\in$ NP: Die Clique selbst ist ein Zertifikat
+\item Clique ist NP-schwer
+\begin{itemize}
+\item Reduktion von SAT auf Clique ($SAT \leq_p Clique$)
+\item Konstruiere einen Graphen $G_F$, welcher eine Clique der Größe k hat, gdw. eine Formel F in KNF erfüllbar ist
+\item $F=\big((L_1^1 \lor \cdots \lor L_{n1}^1)\lor\cdots\lor (L_1^k\lor\cdots\lor L_{nk}^k)\big)$
+\item Wir konstruieren $G_F$ so, dass für jedes Literal in F in $G_F$ ein Knoten (Literal, Index der 'Klausel') es einen Knoten in $G_F$ gibt
+\item Zudem gibt es in $G_F$ einen kannte, zwischen allen Knoten, außer wenn der Index gleich ist $i\neq j$, z.B. ($(p, 1), (q, 1)$) oder die Literale gegenteilig , d.h. $L \land L'$ unerfüllbar ist z.B ($(p, 1), (\lnot p, 2)$)
+\item diesen Graph $G_F$ kann man in PTime erzeugen
+\item da in $G_F$ in einer Clique nie zwei unerfüllbare Literale vorkommen können per Definition ist diese Reduktion korrekt
+\end{itemize}
+\end{itemize}
+Note: Clique ist das Gegenteil einer unabhängigen Menge (Menge von Knoten eines Graphen welche \textit{untereinander} keine Kannten haben)\\
+$\rightarrow$ unabhängige Menge kann auf Clique in PTime reduziert werden, da Komplementierung polynomiell ist
+
+
 \subsubsection{Nicht-Primzahl}
 \textbf{Problem}
 Sei eine natürliche Zahl $z>1$ gegeben. Gibt es eine $p,q>1$ mit $p\cdot q = z$ ? (Primfaktorzerlegung)
-
-\subsubsection{Clique}
-\textbf{Problem}\\
-Sei ein Graph G und eine Zahl k gegeben. Enthält G eine vollvermaschte Knotenteilmenge mit k Knoten (Clique) ?
-\textbf{Beweis}\\
-\begin{itemize}
-\item Clique $\in$ NP: Die Clique selbst ist ein Zertifikat
-\item Clique ist NP-schwer. z.z. durch Reduktion auf SAT
-\begin{itemize}
-\item Sei F eine KNF
-\item Sei $G_F$ ein Graph für den gilt: $G_F$ hat eine Clique der Größe l gdw. F erfüllbar ist
-\item Knoten: Stehen in unterschiedlichen Disjunktionen der KNF, jeweils ein Paar aus Atom und Index der Disjunktion innerhalb der KNF
-\item Kannten: zwischen Paaren, für welche der Index der Paares unterschiedlich ist und die Konjunktion der Atome erfüllbar ist
-\end{itemize}
-\item $G_F$ kann in PTime berechnet werden
-\end{itemize}
 
 \subsubsection{Rucksackproblem}
 \textbf{Problem}
@@ -1291,6 +1303,7 @@ Konstruktion von Modellen direkt aus den Formeln, welche sie erfüllen sollen
 \item $I_2$ mit $hatVater^{I_2}$ = $\{(t,(f(t) | t \in \Delta_F \}$ Herbrandmodell, da Formel erfüllt
 \item $I_3$ mit $hatVater^{I_3}$ = $\Delta_F \times \Delta_F$ Herbrandmodell, da Formel erfüllt
 \end{itemize}
+
 
 
 \end{document}

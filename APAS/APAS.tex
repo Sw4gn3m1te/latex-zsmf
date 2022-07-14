@@ -1,0 +1,281 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{setspace}
+\usepackage{enumerate}
+\usepackage{pbox}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\newcommand{\red}[1]{\textcolor{red} {#1}}
+\newcommand{\blue}[1]{\textcolor{blue} {#1}}
+\newcommand{\green}[1]{\textcolor{ForestGreen} {#1}}
+\newcommand{\yellow}[1]{\textcolor{yellow} {#1}}
+\newcommand{\nl}{\\[0.1cm]}
+\title{Advanced Problem Solving and Search}
+\author{Henrik Tscherny}
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Local-Search}
+
+Local-Search has basicly 4 steps:
+\begin{enumerate}
+\item pick solution from the search space
+\item evaluate that solution
+\item pick a better solution in the neighbourhood if possible
+\item repeat until no better solution can be found
+\end{enumerate}
+
+\subsection{Hill-climbing}
+
+\begin{itemize}
+\item start from any initial point, =\textit{a}
+\item choose a point in the neighbourhood of \textit{a},  =\textit{b}
+\item check if value of \textit{a} is better then value of \textit{b}
+\begin{itemize}
+\item if so \textit{a}=\textit{b}
+\item else choose different point \textit{b}
+\end{itemize}
+\item if search space (N(a)) is exhausted return
+\end{itemize}
+\textbf{iterated hill-climbing}:\\
+basic hill-climbing but you terminate after n steps, good if function is unbounded and has no min/max\\
+
+
+
+
+
+\subsection{Examples}
+\textbf{GSAT}
+\begin{enumerate}
+\item randomly assign \textit{True} or \textit{False} to each Variable
+\item flip one variable assignment
+\begin{itemize}
+\item if SAT: return
+\item else: continue with 2 till MAX-FLIPS is reached
+\end{itemize}
+\item continue with 1 till MAX-TRIES is reached
+\end{enumerate}
+
+
+\subsection{Simulated Annealing/Stochastic Hill-Climbing}
+Improvement to Local-Search to skip over local min/max through new parameter \textbf{temperature}
+\begin{itemize}
+\item points in the neighbourhood are selected probabilisticly
+\item probability depends on the value difference of the current and the neighbouring point as well as the temperature
+\item higher temperature means less impact of the value difference $\rightarrow$ search is more random
+\item formula for probability: $\frac{1}{1+e \frac{eval(v_c)-eval(v_n)}{T}}$
+\item newly selected points can be worse then previous points (so that we can skip local optima)
+\item for \textbf{stochastic hill-climbing} the temperature remains constant
+\item for \textbf{simulated annealing} the temperature decreases over time making it more probable that new points are accepted over time
+\item also for \textbf{simulated annealing} new better valued points are always chosen
+\end{itemize}
+
+
+\subsection{Tabu-Search}
+
+
+\begin{itemize}
+\item Using a Memory to search new locations in the search space
+\item recently examined locations are ignored for a certain time period (e.g. five iterations)
+\item if some solution is much better then the solution before, the tabu can be overridden (\textbf{aspiration criteria})
+\item long-term memory like \textbf{frequency based memory} can be used to chose steps when every next solution is worse then the solution before\\$\rightarrow$ 20 out of 40 times we went right, so let's move right again
+\item tabu-search moves to worse locations only if stuck in a local min/max
+\end{itemize}
+
+\section{Answer-Set Programming}
+\begin{itemize}
+\item declarative problem solving approach
+\item modeling language
+\item allows solving problems in \textit{NP} and $\mathit{NP^{NP}}$
+\end{itemize}
+
+\subsection{Normal Logic Program}
+\begin{itemize}
+\item $\green{a_0} \leftarrow \blue{a_1,...,a_m},\red{not\, a_{m+1},...,not\, a_n}$
+\begin{itemize}
+\item \green{head}
+\item \blue{body$^+$}
+\item \red{body$^-$}
+\item  body = \blue{body$^+$} $\cup$ \red{body$^-$}
+\end{itemize}
+\item if \red{body$^-$} = $\emptyset$ its called a \textit{positive program}
+\item a set of Atoms \textbf{A} is \textit{closed under} a positive program P iff the \green{Head} and \blue{body$^+$} only contains elements of \textbf{A}\\
+$\rightarrow$ X corresponds to a model of P
+\item the \textit{smallest} set of Atoms closed under a positive program P is called $Cn(P)$\\
+$\rightarrow$ $Cn(P)$ also corresponds to the smallest model of P
+\item $Cn(P)$ is a \textit{stable model} of P
+\item \textit{definitive clauses/positive rules}: $a_0 \lor\land a_1 ... \lor\land a_m$\\(exactly one positive atom in DNF)
+\item \textit{Horn clauses}: clauses with \textbf{at most} one positive atom\\$\rightarrow$ every definite clause is a horn clause
+\end{itemize}
+
+\textbf{Gelfond-Lifschitz-Reduct} $\mathbf{P^X}$
+\begin{itemize}
+\item $P^X = \{\green{head(r)} \rightarrow \blue{body^+} \,|\, r\in P \text{ and } \red{body^-} \cap X = \emptyset\}$\\
+$\rightarrow$ \blue{body$^-$} does not contains elements of X
+\item a set \textbf{X} of Atoms is a \textit{stable model} of \textbf{P}, if $Cn(P^X) = X$
+\begin{itemize}
+\item delete each rule having \textit{not a} in its body with $a\in X$
+\item delete negative atoms \textit{not a} from the remaining rules
+\end{itemize}
+\end{itemize}
+
+\textbf{Variables in Logic Programs}
+\begin{itemize}
+\item let \textit{P} be a logic program with rules \textit{r}
+\item $\mathcal{T}$: set of variable-free terms (Herbrand universe)
+\item $\mathcal{A}$: set of atoms constructable from $\mathcal{T}$ (Herbrand base)
+\item $ground(r) = \{r\theta \,|\, \theta: var(r) \rightarrow \mathcal{T}, var(r\theta = \emptyset \}$
+\item $\displaystyle ground(P) = \bigcup_{r\in P} ground(r)$ $\Rightarrow$  \textit{ground instantiation}\\
+\textit{Ground(P)} is the Set of the facts and all the rules of P with each variable replaced by an element of $\mathcal{T}$, for all possible choices of elements from $\mathcal{T}$
+\end{itemize}
+
+
+\textbf{Syntax}\\
+\begin{tabular}{c c c c c c c c c c}
+ & true & false & if & and & or & iff & default negation & classical negation \\
+ \hline
+source code & & & :- & , & | & & not & -\\
+logic program &  & & $\leftarrow$ & , & ; & & $not$ & $\lnot$\\
+formula & $\top$ & $\bot$ & $\rightarrow$ & $\land$ & $\lor$ & $\leftrightarrow$ & $\sim$ & $\lnot$\\
+\hline
+\end{tabular}
+
+\paragraph{default negation vs. classical negation}
+\flushleft
+\begin{tabular}{|c|c|}
+\hline
+\textbf{default negation} & \textbf{classical negation}\\
+\hline 
+\pbox{10cm}{only negates if there is\\evidence that sth. is not true\\$\rightarrow$ close-world assumption\\
+can be used to express non-monotonicity\\$\rightarrow$ more knowledge can lead to less true statements\\(knowledge can be 'revoked')} & \pbox{10cm}{False is not the same as Unknown\\Nothing can be inferred about an object\\$\rightarrow$ open-word assumption\\
+more statements lead to more knowledge\\$\rightarrow$ monotonicity}\\
+\hline
+\end{tabular}
+\nl
+\textbf{Complexity}:\\
+\begin{tabular}{|c|c|c|c|}
+\hline
+& X is a stable model of P & a is in the stable model of P\\
+\hline
+positive normal logic program & P-complete & P-complete\\
+normal logic program & P-complete & NP-complete\\
+normal lp w/ optimization statements & co-NP-complete & $\Delta^P_2$-complete\\
+positive disjunctive lp & co-NP-complete & NP$^{NP}$-complete\\
+disjunctive lp & co-NP-complete & NP$^{NP}$-complete\\
+disjunctive lp w/ optimization statements & co-NP$^{NP}$-complete & $\Delta^P_3$-complete\\
+propositional theory & co-NP-complete & NP$^{NP}$-complete\\
+\hline
+
+
+\end{tabular}
+
+
+
+\section{Constraint Satisfaction Problem}
+$\mathcal{C} = \langle X,D,C \rangle$, with:
+\begin{itemize}
+\item X... Variables
+\item D... Domains for each Variable\\
+a domain contains a set of allowed values for each Variable (can be finite or infinite, can be discrete or continuous)
+\item C... Constraints for Variable values\\
+a tuple $\langle \text{scopre, rel} \rangle$\\
+\textit{scope} is a tuple of constraint variables\\
+\textit{rel} defines the possible values (can be a list or an expression etc.)
+\item other then in regular search in CSP its possible to cut large portions from search space at once using constraint $\rightarrow$ \textbf{constraint propagation}\\
+this can be done in combination with a search or as a pre-processing step
+\begin{itemize}
+\item Each variable becomes a node
+\item Each binary constraint becomes an arc
+\item enforcing local consistency:
+\begin{itemize}
+\item Node consistency: all values in the domain of a Variable satisfy the unary constraints of that Variable\\
+you can remove elements from the domain that do not satisfy the constrain
+\item Arc consistency: all values from a domain for a variable satisfy the variables binary constraints. Two Variables are arc consistent if there there is a value in each Variables respective domain s.d. the binary relation is satisfied. If this hold for all variables the CSP is arc consistent
+\item Path consistent: 
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+
+\subsection{Example}
+Coloring of a Map s.d. no two adjacent countries are the same color
+
+\begin{itemize}
+\item $X = \{Germany, Netherlands, Belgium, Luxembourg, France, Switzerland,$\\ $Lichtenstein, Austria, Czech Republic, Poland, Denmark\}$\\
+\item $D = \{Red, Green, Blue, Yellow\}$\\
+\item $C = \text{adjacent countries have different colors (may be expressed in an formal language)}$
+\item a Solution would be a color assignment for each country s.d. all constraints are satisfied
+\end{itemize}
+
+
+\subsection{Search strategies}
+\begin{itemize}
+\item \textbf{Standard search formulation (incremental)}
+\begin{itemize}
+\item initial state: $\emptyset$
+\item states are defined by the values assigned so far
+\item step: assign a value to an unassigned variable, (as well as checking for conflicts)
+\item goal: current assignment is complete
+\item $\Rightarrow$ every solution is at depth \textit{n} with \textit{n} Variables
+\item $\Rightarrow$ branching factor $b=(n-l)d$ at depth l $\rightarrow$ $n!d^n$ leaves 
+\end{itemize}
+\item \textbf{Backtracking search}
+\begin{itemize}
+\item variable assignments are commutative $\rightarrow$ it doesnt matter if we assign X before Y or Y before X
+\item branching factor $b=d$ with $d^n$ leaves
+\item DFS for CSPs with single-variable assignment
+\end{itemize}
+\end{itemize}
+
+
+\section{Evolutionary Algorithms}
+\begin{itemize}
+\item instead of modifying a existing solution we now use random variation to search for better solutions in parallel.
+\item based on natural selection
+\item each of the individuals within a population can be evaluated by a fitness function\\
+$\rightarrow$ fitter individual win over less fit competitors
+\item surviving individuals act as seed for the next population\\
+$\rightarrow$ genes are passed on
+\item recombination and mutation allows for new and potentially fitter individuals
+\item after a certain time the increase in fitness stagnates 
+\end{itemize}
+
+\section{Trees}
+\begin{itemize}
+\item Many CSPs can be solved in P-Time if the problems treewidth is small
+\item  Solving a bounded width problem includes two steps
+\begin{enumerate}
+\item generate a (hyper)tree decomposition with small width
+\item solve the problem based on the decomposition with dynamic programming
+\end{enumerate}
+\item \textit{Idea}: decompose main problem into sub-problems of smaller size
+\item if the constraint Graph to a corresponding CSP has no loops the CSP can be solved in $\mathbf{O(nd^2)}$ time\\
+(which is much smaller then the usual $O(d^n)$
+\item \textit{constraint graph}: Nodes... Variables, Arcs...Constraints
+\end{itemize}
+\subsection{Tree Decompositions}
+\begin{itemize}
+\item $G=(V,E)$
+\item \textit{tree decomposition} $(T, \chi)$\begin{itemize}
+\item Tree: $T = (I,F)$, I...Nodes, F...Edges
+\item $\chi = \{\chi_i :i\in I\}$ with:
+\begin{itemize}
+\item $\displaystyle \bigcup_{i\in I} \chi_i = V$
+\item $\forall (v,w) \in E \exists i \in I : v \in \chi_i \text{ and } w \in \chi_i$
+\item $\forall i,j,k\in I: \text{ if } j\text{ is on the path from } i \text{ to } k \text{ in } T,$\\$\text{then } \chi_i \cap \chi_k \subseteq \chi_j$
+\end{itemize}
+\end{itemize}
+\item width of a tree decomposition: $\displaystyle \max_{i\in I} |\chi_i | -1$
+\item treewidth of a graph G is denoted by $\mathbf{tw(G)}$, its the minimum width over all possible tree decompositions of G
+\item finding tw(G) is \textbf{NP-hard}
+\end{itemize}
+
+\end{document}
