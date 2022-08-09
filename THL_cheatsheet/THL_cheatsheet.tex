@@ -1,0 +1,155 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[legalpaper, landscape, margin=0cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[shortlabels]{enumitem}
+\usepackage{enumitem}
+\usepackage{changepage}
+\usepackage{paracol}
+\usepackage{xcolor}
+\setlength{\columnseprule}{0.4pt}
+\newcommand{\blue}[1]{\textcolor{blue} {#1}}
+\begin{document}
+
+\begin{paracol}{3}
+\switchcolumn[0]
+\centering
+\textbf{Reduktionen}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item turing red.: $P \leq_T Q$ P kann mit Q als subroutine gelößt werden
+\item poly. m-red.: $ P \leq_p Q \Leftrightarrow \forall w \in \Sigma^*: w\in P \leftrightarrow f(w) \in Q$
+\item L ist NP-hard: $\forall L' \in $ NP $: L' \leq_p L$ (alle L' aus NP sind auf L p.m.r.)
+\item L element NP: ex. ein poly. Verifikator (Cert. überprüfbar in P)
+\item L ist NP-complete: $L \in $ NP und L NP-hard
+\item Jede m-red ist eine t-red (aber nicht anders herum)\\ex. P s.d. $P \leq_T Q$ aber nicht $P \leq_m Q$
+\end{itemize}
+\hspace{1cm}
+\switchcolumn[1]
+\centering
+\textbf{(Un)Entscheidbarkeit}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item entscheidbar: ex. TM, die f.a. inputs $w (\in | \not\in) L$ hält
+\item \blue{(co)}-semi-entscheidbar: ex. TM, die f.a. inputs $w \blue{(\not\in)} \in  L$ hält
+\item $P \leq Q$, Q \blue{(un)}entscheidbar $\Rightarrow$ P \blue{(un)entscheidbar}
+\item semi- + co-semi = entscheidbar = $L$ und $\bar{L}$ entscheidbar
+\item $Phalt \leq P \land PHalt \leq \bar{P}\, \Rightarrow$ vollständig unentscheidbar
+\item Satz v. Rice: E nicht-triviale Eigenschaft, TM M mit L=L(M)\\hat L die E ? $\Rightarrow$ Unentscheidbar
+\end{itemize}
+\switchcolumn[2]
+\centering
+\textbf{Beziehungen von Klassen}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item L $\subseteq$ NL $\subseteq$ P $\subseteq$ NP $\subseteq$ PSpace $\subseteq$ NPSpace $\subseteq$ EXP $\subseteq$ NEXP
+\item Satz von Savitch: NSpace(f(n)) $\subseteq$ DSpace(f(n)$^2$)
+\item NL $\subsetneq$ PSpace, P $\subsetneq$ EXP, NP $\subsetneq$ NEXP (folgt auf THT/SHT)
+\item Satz von Immerman, Szelepcsenyi: NL $=$ coNL
+\item $L \in$ DTIME/DSPACE $\Leftrightarrow$ $\bar{L}\in $ DTIME/DSPACE
+\item wenn NP $=$ coNP $\rightarrow$ P $=$ NP
+\end{itemize}
+\switchcolumn[0]*[\hrule width\textwidth]
+\centering
+\textbf{Halteproblem}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item PHalt = geg. M, w hält M auf w ?
+\item Assume: PHalt entscheidbar $\rightarrow$ ex. Entscheider H
+\item Konstruiere d. Diagonalisierung TM D s.d.
+\item -  prüfe ob Eingabe TM ist
+\item -  Simuliere H auf <M,<M>> $\rightarrow$ hält M auf <M> ?
+\item -  Ja $\rightarrow$ Endlosschleife, Nein $\rightarrow$ akzeptiere
+\item \textit{Simuliere D auf <D>} $\rightarrow$ Wiederspruch
+\end{itemize}
+\switchcolumn[1]
+\centering
+\textbf{PCP}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item Menge Dominosteine, ex. Anordnung s.d. oben = unten
+\item $PHalt \leq mPCP \leq PCP$
+\item mPCP: PCP aber mit festem Startstein
+\item idee: Kodieren TM-lauf (config. seq) als seq. von Wortpaaren, s.d oben eine config zurücl liegt
+\item ->  TM hält $\rightarrow$ Lauf endlich, ex. Lösung (+ vice versa)
+\item MPCP hat lsg. $\rightarrow$ PCP hat lsg. + $\forall$ Sym. umgeben mit \#
+\item PCP hat lsg. $\rightarrow$ mPCP hat lsg. + da PCP mit erstem Stein anfangen muss, da nur dieser oben = unten + \# weglassen
+\end{itemize}
+\switchcolumn[2]
+\centering
+\textbf{Unifikation}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item Löschen: $\{x = x\} \rightarrow \{\}$ (gleiches weglassen)
+\item Zerlegung: \\ $\{f(x_1, ..., x_n) = f(y_1, ..., y_n)\} \rightarrow \{x_1=y_1, ..., x_n=y_n\}$
+\item Orientierung: $\{x=y\} \rightarrow \{y=x\}$ (vertauschen)
+\item Eliminierung: $\{x=y\} \rightarrow \{x=y\} \cup G\{x\mapsto y\}$ (einsetzen)
+\item $\sigma$ is min. so allgemein wie $\theta$, wenn $\exists \lambda: \sigma \circ \lambda = \theta$,
+\item MGU: $\forall \theta: \sigma \preceq \theta$
+\item alle MGU's sind bis auch Umbenennung der Vars gleich
+\item gelößte Form: wenn RS nicht in LS vorkommt, RS ist Variable
+\end{itemize}
+\switchcolumn[0]*[\hrule width\textwidth]
+\centering
+\textbf{Prädikatenlogik Definitionen}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item V...Variablen, C...Konstanten, P...Prädikatensymbole
+\item Atom: $p(t_1,...,t_n)\;\quad p\in P,\; t_i\in V\cup C$ (t...Terme)
+\item Formel: Induktiv, Atom ist Formel, $\lnot F, F\land G,..., \forall x.F$ auch
+\item gebundene Variable: steht im Scope eines Quantors\\default: Variablen in Atomen sind frei
+\item Interpretation $\mathcal{I}$: $\langle \Delta^\mathcal{I}, \cdot^\mathcal{I} \rangle$
+\item -  $\Delta^\mathcal{I}$: Domäne/Grunmenge
+\item -  $\cdot^\mathcal{I}$: Interpretationsfunktion
+\item $\mathcal{I}$ mapped jede Konstante auf ein Domänenelement und jedes Prädikatensymbol auf eine Relation (Menge)
+\item Bsp: $\Delta^\mathcal{I} = \mathbb{N}$, $c^\mathcal{I}=299.792.458$, $\leq_4^\mathcal{I} = \{0,1,2,3,4\}$,\\even$^\mathcal{I} = \{n|n \equiv 0 $ (mod 2)$\}$
+\item Zuweisung: $\mathcal{Z}: V \rightarrow \Delta^\mathcal{I}$, $\mathcal{Z}[x\mapsto \delta]$, für $x\in V$, $\delta \in \Delta^\mathcal{I}$
+\end{itemize}
+\switchcolumn[1]
+\centering
+\textbf{Formelformen}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item geschlossene Formel/Satz: Formel ohne freie Variablen
+\item negation normal Form (NNF): nur ($\lnot, \land, \lor$), $\lnot$ nur vor Atomen
+\item bereinigte Form: keine Variable kommt gebunden und frei vor\\keine Variable wird von mehr als einem Quantor gebunden
+\item Pränexform: Alle Quantoren stehen am Anfang
+\item Skolemform: Pränexform + alle $\exists$ entfernt\\n-stelliges Funktionssymbol mit n = Anz. der $\forall$ davor
+\item KNF: $(...\lor ... \lor ...) \land (...\lor ...) \land ...$
+\item Klauselform: $(x\lor y)\land \neg z$ $\rightarrow$ $\{\{x, y\}, \{\neg z\}\}$
+\item F in Pränex erfüllbar $\Leftrightarrow$ Skolemisierung erfüllbar
+\item Skolemisierung is keine äquiv. Umf., nur erfüllbarkeitserhalte
+\end{itemize}
+\switchcolumn[2]
+\centering
+\textbf{Logigisches Schließen}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item $\mathcal{I}$ is ein Modell für F wenn $\mathcal{I}$ F erfüllt ($\mathcal{I}\models F$)
+\item $\mathcal{I}\models\mathcal{T}$ wenn $\forall F \in \mathcal{T}: \mathcal{I}\models F$
+\item logische Konsequenz: $F\models G$, jedes Modell für F ist eins für G
+\item Alle Tautologien $\models F$ sind äquivalent (ebenso für unerf. F)
+\item $F \equiv G \Leftrightarrow F\models G \land G \models F$
+\item Monotonie: Mehr Sätze $\Leftrightarrow$ weniger Modele, mehr Schlussfolgerungen\\$\rightarrow$ Tautologien sind in jeder $\mathcal{I}$ wahr, log. Kons. von allem\\$\rightarrow$ Unerf. F haben kein Model, haben alle Sätze als Kons.
+\item Deduktionstheorem: $F \models G \rightarrow H \Leftrightarrow F \cup \{G\} \models H$
+\item $F \land G \models H \Leftrightarrow F \models G \rightarrow H$
+\item $F\equiv G \Leftrightarrow \models F \leftrightarrow G$
+\item $T \models F \equiv T \cup \{\neg F\}$ unerf. ? $\equiv (\land_{G\in\mathcal{T}} G \rightarrow F$ Tautologie ?
+\end{itemize}
+\end{paracol}
+\newpage
+\end{document}
