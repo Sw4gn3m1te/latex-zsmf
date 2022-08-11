@@ -6,6 +6,8 @@
 \usepackage{times}
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{float}
+\usepackage{stix}
 \usepackage{amssymb}
 \usepackage[shortlabels]{enumitem}
 \usepackage{enumitem}
@@ -116,6 +118,7 @@
 \item $\mathcal{I}$ mapped jede Konstante auf ein Domänenelement und jedes Prädikatensymbol auf eine Relation (Menge)
 \item Bsp: $\Delta^\mathcal{I} = \mathbb{N}$, $c^\mathcal{I}=299.792.458$, $\leq_4^\mathcal{I} = \{0,1,2,3,4\}$,\\even$^\mathcal{I} = \{n|n \equiv 0 $ (mod 2)$\}$
 \item Zuweisung: $\mathcal{Z}: V \rightarrow \Delta^\mathcal{I}$, $\mathcal{Z}[x\mapsto \delta]$, für $x\in V$, $\delta \in \Delta^\mathcal{I}$
+\item Kompaktheitssatz:\\$|T|=\infty, T\models F, F\models G, G\subset T, |G|=\infty$
 \end{itemize}
 \switchcolumn[1]
 \centering
@@ -152,4 +155,101 @@
 \end{itemize}
 \end{paracol}
 \newpage
+\begin{paracol}{3}
+\switchcolumn[0]
+\centering
+\textbf{Herbrand}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item Satz in Skolemform erf $\Leftrightarrow$ F hat HB-Model
+\item Herbrand-Expansion:\\$HE(F) := \{G\{x_1\mapsto t_1, ..., x_n\mapsto t_n\}|t_1,...,t_n\in\Delta_F\}$\\z.B. $p(a,f(a,s,t))\lor q(b)) \,|\, s,t \in \Delta_G\}$
+\item Satz v. Göd, Her, Sko: F in SkF erf. $\Leftrightarrow$ HE(F) aussagenlog. erf
+\item Herbrand-Universum: für F, Menge aller var.freien Terme, die man mit Konst. und Funk. symbolen in $F \cup \{a\}$ bilden kann
+\item Herbrand-Interpretation: $\Delta^\mathcal{I} = \Delta_F$, $\forall t\in \Delta_F: t^\mathcal{I}=t$
+\end{itemize}
+\switchcolumn[1]
+\centering
+\textbf{Clique NPC}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item Clique $\in$ NP: Clique ist Cert.
+\item Clique NP-hard: SAT $\leq_p$ Clique
+\item $G_F$ hat Clique der Größe l$\Leftrightarrow$ F ist erf.
+\item $F = \big( (L_1^1\lor...\lor L_{n_1}^1)\land ...\land (L_1^l\lor ...\lor L_{n_l}^l)\big)$
+\item Knoten: $V = \{(L_j^i)\,|\, i\in \{1...l\},j\in\{1,...,n_i\}\}$
+\item Kanten: $E = \{(L,i)-(L',j) \,|\, i\neq j, L\land L' $ erf. $\}$
+\item ez auf unabh. Menge reduz. $\rightarrow$ Komplement
+\end{itemize}
+\switchcolumn[2]
+\centering
+\textbf{Basic Logikregeln}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item De-Morgan: $\neg (A \land  B) \equiv \neg A \lor \neg B$
+\item De-Morgan: $\neg (A \lor B) \equiv \neg A \land \neg B$
+\item $A \rightarrow B \equiv \neg A \lor B$
+\item $A \leftrightarrow B \equiv A \land B \lor \neg A \land \neg B$
+\item $\neg \neg A \equiv A$
+\end{itemize}
+\switchcolumn[0]*[\hrule width\textwidth]
+\centering
+\textbf{Teilmengen Summe NPC}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item $F = (C_1 \land ... \land C_n)$
+\item $v(t_i) := a_1...a_nc_1...c_k$
+\item $\displaystyle a_j = \begin{cases}1, i=j\\0,  i\neq j\end{cases},\quad c_j = \begin{cases}1, p_i \in C_j\\0, else\end{cases}$
+\item $v(f_i):=a_1...a_nc_1...c_k$
+\item $\displaystyle a_j = \begin{cases}1, i=j\\0, i\neq j \end{cases},\quad c_j = \begin{cases}1, \neg p \in C_j\\0 else \end{cases}$
+\item für $r := |C_i| -1$, def: $m_{i, 1},...,m_{i,r}$
+\item $v(m_{i,j}) := c_i...c_k$
+\item $\displaystyle c_l = \begin{cases}1, l=i\\0, l\neq i \end{cases}$
+\item $\displaystyle S := \big\{t_i,f_i \, \big\vert \, 1 \leq i \leq n \big\} \cup \big\{ m_{i,j} \, \big\vert\, 1\leq i\leq k, 1\leq j \leq |C_i|-1\big\}$
+\item $z := a_1...a_nc_1...c_k$ mit $a_i := 1, c_i = |C_i|$
+\end{itemize}
+\switchcolumn[1]
+\centering
+\textbf{PCP Steine}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item $$
+\begin{cases}
+\left[ {qa \atop bp} \right] \rightarrow \delta(q,a) = \langle p,b,R \rangle,\\
+\left[ {cqa \atop pcb} \right] \rightarrow \delta(q,a) = \langle p,b,L \rangle \, \text{und $c \in \Gamma$ beliebig},\\
+\left[ {qa \atop pb} \right] \rightarrow \delta(q,a) = \langle q,b,N \rangle\\
+\end{cases}
+$$
+\item $$
+\begin{cases}
+\left[ {\# qa \atop \# bp} \right] \rightarrow \delta(q, a) = \langle p, b, L \rangle \, \text{anstoßen am linken Rand},\\
+\left[ {q \# \atop q \mathvisiblespace \# } \right] \rightarrow \forall q \in Q \, \text{unendlich nach rechts}\\
+\end{cases}
+$$
+\item Kopierregel:
+$\left[ {x \atop x} \right] \rightarrow \forall x \in \Gamma \cup \{ \# \}$
+\end{itemize}
+\switchcolumn[2]
+\centering
+\textbf{Datalog}
+\flushleft
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+\item Konsequenzoperator: $T_p$
+\item $T_p^0 = \emptyset$, if $T_p^i = T_p^{i+1} \rightarrow T_p^\infty$
+\item n-spaltige Tabelle wird zu n-stelligem Prädikat
+\item Schlussfolgerung $P\models F$ in Datalog in ExpTime
+\item für jeden Fakt $F\in T_p^\infty$ ex. min ein Ableitungsbaum
+\item für P ist $T_p^\infty$ das kleinste Herb. Modell\\$\rightarrow$ $F\in T_p^\infty \Leftrightarrow$ F in jeden Heb. Mod. vorkommt $\Leftrightarrow$ $P\models F$
+\item Datenbankanfragen in präd. Log. ist PSpace-Complete\\(im Bezug auf Größe der Datenbank und Formel)
+\item Zeitkomplexität: ExpTime
+\item Bsp: Anfrage:\\$Q_o[x] = \exists x_0,z_{linie}.verbindung(x_0, x_1, z_{linie}) \land Q_0[x_0])$
+\item gesuchte Var wird quantifiziert
+\item bei Bool wird alles quantifiziert, das gesuchte mit $\exists$
+\end{itemize}
+\end{paracol}
 \end{document}
