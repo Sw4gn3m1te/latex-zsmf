@@ -194,4 +194,54 @@ used to solve zero-sum games
 \end{itemize}
 \end{itemize}
 
+\section{Monte Carlo}
+Algorithms that use randomness and whose output may be incorrect with a certain probability
+\subsection{Tree Search}
+\begin{itemize}
+\setlength\itemsep{0.05cm}
+\item Simulate random moves from current to terminal states
+\item do statistics on moves that lead to wins
+\item \textbf{Playout}: complete move sequence from a state to a terminal state
+\item playout policy: bias simulation towards optimal play
+\item selection policy: determins where the simulation starts (exporations vs. exploitation)
+\item \textit{Steps}:
+\begin{itemize}
+\setlength\itemsep{0.05cm}
+\item Selection
+\item Expansion
+\item Simulation
+\item Backpropagation
+\end{itemize}
+\end{itemize}
+
+\subsection{Selection Policies}
+\textbf{UTC} (Upper confidence bounds applied to trees)
+\begin{itemize}
+\setlength\itemsep{0.05cm}
+\item ranks moves in terms of their upper confidence bound values
+\item $UCB1(n)=\frac{U(n)}{N(n)} + c\cdot \sqrt{\frac{ln \, N(n')}{N(n)}}$
+\item $n'$: unique parten of n in the tree
+\item $U(n):$ total utility of node n
+\item $N(m)$: total number of playout through node m
+\item $c$: some constant chosen empirically (for balance exploitation vs. exploration)
+\end{itemize}
+
+\section{Games with missing information}
+\textbf{Extensive Form Game}
+\begin{itemize}
+\setlength\itemsep{0.05cm}
+\item $P = \ecb{1,2,...,n}$ Set of players (min. 2)
+\item n+1 tuple $M =(M_1,...,M_n,M_{nature})$ of Moves
+\item $H$ Set of histories (seq. of moves)
+\item $T\subseteq H$ terminal histories
+\item $J_1,...,J_k = H\setminus T$ Partition into information sets s.t. all $h_1, h_2 \in J_i$ have the same legal moves
+\item $\ecb{1,...,k} \rightarrow P \cup \ecb{Nature}$ player function
+\item $u = (u_1,...,u_n)$ utility functions s.t. $u_i : T \rightarrow \mathbb{R}$
+\end{itemize}
+\textbf{Information Sets}
+\begin{itemize}
+\setlength\itemsep{0.05cm}
+\item the turn player does not have the information to distinguish between states in the set (but from other sets)
+
+\end{itemize}
 \end{document}
