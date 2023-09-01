@@ -67,6 +67,7 @@ Example: $\ket{\psi} = \frac{1}{\sqrt{2}}\ket{00} + \frac{1}{\sqrt{2}}\ket{11}$
 \item \textbf{Conjugate}: $A^*$ each entry is the conjugate
 \item \textbf{Adjunct}: $A^\dagger$ transpose + conjugate
 \item \textbf{Unitary}: $UU^\dagger = UU^{-1} = I = U^\dagger U$ adjunct is also the inverse
+\item Note: every unitary operator can be written as its eigenbases
 \end{itemize}
 
 \section{Gates}
@@ -97,6 +98,15 @@ $H^{\bigotimes 1} = H$
 \end{itemize} 
 \end{itemize}
 
+\subsection{Phase Kickback}
+\begin{itemize}
+\item U: one qubit unitary gate 
+\item $\ket{\phi}$: some base state 
+\item applying $U$ to $\ket{\psi}$ yields $e^{i\phi}\ket{\psi}$
+\item the global phase factor of a quantum state is not measurable (symmetry)
+\item using \textbf{ancilla} qubits the global phase can be turned intro a relative phase which is measurable
+\end{itemize}
+
 \section{Deutsch Algorithm}
 \begin{itemize}
 \item function $f : \ecb{0,1}\rightarrow \ecb{0,1}$ that is either balanced or constant
@@ -117,7 +127,7 @@ $H^{\bigotimes 1} = H$
 \item $\ket{\psi_0} = \ket{00}$
 \item $\ket{\psi_1} = \ket{01}$
 \item $\ket{\psi_2} = \ket{+-} = \frac{1}{\sqrt{2}}(\ket{0} + \ket{1})\ket{-} = \frac{1}{\sqrt{2}}(\ket{0}\ket{-}+\ket{1}\ket{-})$
-\item $\ket{\psi_3} = U_f \frac{1}{\sqrt{2}}(\ket{0}\ket{-}+\ket{1}\ket{-}) = \frac{1}{\sqrt{2}}(U_f\ket{0}\ket{-}+U_f\ket{1}\ket{-}) \overset{\text{phase oracle}}{=} \frac{1}{\sqrt{2}}((-1)^{f(0)}\ket{0}\ket{-}+ (-1)^{f(1)}\ket{1}\ket{-})$ ($\ket{-}$ can be omitted as its not needed)
+\item $\ket{\psi_3} = U_f \frac{1}{\sqrt{2}}(\ket{0}\ket{-}+\ket{1}\ket{-}) = \frac{1}{\sqrt{2}}(U_f\ket{0}\ket{-}+U_f\ket{1}\ket{-}) \overset{\text{phase oracle}}{=} \frac{1}{\sqrt{2}}((-1)^{f(0)}\ket{0}\ket{-}+ (-1)^{f(1)}\ket{1}\ket{-})$\\($\ket{-}$ can be omitted as its not needed)
 \item case $f(0) = f(1)$: $\begin{cases} \ket{\psi_3} = \frac{1}{\sqrt{2}}(\ket{0} + \ket{1}), & f(0) = f(1) = 0\\ \ket{\psi_3} = -\frac{1}{\sqrt{2}}(\ket{0}+\ket{1}), & f(0) = f(1) = 1 \end{cases}$\\$\ket{\psi_3} = \pm \frac{1}{\sqrt{2}}(\ket{0}+\ket{1}) = \pm \ket{+}$
 \item case $f(0) \neq f(1)$: $\begin{cases} \ket{\psi_3} = \frac{1}{\sqrt{2}}(\ket{0} - \ket{1}), & f(0) = 0 \land f(1) = 1\\\ket{\psi_3} = -\frac{1}{\sqrt{2}}(\ket{0} - \ket{1}), & f(0) = 1 \land f(1) = 0 \end{cases}$\\$\ket{\psi_3} = \pm \frac{1}{\sqrt{2}}(\ket{0}-\ket{1}) = \pm \ket{-}$
 \item $\ket{\psi_4} = \begin{cases} \pm \ket{0}, & f(0) = f(1)\\ \pm\ \ket{1}, & f(0) \neq f(1) \end{cases}$
@@ -137,7 +147,7 @@ $H^{\bigotimes 1} = H$
 \begin{itemize}
 \item $\ket{\psi_0} = \ket{00...0}\ket{-} = \ket{0}^{\bigotimes n}\ket{-}$ (we can get the $\ket{-}$ by $H\ket{1}$)
 \item $\displaystyle \ket{\psi_1} = H^{\bigotimes n}\ket{0}^{\bigotimes n}\ket{-} = \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} \ket{x}\ket{-}$ (uniform distribution)
-\item $\displaystyle \ket{\psi_2} = \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n}U_f\ket{x}\ket{-} \overset{\text{phase oracle}}{=} \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} (-1)^{f(x)}\ket{x}\ket{-}$
+\item $\displaystyle \ket{\psi_2} = \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n}U_f\ket{x}\ket{-} \overset{\text{phase oracle}}{=} \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} (-1)^{f(x)}\ket{x}\ket{-}$\\($\ket{-}$ can be omitted)
 \item Note: $\displaystyle H^{\bigotimes n}\ket{x} = \frac{1}{\sqrt{2^n}} \sum_{z\in\ecb{0,1}^n} (-1)^{x\cdot z} \ket{z}$, $\; (\ast)$
 \item $\displaystyle \ket{\psi_3} = \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} (-1)^{f(x)}H^{\bigotimes n}\ket{x}\ket{-}\\\overset{(\ast)}{=}
 \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} (-1)^{f(x)}\frac{1}{\sqrt{2^n}} \sum_{z\in\ecb{0,1}^n} (-1)^{x\cdot z} \ket{z}\\= \frac{1}{2^n}\sum_{x\in\ecb{0,1}^n}\sum_{z\in\ecb{0,1}^n} (-1)^{f(x)+x\cdot z} \ket{z}$
@@ -148,4 +158,50 @@ case f constant: $\displaystyle \begin{cases} \frac{1}{2^n} \sum_{x\in\ecb{0,1}^
 \item $\rightarrow$ measure and iff we get 000...0 then $f(x)$ is constant else balanced
 \end{itemize}
 \end{itemize}
+
+\section{Grovers Algorithm}
+\begin{itemize}
+\item Problem: given an unstructured database, find an element $\hat{x}$ within this database
+\item $f : \ecb{0,1}^n \rightarrow \ecb{0,1}$ with $f(\hat{x}) = 1$, $f(\lnot \hat{x}) = 0$ \hspace{1cm}($x, \hat{x} \in \ecb{0,1}^n$)
+\item classical: $\frac{N+1}{2} \in O(N)$
+\item quantum: $\frac{\pi}{4}\sqrt{N} \in O(\sqrt{N})$
+\item Steps:
+\begin{enumerate}
+\item generate uniform distribution on all elements:\\
+\begin{itemize}
+\item $\displaystyle H^{\bigotimes n}\ket{000...0}=\frac{1}{\sqrt{N}} \sum_{x=0}^{N-1} \ket{x}$
+\item $\displaystyle\ket{s} = H^{\bigotimes n+1} \ket{000...0}\ket{1} = \ket{0}^{\bigotimes n}\ket{-}$
+\end{itemize}
+\item Grover Iteration:
+\begin{enumerate}
+\item Negate the amplitude of $\hat{x}$ (Oracle $\hat{U_f}$)
+\begin{itemize}
+\item $\displaystyle \hat{U_f}\ket{s} = \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} (-1)^{f(x)}H^{\bigotimes n}\ket{x}\ket{-}$ \hspace{0.2cm}(as in Deutsch-Josza)
+\end{itemize}
+\item Mirror/Reflect/Diffuse all amplitudes a at the mean value m(Diffusion $\hat{D}$)
+\begin{itemize}
+\item $a := 2\cdot m - a$
+\item mirroring as a quantum state: $\displaystyle \sum_{i=0}^{N-1} a_i \ket{i}$ $(\ast)$
+\item mean value of amplitudes: $\displaystyle \sum_{j=0}^{N-1} \frac{a_j}{N}$ $(\ast\ast)$
+\item combining $(\ast)$ and $(\ast\ast)$ we get: $\displaystyle\ket{s} = \sum_{i=0}^{N-1} \bigg( 2\cdot \sum_{j=0}^{N-1} \frac{a_j}{N}\bigg) \ket{i}$
+\item $D_N = \begin{bmatrix} -1 + \frac{2}{N} & \dots & \frac{2}{N} \\ \vdots & -1 + \frac{2}{N}& \vdots\\  \frac{2}{N} & \dots & -1 + \frac{2}{N}\end{bmatrix}$
+\item Note: $D_N$ can be expressed as a local operation ($leq 3$ bits involved)
+\end{itemize}
+\end{enumerate}
+\item Conditional sign flip for $\hat{x}$
+\begin{itemize}
+\item $V_f : \ket{x} \rightarrow (-1)^{f(x)}\ket{x}$
+\end{itemize}
+\item Measure $\ket{x}$ and return it off $\hat{x}>c$ (c is some constant)
+\end{enumerate}
+\item The number of grover iterations T is capped by $(2T+1)\frac{1}{\sqrt{N}}$ since every iteration rotates by $\frac{2}{\sqrt{N}}$ $\Rightarrow$ $T=\frac{\pi}{4}\sqrt{4}$
+\item doing more than the necessary number of iteration degrades the result
+\end{itemize}
+
+\section{Simons Algorithms}
+Todo
+
+\section{Shors Algorithm}
+Todo
+
 \end{document}
