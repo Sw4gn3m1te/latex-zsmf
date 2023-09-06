@@ -183,15 +183,11 @@ case f constant: $\displaystyle \begin{cases} \frac{1}{2^n} \sum_{x\in\ecb{0,1}^
 \item $a := 2\cdot m - a$
 \item mirroring as a quantum state: $\displaystyle \sum_{i=0}^{N-1} a_i \ket{i}$ $(\ast)$
 \item mean value of amplitudes: $\displaystyle \sum_{j=0}^{N-1} \frac{a_j}{N}$ $(\ast\ast)$
-\item combining $(\ast)$ and $(\ast\ast)$ we get: $\displaystyle\ket{s} = \sum_{i=0}^{N-1} \bigg( 2\cdot \sum_{j=0}^{N-1} \frac{a_j}{N}\bigg) \ket{i}$
+\item combining $(\ast)$ and $(\ast\ast)$ we get: $\displaystyle\ket{s} = \sum_{i=0}^{N-1} \bigg( 2\cdot \sum_{j=0}^{N-1} \frac{a_j}{N}-a_i\bigg) \ket{i}$
 \item $D_N = \begin{bmatrix} -1 + \frac{2}{N} & \dots & \frac{2}{N} \\ \vdots & -1 + \frac{2}{N}& \vdots\\  \frac{2}{N} & \dots & -1 + \frac{2}{N}\end{bmatrix}$
 \item Note: $D_N$ can be expressed as a local operation ($leq 3$ bits involved)
 \end{itemize}
 \end{enumerate}
-\item Conditional sign flip for $\hat{x}$
-\begin{itemize}
-\item $V_f : \ket{x} \rightarrow (-1)^{f(x)}\ket{x}$
-\end{itemize}
 \item Measure $\ket{x}$ and return it off $\hat{x}>c$ (c is some constant)
 \end{enumerate}
 \item The number of grover iterations T is capped by $(2T+1)\frac{1}{\sqrt{N}}$ since every iteration rotates by $\frac{2}{\sqrt{N}}$ $\Rightarrow$ $T=\frac{\pi}{4}\sqrt{4}$
@@ -202,6 +198,65 @@ case f constant: $\displaystyle \begin{cases} \frac{1}{2^n} \sum_{x\in\ecb{0,1}^
 Todo
 
 \section{Shors Algorithm}
-Todo
+Goal: Find prime factor $z \cdot r = n$ for some $n\in\mathbb{N}$ that is not a prime power
+\begin{enumerate}
+\item Make a random guess $a\in\ecb{2,...,n-1}$
+\item calculate $z := gcd(a, n)$ and return $z$ if $z\neq 1$\\(the guess was very lucky and a prime factor was guessed, other factor is $\frac{n}{z}$)
+\item calculate the period of $a$ in $(\mathbb{Z}/n\mathbb{Z})^\times$: $a^p \equiv 1 \mod n$ (\textbf{Quantum})\\
+(Ordnung von a innerhalb der primen Restklassengruppe)
+\begin{itemize}
+\item choose $q$ with $n^2 \leq q <2n^2$
+\item initialize input quantumregister with: $\displaystyle \frac{1}{\sqrt{q}} \sum_{p=0}^{q-1} \ket{p}\ket{0}$\\
+(superposition of all possible periods)
+\item initialize output quantumregister with: $\displaystyle \frac{1}{\sqrt{q}} \sum_{p=0}^{q-1} \ket{p}\ket{a^p\mod n}$\\
+(superposition of the remainders of the calculation $a^p\mod n$)
+\item Example $q=16, a=7$:\\
+$\frac{1}{4}(\ket{0}\ket{1})+\ket{2}\ket{4}+\ket{3}\ket{13}+\\
+\ket{4}\ket{1}+\ket{5}\ket{1})+\ket{6}\ket{4}+\ket{7}\ket{13}+\\
+\ket{8}\ket{1}+\ket{9}\ket{1})+\ket{10}\ket{4}+\ket{11}\ket{13}+\\
+\ket{12}\ket{1}+\ket{13}\ket{1})+\ket{14}\ket{4}+\ket{15}\ket{13})$\\
+(Clearly the period $p=4$ with $(1,7,4,13)$
+\item measuring the output/reminder register yields a superposition of all elements with the same reminder (uniformly random which exactly)\\Example: $\frac{1}{2} (\ket{1}+\ket{5}+\ket{9}+\ket{13})\ket{7}$ (all elements with reminder 7)
+\item apply $QFT_n$ to input register to get the period $p$\\
+Example: $\frac{1}{2}(\ket{0}+\ket{4}+\ket{8}+\ket{12})$\\(amplitudes for each element may have changed sign/phase)
+\item measuring the input register yields $\ecb{\frac{j\cdot n}{p}\vert j=0,...,3}$\\Example:$\ecb{0,4,8,12}$
+\item calculate $p$ using $\frac{j}{p}=\frac{y}{n}$ (y...output measurement)\\
+(only works if j and p have no common divisors hence measuring 0 or 8 in the Example necessitates a new run as the state is now destroyed)
+\end{itemize}
+\item GoTo (1) if: $p$ is odd (we cannot calculate $\frac{p}{2}\in\mathbb{N}$)
+\item calculate $z:=gcd(a^{\frac{p}{2}}-1,n)$
+\begin{itemize}
+\item return $z$ if $z\neq 1$ as its a factor of n
+\end{itemize}
+\item calculate $z:=gcd(a^{\frac{p}{2}}+1,n)$
+\begin{itemize}
+\item if $z=n$ Goto (1), as we have a multiple of $n$ 
+\item else return $z$
+\end{itemize}
+\end{enumerate}
+\begin{itemize}
+\item $(a^{\frac{p}{2}}-1)\cdot (a^{\frac{p}{2}}+1) = a^p -1 = k \cdot n$
+\item hence either the first or the second term must have a common divisor with n
+\end{itemize}
+
+Note: applying $QFT$ to $\ket{0}$ yields a uniform superposition as a Hadamard-transformation
+
+\subsection{RSA}
+\begin{itemize}
+\item asymetric encryption
+\item key generation:
+\begin{enumerate}
+\item choose $p,q\in\mathbb{P}$ at random
+\item calculate $n=p\cdot q$ (this is the modulus for the public/private key)
+\item compute $\varphi(n) = (p-1)(q-1)$ (number of coprime integers)
+\item choose $e$ s.t. $1 < e < \varphi(n)$ and $e$ and $\varphi(n)$ are coprime (e: encryption exponent)
+\item calculate $e\cdot d \equiv 1 (mod \varphi(n))$ (d: decryption exponent) (calculation by adv. eucl. alg.)
+\item keys are:
+\begin{itemize}
+\item Public: $(e, n)$
+\item Private: $(d, n)$
+\end{itemize}
+\end{enumerate}
+\end{itemize}
 
 \end{document}
