@@ -5,7 +5,7 @@
 \usepackage{times}
 \usepackage{graphicx}
 \usepackage{url}
-\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{setspace}
 \usepackage{enumerate}
 \usepackage{amsmath}
@@ -108,6 +108,52 @@ $H^{\otimes 1} = H$
 \item using \textbf{ancilla} qubits the global phase can be turned intro a relative phase which is measurable
 \end{itemize}
 
+\subsection{Bloch Sphere}
+\begin{itemize}
+\item a Bloch Sphere can be used to visualize the state of a single qubit
+\item \centering{\includegraphics[scale=0.4]{./resources/bs.png}}
+\end{itemize}
+
+\subsection{No-Cloning-Theorem}
+\begin{itemize}
+\item it is impossible to create an identical copy of an arbitrary quantum state
+\item the depicted setup does not exist:\\\includegraphics[scale=0.5]{./resources/noclone.png}\\
+there exists no unitary transformation that copies $\ket{\psi}$
+\item Proof:
+\begin{itemize}
+\item Assume towards contradiction it is possible to clone $\ket{\psi} = \alpha \ket{0} + \beta \ket{1}$
+\item If $\alpha = 1, \beta = 0$ then $U\ket{00}=\ket{00}$
+\item If $\alpha = 0, \beta = 1$ then $U\ket{10}=\ket{11}$
+\item more general: $U(\ket{\psi}\ket{0}) = U\big( (\alpha \ket{0} + \beta \ket{1})\ket{0}\big) = \alpha\ket{00}+\beta\ket{11}$
+\item however we need to obtain: $\ket{\psi\psi} = (\alpha\ket{0}+\beta\ket{1})\otimes(\alpha\ket{0}+\beta\ket{1})=\\\alpha^2\ket{00}+\alpha\beta\ket{01}+\alpha\beta\ket{10}+\beta^2\ket{11}$
+\item however $\alpha\ket{00}+\beta\ket{11} = \alpha^2\ket{00}+\alpha\beta\ket{01}+\alpha\beta\ket{10}+\beta^2\ket{11}$ is not possible 
+\item Contradiction !
+\end{itemize}
+\end{itemize}
+
+\subsection{Quantum Teleportation}
+\begin{itemize}
+\item not copying a quantum state but transferring it
+\item use quantum entanglement and classical communication
+\item setup:
+\begin{itemize}
+\item A, B generate an entangled pair of qubits (Bell state) $\beta_{00} = \frac{1}{\sqrt{2}}(\ket{00}+\ket{11})$
+\item A, B separate but take their entangled bits with them
+\item A create a quantum state $\ket{\psi} = \alpha \ket{0} + \beta\ket{1}$ which shall be send to B
+\item \hspace{1pt}\\\includegraphics[scale=0.4]{./resources/qtele.png}
+\item Input state: $\ket{\psi_0}=\ket{\psi}\ket{\beta_{00}} = \frac{1}{\sqrt{2}}\big( \alpha\ket{\red{0}}(\ket{\blue{0}\green{0}}+\ket{\blue{1}\green{1}})+\beta\ket{\red{1}}(\ket{\blue{0}\green{0}}+\ket{\blue{1}\green{1}} )\big)$
+\item Perform CNot: $\frac{1}{\sqrt{2}}\big( \alpha\ket{\red{0}}(\ket{\blue{0}\green{0}}+\ket{\blue{1}\green{1}})+\beta\ket{\red{1}}(\ket{\blue{1}\green{0}}+\ket{\blue{0}\green{1}} )\big)$
+\item Apply Hadamard: $\frac{1}{2}\big( \alpha(\ket{\red{0}}+\ket{\red{1}})(\ket{\blue{0}\green{0}}+\ket{\blue{1}\green{1}})+\beta(\ket{\red{0}}-\ket{\red{1}})(\ket{\blue{1}\green{0}}+\ket{\blue{0}\green{1}})\big)$
+\item A now measures the first to qubits and can infer the state of Bs bits
+\begin{itemize}
+\item $\ket{\red{0}\blue{0}} \rightarrow \alpha \ket{\green{0}}+\beta\ket{\green{1}}$
+\item $\ket{\red{0}\blue{1}} \rightarrow \alpha \ket{\green{1}}+\beta\ket{\green{0}}$
+\item $\ket{\red{1}\blue{0}} \rightarrow \alpha \ket{\green{0}}-\beta\ket{\green{1}}$
+\item $\ket{\red{1}\blue{1}} \rightarrow \alpha \ket{\green{1}}-\beta\ket{\green{0}}$
+\end{itemize}
+\item depending on the outcome A gives B a classical message to manipulate Bs bits accordingly
+\end{itemize} 
+\end{itemize}
 
 \section{Measurement}
 \begin{itemize}
@@ -319,5 +365,118 @@ Note: applying $QFT$ to $\ket{0}$ yields a uniform superposition as a Hadamard-t
 \end{itemize}
 \end{enumerate}
 \end{itemize}
+
+\section{Adiabatic Quantum Computing}
+\begin{itemize}
+\item \textbf{Hermitian Matrix}: conjugate transpose is self inverse ($A^\dagger = A$)
+\item alternative approach to quantum computing based on \textbf{time evolution} of quantum states
+\item time evolution is described by \textbf{Schrödingers equation} ($i\hbar \frac{\partial\ket{\psi(t)}}{\partial t} = \mathscr{H)}\ket{\psi(t)}$)
+\item $\ket{\psi(t)} = \displaystyle \sum_{j=1}^n \alpha_j e^{-i\lambda_j t / \hbar}\ket{\phi_j}$\\(j: energy level, $\ket{\phi_j}$: energy state of j-th level, $\lambda_j$: energy of j-th level)
+\item \textbf{Adiabatic Theorem}: a systems energy state does not change under adiabatic change of the Hamiltonian over time
+\item $T \propto \frac{1}{(\min_t \Delta \lambda_t)^2}$
+\item update equation: $\mathscr{H}_t = \big( 1-\frac{t}{T}\big) \mathscr{H}_{init}+\frac{t}{T}\mathscr{H}_{final}$
+\item basic ideal: Morphing a initial Hamiltonian gradually into a final one without changing the energy states of the system
+\item \centering{\includegraphics[scale=0.4]{./resources/adiabatic.png}}
+\item \textbf{Quantum Annealing} accelerates the transition by ignoring the adiabatic theorem
+\item 
+\end{itemize}
+
+
+\section{Error Correction}
+\begin{itemize}
+\item qubits cannot be completely shielded from the environment, hence they interact with it
+\item quantum computers are considered open systems
+\item the environment is denoted as $\ket{e}$ which is usually quite complex
+\item types of errors that can occur are:
+\begin{itemize}
+\item no error: $I: \alpha\ket{0}+\beta\ket{1}$
+\item phase flip: $Z: \alpha\ket{0}-\beta\ket{1}$
+\item bit flip:: $X: \alpha\ket{1}+\beta\ket{0}$
+\item both: $X\cdot Z: \alpha\ket{1}-\beta\ket{0}$
+\end{itemize}
+\item all possible errors in a system can be reduced to a combination of those errors
+\item Idea: use redundancy for error correction ($0 \rightarrow 000, 1 \rightarrow 111$)
+\item \textbf{Bit correction}:
+\begin{itemize}
+\item $\sigma_x$-error
+\item $\ket{\psi} = \alpha\ket{0}+\beta\ket{1} \rightarrow \alpha\ket{000}+\beta\ket{111}$
+\item through the use of two CNot gates the error can be located an fixed using Pauli gates
+\item possible errors and fixes:\\\includegraphics[scale=0.3]{./resources/bitcorrect.png}
+\item the encoding works using CNot gates, the decoding uses CNots and a Tofoli Gate:\\\includegraphics[scale=0.3]{./resources/bitcirc.png}
+\end{itemize}
+\item \textbf{Phase correction}:
+\begin{itemize}
+\item $\sigma_z$-error
+\item Similar approach as bit correction but change to sign base first
+\item $\ket{0} \rightarrow \ket{+ + +}=\frac{\ket{000}+\ket{111}}{\sqrt{2}}, \ket{1}\rightarrow\ket{- - -}=\frac{\ket{000}-\ket{111}}{\sqrt{2}}$
+\item perform encode/decode using Hardamard gates
+\item circuit for phase correction:\\\includegraphics[scale=0.3]{./resources/phasecirc.png}
+\end{itemize}
+\item both corrections can be combined into one (\textbf{Shors 9-Qubit Code})
+\begin{itemize}
+\item both encodings for phase and bit flips are applied
+\item $\ket{0} \rightarrow \frac{(\ket{000}+\ket{111})(\ket{000}+\ket{111})(\ket{000}+\ket{111})}{\sqrt{8}}=\ket{0_L}$
+\item $\ket{1} \rightarrow \frac{(\ket{000}-\ket{111})(\ket{000}-\ket{111})(\ket{000}-\ket{111})}{\sqrt{8}}=\ket{1_L}$
+\item circuit for the 9-qubit shor code:\\\includegraphics[scale=0.3]{./resources/shorcirc.png}
+\end{itemize}
+\end{itemize}
+
+\section{Quantum Complexity Theory}
+\begin{itemize}
+\item \textbf{P}: Deterministic Polynomial Time
+\item \textbf{NP}: Non-deterministic Polynomial Time
+\begin{itemize}
+\item $L\in NP$: solution can be verified in polynomial time by a DTM
+\item $L$ is $NP$-hard: $\forall \bar{L}\in NP: \bar{L} \leq_p L$ (all problems in NP can be reduced to L)
+\item $NPC$: $L\in NP$ and $L$ is $NP$-hard (those are the hardest problems in NP (only polynomial time differences)) 
+\end{itemize}
+\item \textbf{RP}: Randomized Polynomial
+\begin{itemize}
+\item: $P=1$ if $w\not\in L$
+\item $P>0.5$ if $w\in L$
+\item runtime is P
+\end{itemize}
+\item \textbf{BPP}: Bounded Error Probabilistic Polynomial
+\begin{itemize}
+\item $P\geq 0.75$ if $w\in L$
+\item $P\geq 0.75$ if $w\not\in L$
+\item runtime is P
+\end{itemize}
+\item \textbf{PSPACE}: Deterministic Polynomial Space
+\item \textbf{EXP}: Deterministic Exponential Time
+
+\item \textbf{IP}: Interactive Polynomial Time
+\begin{itemize}
+\item V: Verifier, $V(w,r,m_1...m_i)=m_{i+1}:\Gamma^*\times\Gamma^*\times\Gamma^* \rightarrow \Gamma^*\cup\ecb{\text{accept},\text{reject}}$
+\item P: Prover, has unlimited computational power, $P(w,m_1...m_i)=m_{i+1} : \Gamma^*\times\Gamma^*\rightarrow \Gamma^*$
+\item V and P interact, $(V(w,r)\leftrightarrow P(w))(w,r)=\text{accept}$ if exists a message sequence that accepts
+\item $w \in L \rightarrow Pr(V \leftrightarrow P \text{ accetps } w) \geq 2/3$
+\item $w \not\in L \rightarrow Pr(V \leftrightarrow \bar{P} \text{ accetps } w) \leq 1/3$
+\end{itemize}
+\item \textbf{QIP}: Quantum Interactive Polynomial Time
+\item \textbf{MA}: Merlin-Arthur
+\begin{itemize}
+\item like IP but only message, message length is poly and poly many random bits
+\end{itemize}
+\item \textbf{QMA}: Quantum Merlin-Arthur
+\end{itemize}
+\subsection{Relations between Classes}
+\includegraphics[scale=0.4]{./resources/classrelation.png}
+
+\section{Quantum Cryptography}
+\subsection{BB84 Protocol}
+\begin{enumerate}
+\item A, B want to communicate securely
+\item A generates random bits and random bases
+\item A measures each bit in its randomly assigned base and remembers measurement and initialization
+\item A send the measurements to B
+\item B guesses that bases man measures the received qubits 
+\item B remembers measurement
+\item A, B publish measurement bases
+\item A, B use measurement where to bases agree to forge a secret key
+\item A, B convert + to 0 and - to 1
+\item an eavesdropper will be detected when A, B compare their keys
+\end{enumerate}
+
 
 \end{document}
