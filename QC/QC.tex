@@ -19,6 +19,7 @@
 
 \newcommand{\ecb}[1]{\{#1\}}
 \newcommand{\ket}[1]{\vert #1 \rangle}
+\newcommand{\tek}[1]{\langle #1 \vert}
 
 \newcommand*\vv[2]{
     \begin{bmatrix}#1\\#2\end{bmatrix}
@@ -50,7 +51,7 @@
 \item \textbf{basis vectors}: $\ket{0} = \vv{1}{0}$,  $\ket{1} = \vv{0}{1}$
 \item $P(\ket{0}) = |a_0|^2$, $P(\ket{1}) = |a_1|^2$
 \item $\displaystyle \sum_{i=0}^{2^n-1} |a_n| = 1$ (for n-qubit system)
-\item \textbf{tensor product}: $\ket{00} = \ket{0} \bigotimes \ket{0} = \vv{1}{0} \bigotimes \vv{1}{0} = \vv{1\vv{1}{0}}{0\vv{1}{0}} = \vvvv{1}{0}{0}{0}$
+\item \textbf{tensor product}: $\ket{00} = \ket{0} \otimes \ket{0} = \vv{1}{0} \otimes \vv{1}{0} = \vv{1\vv{1}{0}}{0\vv{1}{0}} = \vvvv{1}{0}{0}{0}$
 \item \textbf{entanglement}: non-serperable state (can not be written as the product of qubits, the qubits are statistical dependent)\\
 Example: $\ket{\psi} = \frac{1}{\sqrt{2}}\ket{00} + \frac{1}{\sqrt{2}}\ket{11}$
 \end{itemize}
@@ -80,8 +81,8 @@ Example: $\ket{\psi} = \frac{1}{\sqrt{2}}\ket{00} + \frac{1}{\sqrt{2}}\ket{11}$
 \item applying $H$ splits the probabilities in $\frac{1}{2}$ for each (simulate coinflip)
 \item $H$ is self inverse as it is unitary
 \item \textbf{recursive definition for Hardamard}:\\
-$H^{\bigotimes n} = H \bigotimes H^{\bigotimes n-1} = \frac{1}{\sqrt{2}} \begin{bmatrix}1 & 1\\1 & -1 \end{bmatrix} \bigotimes H^{\bigotimes n-1} = \frac{1}{\sqrt{2}} \begin{bmatrix}H^{\bigotimes n-1} & H^{\bigotimes n-1}\\H^{\bigotimes n-1} & -H^{\bigotimes n-1} \end{bmatrix}$\\
-$H^{\bigotimes 1} = H$
+$H^{\otimes n} = H \otimes H^{\otimes n-1} = \frac{1}{\sqrt{2}} \begin{bmatrix}1 & 1\\1 & -1 \end{bmatrix} \otimes H^{\otimes n-1} = \frac{1}{\sqrt{2}} \begin{bmatrix}H^{\otimes n-1} & H^{\otimes n-1}\\H^{\otimes n-1} & -H^{\otimes n-1} \end{bmatrix}$\\
+$H^{\otimes 1} = H$
 \end{itemize}
 \item \textbf{Pauli Gates}:
 \begin{itemize}
@@ -107,6 +108,34 @@ $H^{\bigotimes 1} = H$
 \item using \textbf{ancilla} qubits the global phase can be turned intro a relative phase which is measurable
 \end{itemize}
 
+
+\section{Measurement}
+\begin{itemize}
+\item Measurements are described by a set of operators $\ecb{M_m}$ with $M_m^\dagger M_m = I$\\the index $m$ refers to the possible measurement outcomes
+\item $P(m) = \tek{\psi}M^\dagger M \ket{\psi}$
+\item after measurement the system is in state: $\displaystyle \frac{M_m\ket{\psi}}{\sqrt{\tek{\psi}M^\dagger M\ket{\psi}}}$
+\item Measurement collapses the state to a basis vector with probabilities of the square of the amplitudes
+\end{itemize}
+\subsection{Projective Measurement}
+\begin{itemize}
+\item described by an \textbf{Observable} M, which is a Hermitian operator
+\item the possible outcomes of the measurement correspond to the eigenvalues of the observable
+\item getting result $m$ when measuring $\ket{\psi}$ with probability $P(m) = \tek{\psi}P_m\ket{\psi}$
+\item expected value: $E(M) = \sum_m m\cdot P(m)$
+\item given that outcome $m$ occurred the state is now: $\frac{P_m\ket{\psi}}{\sqrt{P(m)}}$
+\end{itemize}
+Example: Measuring in computational base
+\begin{itemize}
+\item $M_0 = \ket{0}\tek{0} = \vv{1}{0} \begin{bmatrix} 1 & 0 \end{bmatrix} = \begin{bmatrix} 1 & 0 \\ 0 & 0 \end{bmatrix}$
+\item $M_1 = \ket{1}\tek{1} = \vv{0}{1} \begin{bmatrix} 0 & 1 \end{bmatrix} = \begin{bmatrix} 0 & 0 \\ 0 & 1 \end{bmatrix}$
+\item Be $\ket{\psi} = a\ket{0}+b\ket{1}$
+\begin{itemize}
+\item $P(0) = \tek{\psi}M_0^\dagger M_0\ket{\psi} = \tek{\psi}P_0\ket{\psi} = \begin{bmatrix} a^* & b^* \end{bmatrix}\begin{bmatrix} 1 & 0 \\ 0 & 0 \end{bmatrix} \vv{a}{b} = \vert a \vert^2$
+\item $P(1) = \tek{\psi}M_1^\dagger M_1\ket{\psi} = \tek{\psi}P_1\ket{\psi} = \begin{bmatrix} a^* & b^* \end{bmatrix}\begin{bmatrix} 0 & 0 \\ 0 & 1 \end{bmatrix} \vv{a}{b} = \vert b \vert^2$
+\end{itemize}
+\item $M = Z = \begin{bmatrix}1 & 0 \\ 0 & -1\end{bmatrix}$\\(measuring the computational base is like measuring the observable Pauli-Z)
+\end{itemize}
+
 \section{Deutsch Algorithm}
 \begin{itemize}
 \item function $f : \ecb{0,1}\rightarrow \ecb{0,1}$ that is either balanced or constant
@@ -114,11 +143,11 @@ $H^{\bigotimes 1} = H$
 \item quantum: one call of f is needed
 \item quantum oracle:
 \begin{itemize}
-\item $U_f : \ket{x}\ket{y} \xrightarrow{U_f} \ket{x}\ket{y\bigoplus f(x)}$
+\item $U_f : \ket{x}\ket{y} \xrightarrow{U_f} \ket{x}\ket{y\oplus f(x)}$
 \item $\ket{x}$ input to function
 \item $\ket{y}$ qubit to write function result to
-\item $\ket{y\bigoplus f(x)}$, the XOR ensures that the oracle is reversible (as each image has a unique preimage)
-\item initializing $y = \ket{0}$ we only get the function value $\ket{x}\ket{f(x)}$ as $0\bigoplus x = x$
+\item $\ket{y\oplus f(x)}$, the XOR ensures that the oracle is reversible (as each image has a unique preimage)
+\item initializing $y = \ket{0}$ we only get the function value $\ket{x}\ket{f(x)}$ as $0\oplus x = x$
 \item initializing $y = \ket{-}$ we get phase kickback to $\ket{x}\ket{-} \xrightarrow{U_f} (-1)^{f(x)} \ket{x}\ket{-}$ (a phase is applied to the input qubit)\\$\begin{cases} \ket{x}\ket{-} & f(x)=0 \\ -\ket{x}\ket{-} & f(x)=1 \end{cases}$
 \item Note: this is called a phase oracle ($U_f \ket{x}\ket{-} = (-1)^{f(x)}\ket{x}\ket{-}$)
 \end{itemize}
@@ -145,13 +174,13 @@ $H^{\bigotimes 1} = H$
 \item quantum: one call of f in needed (exponential speed up)
 \item \includegraphics[scale=0.3]{./resources/jozsaplan.png}
 \begin{itemize}
-\item $\ket{\psi_0} = \ket{00...0}\ket{-} = \ket{0}^{\bigotimes n}\ket{-}$ (we can get the $\ket{-}$ by $H\ket{1}$)
-\item $\displaystyle \ket{\psi_1} = H^{\bigotimes n}\ket{0}^{\bigotimes n}\ket{-} = \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} \ket{x}\ket{-}$ (uniform distribution)
+\item $\ket{\psi_0} = \ket{00...0}\ket{-} = \ket{0}^{\otimes n}\ket{-}$ (we can get the $\ket{-}$ by $H\ket{1}$)
+\item $\displaystyle \ket{\psi_1} = H^{\otimes n}\ket{0}^{\otimes n}\ket{-} = \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} \ket{x}\ket{-}$ (uniform distribution)
 \item $\displaystyle \ket{\psi_2} = \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n}U_f\ket{x}\ket{-} \overset{\text{phase oracle}}{=} \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} (-1)^{f(x)}\ket{x}\ket{-}$\\($\ket{-}$ can be omitted)
-\item Note: $\displaystyle H^{\bigotimes n}\ket{x} = \frac{1}{\sqrt{2^n}} \sum_{z\in\ecb{0,1}^n} (-1)^{x\cdot z} \ket{z}$, $\; (\ast)$
-\item $\displaystyle \ket{\psi_3} = \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} (-1)^{f(x)}H^{\bigotimes n}\ket{x}\ket{-}\\\overset{(\ast)}{=}
+\item Note: $\displaystyle H^{\otimes n}\ket{x} = \frac{1}{\sqrt{2^n}} \sum_{z\in\ecb{0,1}^n} (-1)^{x\cdot z} \ket{z}$, $\; (\ast)$
+\item $\displaystyle \ket{\psi_3} = \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} (-1)^{f(x)}H^{\otimes n}\ket{x}\ket{-}\\\overset{(\ast)}{=}
 \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} (-1)^{f(x)}\frac{1}{\sqrt{2^n}} \sum_{z\in\ecb{0,1}^n} (-1)^{x\cdot z} \ket{z}\\= \frac{1}{2^n}\sum_{x\in\ecb{0,1}^n}\sum_{z\in\ecb{0,1}^n} (-1)^{f(x)+x\cdot z} \ket{z}$
-\item consider the amplitude of $\ket{0}^{\bigotimes n}$ is $\displaystyle \frac{1}{2^n} \sum_{x\in\ecb{0,1}^n} (-1)^{f(x)}$
+\item consider the amplitude of $\ket{0}^{\otimes n}$ is $\displaystyle \frac{1}{2^n} \sum_{x\in\ecb{0,1}^n} (-1)^{f(x)}$
 case f constant: $\displaystyle \begin{cases} \frac{1}{2^n} \sum_{x\in\ecb{0,1}^n} (-1)^0 = \frac{1}{2^n} 2^n = 1, & f(x) = 0\\\frac{1}{2^n} \sum_{x\in\ecb{0,1}^n} (-1)^1 = \frac{1}{2^n} (-2^n) = -1, & f(x)=1 \end{cases}$
 \item hence if f is constant the probability of measuring all zeros is 1
 \item hence if f is balanced half of the sum is 1 and half is -1 hence the probability of measuring all zeros is 0
@@ -169,14 +198,14 @@ case f constant: $\displaystyle \begin{cases} \frac{1}{2^n} \sum_{x\in\ecb{0,1}^
 \begin{enumerate}
 \item generate uniform distribution on all elements:\\
 \begin{itemize}
-\item $\displaystyle H^{\bigotimes n}\ket{000...0}=\frac{1}{\sqrt{N}} \sum_{x=0}^{N-1} \ket{x}$
-\item $\displaystyle\ket{s} = H^{\bigotimes n+1} \ket{000...0}\ket{1} = \ket{0}^{\bigotimes n}\ket{-}$
+\item $\displaystyle H^{\otimes n}\ket{000...0}=\frac{1}{\sqrt{N}} \sum_{x=0}^{N-1} \ket{x}$
+\item $\displaystyle\ket{s} = H^{\otimes n+1} \ket{000...0}\ket{1} = \ket{0}^{\otimes n}\ket{-}$
 \end{itemize}
 \item Grover Iteration:
 \begin{enumerate}
 \item Negate the amplitude of $\hat{x}$ (Oracle $\hat{U_f}$)
 \begin{itemize}
-\item $\displaystyle \hat{U_f}\ket{s} = \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} (-1)^{f(x)}H^{\bigotimes n}\ket{x}\ket{-}$ \hspace{0.2cm}(as in Deutsch-Josza)
+\item $\displaystyle \hat{U_f}\ket{s} = \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} (-1)^{f(x)}H^{\otimes n}\ket{x}\ket{-}$ \hspace{0.2cm}(as in Deutsch-Josza)
 \end{itemize}
 \item Mirror/Reflect/Diffuse all amplitudes a at the mean value m(Diffusion $\hat{D}$)
 \begin{itemize}
@@ -195,7 +224,39 @@ case f constant: $\displaystyle \begin{cases} \frac{1}{2^n} \sum_{x\in\ecb{0,1}^
 \end{itemize}
 
 \section{Simons Algorithms}
-Todo
+Precursor to Shors algorithm
+\begin{itemize}
+\item function $f : \ecb{0,1}^n \rightarrow \ecb{0,1}^n$
+\item Goal: is the function a bijection or does f have a period $s$
+\item $\exists s\in\ecb{0,1}^n, \forall x,y\in\ecb{0,1}^n: f(x) = f(y) \leftrightarrow x\oplus y \in \ecb{0^n,s}$
+\begin{enumerate}
+\item Input Quantum Oracle $U_f: \ket{a}\ket{b} \rightarrow \ket{a}\ket{b\oplus f(a)}$
+\item Initialize register $R$ with $\ket{a}\ket{b}=\ket{0...0}\ket{0...0}$
+\item bring $a$ in uniform superposition $H^{\otimes n} \ket{a} \ket{b} = \displaystyle \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} \ket{x}\ket{0...0}$
+\item apply $U_f$ to $R$ yields $\displaystyle \frac{1}{\sqrt{2^n}} \sum_{x\in\ecb{0,1}^n} \ket{x}\ket{f(x)}$\\Entangles Registers
+\item measure $y:=\ket{b}$
+\begin{itemize}
+\item the state to measure is $\frac{1}{\sqrt{2}} (\ket{\hat{x}}+\ket{\hat{x}\oplus s})\ket{f(\hat{x}}$
+\item if $f$ is a bijection then we get $f^{-1}(y)$
+\item if $f$ is periodical there are two preimages ($x, x'$) of $y$ with $x\oplus x' = s$
+\end{itemize}
+\item apply Hadamard to $\ket{a}$: $H^{\otimes n}\ket{a}$
+\begin{itemize}
+\item state: $\displaystyle \frac{1}{\sqrt{2}}\sum_{z\in\ecb{0,1}^n} \frac{1}{\sqrt{2}}\big( (-1)^{\hat{x}\cdot z} + (-1)^{(\hat{x}\oplus s)\cdot z}\big ) \ket{z}\ket{\hat{x}}$
+\item amplitudes: $a_z = \frac{1}{\sqrt{2^{n+1}}}\big( (-1)^{\hat{x}\cdot z} + (-1)^{(\hat{x}\oplus s)\cdot z}\big )$
+\item $z\cdot s$ is even then $a_z = \pm \frac{1}{\sqrt{2^{n+1}}}$
+\item $z\cdot s$ is odd: $a_z = 0$
+\end{itemize}
+\item measure $z:=\ket{a}$
+\item return $z$
+\end{enumerate}
+\begin{itemize}
+\item since we square we only get values of $z$ that are even
+\item those are half of the possible values (the rest is odd) ($2^{n-1}$ many)
+\item $n-1$ of them are linearly independent and define a lin. sys. of equations ($z_1 \cdot t = 0, z_2 \cdot t = 0, ... ,z_{n-1} \cdot t =0$
+\item if $f(0) = f(s)$ return periodic, else bijective
+\end{itemize}
+\end{itemize}
 
 \section{Shors Algorithm}
 Goal: Find prime factor $z \cdot r = n$ for some $n\in\mathbb{N}$ that is not a prime power
